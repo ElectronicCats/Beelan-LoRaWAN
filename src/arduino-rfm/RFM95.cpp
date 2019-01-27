@@ -413,14 +413,14 @@ void RFM_Change_Datarate(unsigned char Datarate)
 			RFM_Write(0x1E,0x74); //SF7 CRC On
 			RFM_Write(0x1D,0x72); //125 kHz 4/5 coding rate explicit header mode
 			RFM_Write(0x26,0x04); //Low datarate optimization off AGC auto on
-    		break;
-        case 0x06: //SF7 BW 250kHz
+      break;
+    case 0x06: //SF7 BW 250kHz
 			RFM_Write(0x1E,0x74); //SF7 CRC On
 			RFM_Write(0x1D,0x82); //250 kHz 4/5 coding rate explicit header mode
 			RFM_Write(0x26,0x04); //Low datarate optimization off AGC auto on
-        break;
+      break;
 
-    #else // Its defined US915 so the datarates are differents
+    #else // Its defined US915 cause the datarates are differents
     case 0x00: //SF10 BW 125 kHz
 			RFM_Write(0x1E,0xA4); //SF10 CRC On
 			RFM_Write(0x1D,0x72); //125 kHz 4/5 coding rate explicit header mode
@@ -491,8 +491,9 @@ void RFM_Change_Datarate(unsigned char Datarate)
 void RFM_Change_Channel(unsigned char Channel)
 {
 	switch(Channel)
-	{
-    #ifdef AS_923
+	{ 
+    //AS_923 Frequency select
+    #if defined(AS_923)
 		case 0x00: //Channel 0 923.200 MHz / 61.035 Hz = 15125748 = 0xE6CCF3
     case 0x10: //Receive channel 923.200 MHz / 61.035 Hz = 15125748 = 0xE6CCF3
 			RFM_Write(0x06,0xE6);
