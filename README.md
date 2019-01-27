@@ -48,8 +48,8 @@ and RFM95 boards (which supposedly contain an SX1272 and SX1276 chip
 respectively).
 
 Some of the supported pre-built board currently available in the market are:
-- Cytron Shield LoRa-RFM (https://www.cytron.io/p-shield-lora-rfm)
-- Dragino (http://www.dragino.com/products/module/item/102-lora-shield.html)
+- [Cytron Shield LoRa-RFM](https://www.cytron.io/p-shield-lora-rfm) 
+- [Dragino](http://www.dragino.com/products/module/item/102-lora-shield.html) 
 - [Electronic Cats CatWAN USB-Stick](https://www.tindie.com/products/electroniccats/catwan-usb-stick/)
 - [Electronic Cats CatWAN Relay Board](https://www.tindie.com/products/electroniccats/catwan-relay-board/)
 - [Electronic Cats CatWAN Shield](https://www.tindie.com/products/electroniccats/catwan-shield-lora-and-lorawan-for-arduino/)
