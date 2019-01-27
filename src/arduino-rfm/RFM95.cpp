@@ -356,7 +356,8 @@ void RFM_Change_Datarate(unsigned char Datarate)
 {
 	switch(Datarate)
 	{
-		case 0x00: //SF12 BW 125 kHz
+		#ifndef US_915
+    case 0x00: //SF12 BW 125 kHz
 			RFM_Write(0x1E,0xC4); //SF12 CRC On
 			RFM_Write(0x1D,0x72); //125 kHz 4/5 coding rate explicit header mode
 			RFM_Write(0x26,0x0C); //Low datarate optimization on AGC auto on
@@ -390,7 +391,65 @@ void RFM_Change_Datarate(unsigned char Datarate)
 			RFM_Write(0x1E,0x74); //SF7 CRC On
 			RFM_Write(0x1D,0x82); //250 kHz 4/5 coding rate explicit header mode
 			RFM_Write(0x26,0x04); //Low datarate optimization off AGC auto on
-            break;
+        break;
+
+    #else // Its defined US915 so the datarates are differents
+    case 0x00: //SF10 BW 125 kHz
+			RFM_Write(0x1E,0xA4); //SF10 CRC On
+			RFM_Write(0x1D,0x72); //125 kHz 4/5 coding rate explicit header mode
+			RFM_Write(0x26,0x0C); //Low datarate optimization on AGC auto on
+			break;
+		case 0x01: //SF9 BW 125 kHz
+			RFM_Write(0x1E,0x94); //SF9 CRC On
+			RFM_Write(0x1D,0x72); //125 kHz 4/5 coding rate explicit header mode
+			RFM_Write(0x26,0x0C); //Low datarate optimization on AGC auto on
+			break;
+		case 0x02: //SF8 BW 125 kHz
+			RFM_Write(0x1E,0x84); //SF8 CRC On
+			RFM_Write(0x1D,0x72); //125 kHz 4/5 coding rate explicit header mode
+			RFM_Write(0x26,0x04); //Low datarate optimization off AGC auto on
+			break;
+		case 0x03: //SF7 BW 125 kHz
+			RFM_Write(0x1E,0x74); //SF7 CRC On
+			RFM_Write(0x1D,0x72); //125 kHz 4/5 coding rate explicit header mode
+			RFM_Write(0x26,0x04); //Low datarate optimization off AGC auto on
+			break;
+		case 0x04: //SF8 BW 500 kHz
+			RFM_Write(0x1E,0x84); //SF8 CRC On
+			RFM_Write(0x1D,0x92); //500 kHz 4/5 coding rate explicit header mode
+			RFM_Write(0x26,0x04); //Low datarate optimization off AGC auto on
+			break;
+		case 0x08: //SF12 BW 500 kHz
+			RFM_Write(0x1E,0xC4); //SF12 CRC On
+			RFM_Write(0x1D,0x92); //125 kHz 4/5 coding rate explicit header mode
+			RFM_Write(0x26,0x04); //Low datarate optimization off AGC auto on
+      break;
+    case 0x09: //SF11 BW 500kHz
+			RFM_Write(0x1E,0xB4); //SF11 CRC On
+			RFM_Write(0x1D,0x92); //500 kHz 4/5 coding rate explicit header mode
+			RFM_Write(0x26,0x04); //Low datarate optimization off AGC auto on
+      break;
+    case 0x0A: //SF10 BW 500kHz
+			RFM_Write(0x1E,0xA4); //SF10 CRC On
+			RFM_Write(0x1D,0x92); //500 kHz 4/5 coding rate explicit header mode
+			RFM_Write(0x26,0x04); //Low datarate optimization off AGC auto on
+      break;
+    case 0x0B: //SF9 BW 500kHz
+			RFM_Write(0x1E,0x94); //SF9 CRC On
+			RFM_Write(0x1D,0x92); //500 kHz 4/5 coding rate explicit header mode
+			RFM_Write(0x26,0x04); //Low datarate optimization off AGC auto on
+      break;
+    case 0x0C: //SF8 BW 500kHz
+			RFM_Write(0x1E,0x84); //SF8 CRC On
+			RFM_Write(0x1D,0x92); //500 kHz 4/5 coding rate explicit header mode
+			RFM_Write(0x26,0x04); //Low datarate optimization off AGC auto on
+      break;
+    case 0x0D: //SF7 BW 500kHz
+			RFM_Write(0x1E,0x74); //SF7 CRC On
+			RFM_Write(0x1D,0x92); //500 kHz 4/5 coding rate explicit header mode
+			RFM_Write(0x26,0x04); //Low datarate optimization off AGC auto on
+      break;
+    #endif
 	}
 }
 
