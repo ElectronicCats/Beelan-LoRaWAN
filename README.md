@@ -168,8 +168,9 @@ void setup() {
 ```
 
 #### Set Data Rate
-You can set data rate allowed in your region (AS_923 or EU_868).
+You can set data rate allowed in your region (AS_923, EU_868 or US915).
 
+###	For AS923 or EU868
 | data_rate | Name | Config          |
 |-----------|------|-----------------|
 | 0         | DR0  | SF12 BW 125 KHz |
@@ -179,6 +180,24 @@ You can set data rate allowed in your region (AS_923 or EU_868).
 | 4         | DR4  | SF8 BW 125 KHz  |
 | 5         | DR5  | SF7 BW 125 KHz  |
 | 6         | DR6  | SF7 BW 250 KHz  |
+
+### For US915
+| data_rate    | Name  | Config          |
+|--------------|-------|-----------------|
+| 0            | DR0   | SF12 BW 125 KHz |
+| 1            | DR1   | SF11 BW 125 KHz |
+| 2            | DR2   | SF10 BW 125 KHz |
+| 3            | DR3   | SF9 BW 125 KHz  |
+| 4            | DR4   | SF8 BW 500 KHz  |
+| 5:7  	     | RFU   | 				    |
+| 8            | DR8   | SF12 BW 500 KHz  |
+| 9            | DR9   | SF11 BW 500 KHz  |
+| 10           | DR10  | SF10 BW 500 KHz  |
+| 11           | DR11  | SF9 BW 500 KHz  |
+| 12           | DR12  | SF8 BW 500 KHz  |
+| 13           | DR13  | SF7 BW 500 KHz  |
+
+*RFU: Reserved for future use
 
 ##### Syntax
 ```c
@@ -198,7 +217,7 @@ void setup() {
 
 ```
 
-#### Send data to Antares
+#### Send data to LoRaWAN
 You need to specify the length of data you want to send and also the message type (unconfirmed or confirmed message). Set `confirm = 0` to send unconfirmed message and `confirm = 1`' to send confirmed message.
 
 #### Syntax
@@ -236,6 +255,8 @@ void loop() {
 }
 
 ```
+
+In this version we'll try to use interrupts in order to eliminate this FSM.
 
 #### Check and retrieve incoming data
 Check for the latest incoming data from server either in binary or string format. You need to provide char buffer to read the data.
