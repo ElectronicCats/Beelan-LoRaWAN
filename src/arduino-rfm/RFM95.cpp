@@ -540,7 +540,8 @@ void RFM_Change_Channel(unsigned char Channel)
 			RFM_Write(0x07,0x33);
 			RFM_Write(0x08,0x5A);
       break;
-    #else
+    //EU_868 Frequency select
+    #elif defined(EU_868)
  		case 0x00: //Channel 0 868.100 MHz / 61.035 Hz = 14222987 = 0xD9068B
 			RFM_Write(0x06,0xD9);
 			RFM_Write(0x07,0x06);
@@ -585,6 +586,53 @@ void RFM_Change_Channel(unsigned char Channel)
 			RFM_Write(0x06,0xD9);
 			RFM_Write(0x07,0x61);
 			RFM_Write(0x08,0xBE);
+			break;
+    //US_915 Frequency select
+    #else
+    case 0x00: //Channel 0 911.900 MHz / 61.035 Hz = 0xE3D359
+			RFM_Write(0x06,pgm_read_byte(&(LoRa_Frequency[0][0])));
+			RFM_Write(0x07,pgm_read_byte(&(LoRa_Frequency[0][1])));
+			RFM_Write(0x08,pgm_read_byte(&(LoRa_Frequency[0][2])));
+			break;
+		case 0x01: //Channel 1 912.100 MHz / 61.035 Hz = 0xE4068C
+			RFM_Write(0x06,pgm_read_byte(&(LoRa_Frequency[1][0])));
+			RFM_Write(0x07,pgm_read_byte(&(LoRa_Frequency[1][1])));
+			RFM_Write(0x08,pgm_read_byte(&(LoRa_Frequency[1][2])));
+			break;
+		case 0x02: //Channel 2 912.300 MHz / 61.035 Hz = 0xE41359   
+			RFM_Write(0x06,pgm_read_byte(&(LoRa_Frequency[2][0])));
+			RFM_Write(0x07,pgm_read_byte(&(LoRa_Frequency[2][1])));
+			RFM_Write(0x08,pgm_read_byte(&(LoRa_Frequency[2][2])));
+			break;
+		case 0x03: //Channel 3 912.500 MHz / 61.035 Hz = 0xE42026
+			RFM_Write(0x06,pgm_read_byte(&(LoRa_Frequency[3][0])));
+			RFM_Write(0x07,pgm_read_byte(&(LoRa_Frequency[3][1])));
+			RFM_Write(0x08,pgm_read_byte(&(LoRa_Frequency[3][2])));
+			break;
+		case 0x04: //Channel 4 912.700 MHz / 61.035 Hz = 0xE42CF3
+			RFM_Write(0x06,pgm_read_byte(&(LoRa_Frequency[4][0])));
+			RFM_Write(0x07,pgm_read_byte(&(LoRa_Frequency[4][1])));
+			RFM_Write(0x08,pgm_read_byte(&(LoRa_Frequency[4][2])));
+			break;
+		case 0x05: //Channel 5 912.900 MHz / 61.035 Hz = 0xE439BF
+			RFM_Write(0x06,pgm_read_byte(&(LoRa_Frequency[5][0])));
+			RFM_Write(0x07,pgm_read_byte(&(LoRa_Frequency[5][1])));
+			RFM_Write(0x08,pgm_read_byte(&(LoRa_Frequency[5][2])));
+			break;
+		case 0x06: //Channel 6 913.100 MHz / 61.035 Hz = 0xE4468C
+			RFM_Write(0x06,pgm_read_byte(&(LoRa_Frequency[6][0])));
+			RFM_Write(0x07,pgm_read_byte(&(LoRa_Frequency[6][1])));
+			RFM_Write(0x08,pgm_read_byte(&(LoRa_Frequency[6][2])));
+			break;
+		case 0x07: //Channel 7 912.300 MHz / 61.035 Hz = 0xE45359
+			RFM_Write(0x06,pgm_read_byte(&(LoRa_Frequency[7][0])));
+			RFM_Write(0x07,pgm_read_byte(&(LoRa_Frequency[7][1])));
+			RFM_Write(0x08,pgm_read_byte(&(LoRa_Frequency[7][2])));
+			break;
+		case 0x10: //Receive channel 923.3 MHz / 61.035 Hz = 0xE6D35A
+			RFM_Write(0x06,pgm_read_byte(&(LoRa_Frequency[8][0])));
+			RFM_Write(0x07,pgm_read_byte(&(LoRa_Frequency[8][1])));
+			RFM_Write(0x08,pgm_read_byte(&(LoRa_Frequency[8][2])));
 			break;
     #endif
 	}
