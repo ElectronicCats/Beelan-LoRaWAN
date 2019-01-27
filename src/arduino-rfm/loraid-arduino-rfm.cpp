@@ -91,13 +91,19 @@ void LoRaIdClass::init(void)
     // Rx
     #ifdef AS_923
     LoRa_Settings.Datarate_Rx = 0x02;   //set to SF10 BW 125 kHz
-    #else
+    #elif defined(EU_868)
     LoRa_Settings.Datarate_Rx = 0x03;   //set to SF9 BW 125 kHz
+    #else //US_915
+    LoRa_Settings.Datarate_Rx = 0x08;   //set to SF9 BW 125 kHz
     #endif
     LoRa_Settings.Channel_Rx = 0x10;    // set to recv channel
 
     // Tx
+    #ifndef US_915
     LoRa_Settings.Datarate_Tx = drate_common = 0x00;   //set to SF12 BW 125 kHz
+    #else
+    LoRa_Settings.Datarate_Tx = drate_common = 0x03;   //set to SF7 BW 125 kHz
+    #endif
     LoRa_Settings.Channel_Tx = 0x00;    // set to channel 0
 
     LoRa_Settings.Confirm = 0x00; //0x00 unconfirmed, 0x01 confirmed
