@@ -1,0 +1,11 @@
+==============================================================================
+Arduino LoRa.id SDK v1.0.0 (2-May-2018)
+-------------------------------
+
+ - Support Class A and Class C
+
+ - Tested using Arduino Uno and LoRa RFM modules
+
+ - Only send LoRa RX to Serial
+
+==============================================================================
