@@ -35,6 +35,33 @@
 #include "Commands.h"
 #include "Config.h"
 
+#ifdef US_915
+  #ifdef SUBND_1
+  const unsigned char LoRa_Frequency[9][3] = {
+	{ 0xE1, 0xF9, 0xC0 },		//Channel 0 903.900 MHz / 61.035 Hz = 14809536 = 0xE1F9C0
+	{ 0xE2, 0x06, 0x8C },		//Channel 1 904.100 MHz / 61.035 Hz = 14812812 = 0xE2068C
+	{ 0xE2, 0x13, 0x59 },		//Channel 2 904.300 MHz / 61.035 Hz = 14816089 = 0xE21359
+	{ 0xE2, 0x20, 0x26 },		//Channel 3 904.500 MHz / 61.035 Hz = 14819366 = 0xE22026
+	{ 0xE2, 0x2C, 0xF3 },		//Channel 4 904.700 MHz / 61.035 Hz = 14822643 = 0xE22CF3
+	{ 0xE2, 0x39, 0xC0 },		//Channel 5 904.900 MHz / 61.035 Hz = 14825920 = 0xE239C0
+	{ 0xE2, 0x46, 0x8C },		//Channel 6 905.100 MHz / 61.035 Hz = 14829196 = 0xE2468C
+	{ 0xE2, 0x53, 0x59 },		//Channel 7 905.300 MHz / 61.035 Hz = 14832473 = 0xE25359
+  { 0xE6, 0xD3, 0x5A },   //Channel RX2 window 923.3 MHz / 61.035 Hz = 0xE6D35A
+  };  
+  #else
+  const unsigned char LoRa_Frequency[9][3] = {
+    { 0xE3, 0xD3, 0x59 }, //Channel 48 911.900 MHz / 61.035 Hz = 0xE3D359
+    { 0xE4, 0x06, 0x8C }, //Channel 49 912.100 MHz / 61.035 Hz = 0xE4068C
+    { 0xE4, 0x13, 0x59 }, //Channel 50 912.300 MHz / 61.035 Hz = 0xE41359
+    { 0xE4, 0x20, 0x26 }, //Channel 51 912.500 MHz / 61.035 Hz = 0xE42026
+    { 0xE4, 0x2C, 0xF3 }, //Channel 52 912.700 MHz / 61.035 Hz = 0xE42CF3
+    { 0xE4, 0x39, 0xBF }, //Channel 53 912.900 MHz / 61.035 Hz = 0xE439BF
+    { 0xE4, 0x46, 0x8C }, //Channel 54 913.100 MHz / 61.035 Hz = 0xE4468C
+    { 0xE5, 0x53, 0x59 }, //Channel 55 912.300 MHz / 61.035 Hz = 0xE45359
+    { 0xE6, 0xD3, 0x5A }, //Channel RX2 window 923.3 MHz / 61.035 Hz = 0xE6D35A
+  };
+  #endif
+#endif
 /*
 *****************************************************************************************
 * Description: Function used to initialize the RFM module on startup
