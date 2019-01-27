@@ -419,8 +419,8 @@ void RFM_Change_Datarate(unsigned char Datarate)
 			RFM_Write(0x1D,0x82); //250 kHz 4/5 coding rate explicit header mode
 			RFM_Write(0x26,0x04); //Low datarate optimization off AGC auto on
       break;
-
-    #else // Its defined US915 cause the datarates are differents
+    // Its defined US915 cause the datarates are differents 
+    #else 
     case 0x00: //SF10 BW 125 kHz
 			RFM_Write(0x1E,0xA4); //SF10 CRC On
 			RFM_Write(0x1D,0x72); //125 kHz 4/5 coding rate explicit header mode
