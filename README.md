@@ -34,6 +34,8 @@ configuration when you switch between sketches or update the library.
 
 At the very least, you should set the right type of board in config.h, most other values should be fine at their defaults.
 
+When using the US_915 you need to select which sub-band you will use, by default it is sub-band 6.
+
 Supported hardware
 ------------------
 This library is intended to be used with plain LoRa transceivers,
@@ -48,6 +50,9 @@ respectively).
 Some of the supported pre-built board currently available in the market are:
 - Cytron Shield LoRa-RFM (https://www.cytron.io/p-shield-lora-rfm)
 - Dragino (http://www.dragino.com/products/module/item/102-lora-shield.html)
+- [Electronic Cats CatWAN USB-Stick](https://www.tindie.com/products/electroniccats/catwan-usb-stick/)
+- [Electronic Cats CatWAN Relay Board](https://www.tindie.com/products/electroniccats/catwan-relay-board/)
+- [Electronic Cats CatWAN Shield](https://www.tindie.com/products/electroniccats/catwan-shield-lora-and-lorawan-for-arduino/)
 
 This library has been tested using:
 - Arduino Uno
