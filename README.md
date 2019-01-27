@@ -22,7 +22,7 @@ For more info, see https://www.arduino.cc/en/Guide/Libraries
 
 Features
 --------
-The LoRa.id SDK library supports LoRaWAN Class A and Class C implementations operating in EU-868 and AS-923 bands. Note that this library is fairly simple with the aim of demonstrating the LoRa.id capabilities.
+The LoRa.id SDK library supports LoRaWAN Class A and Class C implementations operating in EU-868, AS-923 and US-915 bands. Note that this library is fairly simple with the aim of demonstrating the LoRa.id capabilities.
 
 Configuration
 -------------
