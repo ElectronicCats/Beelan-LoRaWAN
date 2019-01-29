@@ -63,7 +63,7 @@ class LoRaIdClass
         LoRaIdClass();
         ~LoRaIdClass();
         
-        void init(void);
+        bool init(void);
         void join(void);
         void setAccessKey(unsigned char *accessKey_in);
         void setAccessKey(char *accessKey_in);

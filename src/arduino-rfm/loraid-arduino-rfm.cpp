@@ -42,7 +42,7 @@ LoRaIdClass::~LoRaIdClass()
 
 }
 
-void LoRaIdClass::init(void)
+bool LoRaIdClass::init(void)
 {
     // Lora Setting Class
     dev_class = CLASS_A;
@@ -146,7 +146,10 @@ void LoRaIdClass::init(void)
     delay(50);
     
     //Initialize RFM module
-    RFM_Init();
+    if(!RFM_Init()){
+    return 0;
+    }
+    return 1;
 }
 
 void LoRaIdClass::join(void)

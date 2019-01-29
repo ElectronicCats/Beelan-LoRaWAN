@@ -6,7 +6,10 @@ unsigned int counter = 0;     // message counter
 
 void setup() {
   // Setup loraid access
-  lora.init();
+  if(!lora.init()){
+  Serial.println("RFM95 not detected");
+  while(1);
+  }
 
   // Set LoRaWAN Class
   lora.setDeviceClass(CLASS_A);

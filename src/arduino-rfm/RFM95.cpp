@@ -68,8 +68,13 @@
 *****************************************************************************************
 */
 
-void RFM_Init()
+bool RFM_Init()
 {
+  
+  uint8_t ver = RFM_Read(0x42);
+  if(ver!=18){
+    return 0;
+  }
   //Switch RFM to sleep
   //DONT USE Switch mode function
   RFM_Write(0x01,0x00);
@@ -112,7 +117,7 @@ void RFM_Init()
   RFM_Write(0x0E,0x80);
   //Rx base adress
   RFM_Write(0x0F,0x00);
-  
+  return 1;
 }
 
 /*

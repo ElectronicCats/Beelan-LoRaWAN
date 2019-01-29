@@ -51,7 +51,7 @@ typedef enum {NO_MESSAGE,NEW_MESSAGE,CRC_OK,MIC_OK,ADDRESS_OK,MESSAGE_DONE,TIMEO
 *****************************************************************************************
 */
 
-void RFM_Init();
+bool RFM_Init();
 void RFM_Send_Package(sBuffer *RFM_Tx_Package, sSettings *LoRa_Settings);
 message_t RFM_Single_Receive(sSettings *LoRa_Settings);
 void RFM_Continuous_Receive(sSettings *LoRa_Settings);
