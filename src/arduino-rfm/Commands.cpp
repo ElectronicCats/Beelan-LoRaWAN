@@ -66,6 +66,7 @@ void UART_Send_Datarate(unsigned char *Datarate)
 
   switch(*Datarate)
   {
+    #if defined(EU_868)||defined(AS_923)
       case 0x00:
           Serial.write("SF 12 BW 125");
           break;
@@ -87,6 +88,41 @@ void UART_Send_Datarate(unsigned char *Datarate)
       case 0x06:
           Serial.write("SF 7 BW 250");
           break;
+    #else
+      case 0x00:
+          Serial.write("SF 10 BW 125");
+          break;
+      case 0x01:
+          Serial.write("SF 9 BW 125");
+          break;
+      case 0x02:
+          Serial.write("SF 8 BW 125");
+          break;
+      case 0x03:
+          Serial.write("SF 7 BW 125");
+          break;
+      case 0x04:
+          Serial.write("SF 8 BW 500");
+          break;
+      case 0x08:
+          Serial.write("SF 12 BW 500");
+          break;
+      case 0x09:
+          Serial.write("SF 11  BW 500");
+          break;
+      case 0x0A:
+          Serial.write("SF 10 BW 500");
+          break;
+      case 0x0B:
+          Serial.write("SF 9 BW 500");
+          break;
+      case 0x0C:
+          Serial.write("SF 8 BW 500");
+          break;
+      case 0x0D:
+          Serial.write("SF 7 BW 500");
+          break;     
+    #endif
   }
 
   UART_Send_Newline();
@@ -127,7 +163,7 @@ void UART_Send_Channel(unsigned char *Channel)
     case 0x10:
       Serial.write("923.200");
       break;
-    #else
+    #elif defined(EU_868)
     case 0x00:
       Serial.write("868.100");
       break;
@@ -155,6 +191,64 @@ void UART_Send_Channel(unsigned char *Channel)
     case 0x10:
       Serial.write("869.525");
       break;
+    #else //US_915
+      #ifdef SUBND_6
+        case 0x00:
+          Serial.write("911.9");
+          break;
+        case 0x01:
+          Serial.write("912.1");
+          break;
+        case 0x02:
+          Serial.write("912.3");
+          break;
+        case 0x03:
+          Serial.write("912.5");
+          break;
+        case 0x04:
+          Serial.write("912.7");
+          break;
+        case 0x05:
+          Serial.write("912.9");
+          break;
+        case 0x06:
+          Serial.write("913.1");
+          break;
+        case 0x07:
+          Serial.write("913.3");
+          break;
+        case 0x10:
+          Serial.write("923.3");
+          break;
+      #else
+        case 0x00:
+          Serial.write("902.3");
+          break;
+        case 0x01:
+          Serial.write("902.5");
+          break;
+        case 0x02:
+          Serial.write("902.7");
+          break;
+        case 0x03:
+          Serial.write("902.9");
+          break;
+        case 0x04:
+          Serial.write("903.1");
+          break;
+        case 0x05:
+          Serial.write("903.3");
+          break;
+        case 0x06:
+          Serial.write("903.5");
+          break;
+        case 0x07:
+          Serial.write("903.7");
+          break;
+        case 0x10:
+          Serial.write("923.3");
+          break;
+      #endif // Sub-Band
     #endif
   }
 
