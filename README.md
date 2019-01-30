@@ -108,44 +108,52 @@ void setup() {
 ```
 
 #### Setup Authentication Keys
-Setup authentication keys provisioned by Antares server, including device address.
+Setup authentication keys for your LoRaWAN device, including device address.
 
 ##### Syntax
 ```c
-void setAccessKey(unsigned char *accessKey_in);
+void setAppSKey(unsigned char *ApskKey_in);
+void setNwkSKey(unsigned char *NwkKey_in);
 ```
 
 ##### Example
 ```c
 void setup() {
   // Setup loraid access
-  lora.init();
+  if(!lora.init()){
+  Serial.println("RFM95 not detected");
+  while(1);
+  }
   ...
 
   // Put Antares Key and DevAddress here
-  lora.setAccessKey("8878f39f897b9a50:bd6b3446f4c13871");
+  lora.setNwkSKey("b7300d9f68b649ed30530f9dd69f9afe");
+  lora.setAppSKey("9d52eef7fab63eda18794d0e503ddf20");
   ...
 
 }
 ```
 
-#### Setup Device ID for Authentication 
-Setup device ID for activating the device.
+#### Setup Device address
+Setup device address for activating the device.
 
 ##### Syntax
 ```c
-void setDeviceId(unsigned char *devAddr_in);
+void setDevAddr(unsigned char *devAddr_in);
 ```
 
 ##### Example
 ```c
 void setup() {
   // Setup loraid access
-  lora.init();
+  if(!lora.init()){
+  Serial.println("RFM95 not detected");
+  while(1);
+  }
   ...
 
   // Put Antares Key and DevAddress here
-  lora.setDeviceId("00000001");
+  lora.setDevAddr("07000007");
   ...
 
 }
@@ -162,7 +170,10 @@ void setDeviceClass(devclass_t dev_class);
 ```c
 void setup() {
   // Setup loraid access
-  lora.init();
+  if(!lora.init()){
+  Serial.println("RFM95 not detected");
+  while(1);
+  }
   ...
 
   // Set LoRaWAN Class
@@ -213,7 +224,10 @@ void setDataRate(unsigned char data_rate);
 ```c
 void setup() {
   // Setup loraid access
-  lora.init();
+  if(!lora.init()){
+  Serial.println("RFM95 not detected");
+  while(1);
+  }
   ...
 
   // Set Data Rate to SF10 BW 125 KHz

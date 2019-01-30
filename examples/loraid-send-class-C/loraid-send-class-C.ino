@@ -6,7 +6,11 @@ unsigned int counter = 0;     // message counter
 
 void setup() {
   // Setup loraid access
-  lora.init();
+  Serial.begin(115200);
+  if(!lora.init()){
+    Serial.println("RFM95 not detected");
+    while(1);
+  }
 
   // Set LoRaWAN Class
   lora.setDeviceClass(CLASS_C);
@@ -14,9 +18,10 @@ void setup() {
   // Set Data Rate
   lora.setDataRate(2);
   
-  // Put Antares Key and DevAddress here
-  lora.setAccessKey("8878f39f897b9a50:bd6b3446f4c13871");
-  lora.setDeviceId("00000001");
+  // Put ABP Key and DevAddress here
+  lora.setNwkSKey("b7300d9f68b649ed30530f9dd69f9afe");
+  lora.setAppSKey("9d52eef7fab63eda18794d0e503ddf20");
+  lora.setDevAddr("07000007");
 }
 
 void loop() {
