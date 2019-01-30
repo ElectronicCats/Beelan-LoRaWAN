@@ -241,7 +241,7 @@ You need to specify the length of data you want to send and also the message typ
 
 #### Syntax
 ```c
-void sendToAntares(unsigned char *data, unsigned int len, unsigned char confirm);
+void sendUplink(unsigned char *data, unsigned int len, unsigned char confirm);
 ```        
 
 ##### Example
@@ -250,7 +250,7 @@ void loop() {
   // put your main code here, to run repeatedly:
   char myStr[] = "Ini data LoRaku";  
 
-  lora.sendToAntares(myStr, strlen(myStr), 0);
+  lora.sendUplink(myStr, strlen(myStr), 0);
   ...
 
 } 

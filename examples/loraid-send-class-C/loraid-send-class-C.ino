@@ -37,7 +37,7 @@ void loop() {
     previousMillis = currentMillis; 
 
     sprintf(myStr, "Ini data LoRa ke-%d", counter); 
-    lora.sendToAntares((unsigned char *)myStr, strlen(myStr), 0);
+    lora.sendUplink((unsigned char *)myStr, strlen(myStr), 0);
     counter++;
   }
 

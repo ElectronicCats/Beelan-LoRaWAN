@@ -225,7 +225,7 @@ void LoRaIdClass::setDeviceClass(devclass_t dev_class)
     RFM_Command_Status = NO_RFM_COMMAND;
 }
 
-void LoRaIdClass::sendToAntares(unsigned char *data, unsigned int len, unsigned char confirm)
+void LoRaIdClass::sendUplink(unsigned char *data, unsigned int len, unsigned char confirm)
 {
     unsigned char freq_idx;
 
@@ -256,9 +256,9 @@ void LoRaIdClass::sendToAntares(unsigned char *data, unsigned int len, unsigned 
     Mac_Data(data, len, &Buffer_Tx);
 }
 
-void LoRaIdClass::sendToAntares(char *data, unsigned int len, unsigned char confirm)
+void LoRaIdClass::sendUplink(char *data, unsigned int len, unsigned char confirm)
 {
-    sendToAntares((unsigned char *)data, len, confirm);
+    sendUplink((unsigned char *)data, len, confirm);
 }
 
 // 
