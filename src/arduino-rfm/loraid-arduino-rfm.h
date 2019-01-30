@@ -65,10 +65,12 @@ class LoRaIdClass
         
         bool init(void);
         void join(void);
-        void setAccessKey(unsigned char *accessKey_in);
-        void setAccessKey(char *accessKey_in);
-        void setDeviceId(unsigned char *devAddr_in);
-        void setDeviceId(char *devAddr_in);
+        void setNwkSKey(unsigned char *NwkKey_in);
+        void setNwkSKey(char *NwkKey_in);
+        void setAppSKey(unsigned char *ApskKey_in);
+        void setAppSKey(char *ApskKey_in);
+        void setDevAddr(unsigned char *devAddr_in);
+        void setDevAddr(char *devAddr_in);
         void setDeviceClass(devclass_t dev_class);
         void sendToAntares(unsigned char *data, unsigned int len, unsigned char confirm);
         String makeData(int data1, int data2, int data3, String ddata1, String ddata2, String ddata3);

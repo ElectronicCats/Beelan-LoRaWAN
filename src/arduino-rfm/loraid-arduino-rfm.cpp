@@ -164,21 +164,11 @@ void LoRaIdClass::join(void)
     }
 }
 
-void LoRaIdClass::setAccessKey(unsigned char *accessKey_in)
+
+
+void LoRaIdClass::setNwkSKey(unsigned char *NwkKey_in)
 {
-    memset(Session_Data.NwkSKey, 0x30, sizeof(Session_Data.NwkSKey));
-    memset(Session_Data.AppSKey, 0x30, sizeof(Session_Data.AppSKey));
-    unsigned char NwkSKey_temp[32];
-    unsigned char AppSKey_temp[32];
-    
-    memset(NwkSKey_temp, 0x30, sizeof(NwkSKey_temp));
-    memset(AppSKey_temp, 0x30, sizeof(NwkSKey_temp));
-    memcpy(&NwkSKey_temp[0], &accessKey_in[0], 16);
-    memcpy(&AppSKey_temp[16], &accessKey_in[17], 16); 
-
-    Mac_NwkSKey(NwkSKey_temp, NwkSKey);
-    Mac_AppSKey(AppSKey_temp, AppSKey);
-
+    Mac_NwkSKey(NwkKey_in, NwkSKey);
     //Reset frame counter
     Frame_Counter_Tx = 0x0000;
 
@@ -186,12 +176,30 @@ void LoRaIdClass::setAccessKey(unsigned char *accessKey_in)
     RFM_Command_Status = NO_RFM_COMMAND;
 }
 
-void LoRaIdClass::setAccessKey(char *accessKey_in)
+void LoRaIdClass::setNwkSKey(char *NwkKey_in)
 {
-    setAccessKey((unsigned char *)accessKey_in);
+    setNwkSKey((unsigned char *)NwkKey_in);
 }
 
-void LoRaIdClass::setDeviceId(unsigned char *devAddr_in)
+
+void LoRaIdClass::setAppSKey(unsigned char *ApskKey_in)
+{
+    Mac_AppSKey(ApskKey_in, AppSKey);
+    //Reset frame counter
+    Frame_Counter_Tx = 0x0000;
+
+    //Reset RFM command status
+    RFM_Command_Status = NO_RFM_COMMAND;
+}
+
+void LoRaIdClass::setAppSKey(char *ApskKey_in)
+{
+    setAppSKey((unsigned char *)ApskKey_in);
+}
+
+
+
+void LoRaIdClass::setDevAddr(unsigned char *devAddr_in)
 {
     memset(Session_Data.DevAddr, 0x30, sizeof(Session_Data.DevAddr));
 
@@ -204,9 +212,9 @@ void LoRaIdClass::setDeviceId(unsigned char *devAddr_in)
     RFM_Command_Status = NO_RFM_COMMAND;
 }
 
-void LoRaIdClass::setDeviceId(char *devAddr_in)
+void LoRaIdClass::setDevAddr(char *devAddr_in)
 {
-    setDeviceId((unsigned char *)devAddr_in);
+    setDevAddr((unsigned char *)devAddr_in);
 }
 
 void LoRaIdClass::setDeviceClass(devclass_t dev_class)
