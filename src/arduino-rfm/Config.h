@@ -2,9 +2,9 @@
 #define _CONFIG_H_
 
 // Board definition
-#define BOARD_DRAGINO_SHIELD
+//#define BOARD_DRAGINO_SHIELD
 // #define BOARD_CYTRON_SHIELD
-// #define CUSTOM_BOARD
+#define CUSTOM_BOARD
 
 // Your custom pins
 #ifdef CUSTOM_BOARD
@@ -16,12 +16,12 @@
     #define CS      10
     #define RFM_RST 9        
 #else                   // for Arduino board
-    #define DIO0    2
-    #define DIO1    6
-    #define DIO5    8
-    #define DIO2    7
-    #define CS      10
-    #define RFM_RST 9        
+    #define DIO0    RFM_DIO0
+    #define DIO1    RFM_DIO1
+    #define DIO5    RFM_DIO5
+    #define DIO2    RFM_DIO2
+    #define CS      SS
+    #define RFM_RST RFM_RST       
 #endif  
 #endif // _CUSTOM_BOARD_
 
@@ -39,7 +39,7 @@
 // ------------------------------------------------
 // ------------- Pre-defined PINS -----------------
 // ------------------------------------------------
-
+/*
 #if defined(ESP8266)
 #ifdef BOARD_DRAGINO_SHIELD
     #define DIO0    16
@@ -77,5 +77,5 @@
 #error "Unsupported shield"
 #endif
 #endif
-
+*/
 #endif
