@@ -57,7 +57,7 @@
     { 0xE4, 0x2C, 0xF3 }, //Channel 52 912.700 MHz / 61.035 Hz = 0xE42CF3
     { 0xE4, 0x39, 0xBF }, //Channel 53 912.900 MHz / 61.035 Hz = 0xE439BF
     { 0xE4, 0x46, 0x8C }, //Channel 54 913.100 MHz / 61.035 Hz = 0xE4468C
-    { 0xE5, 0x53, 0x59 }, //Channel 55 912.300 MHz / 61.035 Hz = 0xE45359
+    { 0xE4, 0x53, 0x59 }, //Channel 55 913.300 MHz / 61.035 Hz = 0xE45359
     { 0xE6, 0xD3, 0x5A }, //Channel RX2 window 923.3 MHz / 61.035 Hz = 0xE6D35A
   };
   #endif
