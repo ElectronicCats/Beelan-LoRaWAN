@@ -1,4 +1,4 @@
-Arduino LoRa.id SDK
+Arduino LoRaWAN library
 ====================
 This repository contains the simple LoRaWAN library originally created by Ideetron B.V. This library is slightly
 modified and encapsulated to run in the generic platform, allowing using the SX1272, SX1276 tranceivers and compatible modules (such as some HopeRF RFM9x modules).
@@ -22,7 +22,7 @@ For more info, see https://www.arduino.cc/en/Guide/Libraries
 
 Features
 --------
-The LoRa.id SDK library supports LoRaWAN Class A and Class C implementations operating in EU-868, AS-923 and US-915 bands. Note that this library is fairly simple with the aim of demonstrating the LoRa.id capabilities.
+The arduino LoRaWAN library supports LoRaWAN Class A and Class C implementations operating in EU-868, AS-923 and US-915 bands. Note that this library is fairly simple with the aim of demonstrating the LoRa.id capabilities.
 
 Configuration
 -------------
