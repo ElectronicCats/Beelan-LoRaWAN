@@ -22,7 +22,7 @@ For more info, see https://www.arduino.cc/en/Guide/Libraries
 
 Features
 --------
-The arduino LoRaWAN library supports LoRaWAN Class A and Class C implementations operating in EU-868, AS-923 and US-915 bands. Note that this library is fairly simple with the aim of demonstrating the LoRa.id capabilities.
+The arduino LoRaWAN library supports LoRaWAN Class A and Class C implementations operating in EU-868, AS-923 and US-915 bands. Note that this library is fairly simple with the aim of demonstrating the LoRaWAN capabilities.
 
 Configuration
 -------------
@@ -312,8 +312,8 @@ Examples
 --------
 This library currently provides two examples:
 
- - `loraid-send-class-A.ino` shows basic usage of Class A lora.id SDK.
- - `loraid-send-class-C.ino` shows basic usage of Class C lora.id SDK.
+ - `loraid-send-class-A.ino` shows basic usage of Class A LoRaWAN.
+ - `loraid-send-class-C.ino` shows basic usage of Class C LoRaWAN.
 
 License
 -------
