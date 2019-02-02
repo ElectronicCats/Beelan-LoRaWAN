@@ -66,26 +66,23 @@ connections are a bit dependent on the transceiver board and Arduino
 used, so this section tries to explain what each connection is for and
 in what cases it is (not) required.
 
-### DIO pins
-The DIO (digitial I/O) pins on the transceiver board can be configured
-for various functions. You need to specify the transceiver board in `config.h`. You can also specify custom DIO pins depending on your board.
 
-```c
-// Board definition, uncomment your board
-// #define BOARD_DRAGINO_SHIELD
-// #define BOARD_CYTRON_SHIELD
-#define CUSTOM_BOARD
+Pin mapping
+-----------
+As described above, most connections can use arbitrary I/O pins on the
+Arduino side. To tell the arduino LoRaWAN library about these, a pin mapping struct is used in the sketch file.
 
-// Your custom pins
-#ifdef CUSTOM_BOARD
-    #define DIO0    2
-    #define DIO1    6
-    #define DIO5    8
-    #define DIO2    7
-    #define CS      10
-    #define RFM_RST 9        
-#endif
-```
+For example, this could look like this:
+
+	sRFM_pins RFM_pins = {
+	  	.CS = SS,
+	  	.RST = RFM_RST,
+	  	.DIO0 = RFM_DIO0,
+	  	.DIO1 = RFM_DIO1,
+	  	.DIO2 = RFM_DIO2,
+	  	.DIO5 = RFM_DIO5
+  	}; 
+  	
 API
 --------
 This library provides a high-level API for connecting the device to Antares server.
@@ -187,31 +184,34 @@ void setup() {
 You can set data rate allowed in your region (AS_923, EU_868 or US915).
 
 ###	For AS923 or EU868
-| data_rate | Name | Config          |
-|-----------|------|-----------------|
-| 0         | DR0  | SF12 BW 125 KHz |
-| 1         | DR1  | SF11 BW 125 KHz |
-| 2         | DR2  | SF10 BW 125 KHz |
-| 3         | DR3  | SF9 BW 125 KHz  |
-| 4         | DR4  | SF8 BW 125 KHz  |
-| 5         | DR5  | SF7 BW 125 KHz  |
-| 6         | DR6  | SF7 BW 250 KHz  |
+| data_rate | Name | Config          |Direction
+|-----------|------|-----------------|----------------
+| 0         | DR0  | SF12 BW 125 KHz | Uplink/Downlink
+| 1         | DR1  | SF11 BW 125 KHz | Uplink/Downlink
+| 2         | DR2  | SF10 BW 125 KHz | Uplink/Downlink
+| 3         | DR3  | SF9 BW 125 KHz  | Uplink/Downlink
+| 4         | DR4  | SF8 BW 125 KHz  | Uplink/Downlink
+| 5         | DR5  | SF7 BW 125 KHz  | Uplink/Downlink
+| 6         | DR6  | SF7 BW 250 KHz  | Uplink/Downlink
 
 ### For US915
-| data_rate    | Name  | Config          |
-|--------------|-------|-----------------|
-| 0            | DR0   | SF12 BW 125 KHz |
-| 1            | DR1   | SF11 BW 125 KHz |
-| 2            | DR2   | SF10 BW 125 KHz |
-| 3            | DR3   | SF9 BW 125 KHz  |
-| 4            | DR4   | SF8 BW 500 KHz  |
-| 5:7  	     | RFU   | 				    |
-| 8            | DR8   | SF12 BW 500 KHz  |
-| 9            | DR9   | SF11 BW 500 KHz  |
-| 10           | DR10  | SF10 BW 500 KHz  |
-| 11           | DR11  | SF9 BW 500 KHz  |
-| 12           | DR12  | SF8 BW 500 KHz  |
-| 13           | DR13  | SF7 BW 500 KHz  |
+| data_rate    | Name  | Config          | Direction   
+|--------------|-------|-----------------|----------
+| 0            | DR0   | SF12 BW 125 KHz | Uplink
+| 1            | DR1   | SF11 BW 125 KHz | Uplink
+| 2            | DR2   | SF10 BW 125 KHz | Uplink
+| 3            | DR3   | SF9 BW 125 KHz  | Uplink
+| 4            | DR4   | SF8 BW 500 KHz  | Uplink
+| 5:7  	     | RFU   | 		N/A		    | N/A
+| 8            | DR8   | SF12 BW 500 KHz  | Downlink
+| 9            | DR9   | SF11 BW 500 KHz  | Downlink
+| 10           | DR10  | SF10 BW 500 KHz  | Downlink
+| 11           | DR11  | SF9 BW 500 KHz  | Downlink
+| 12           | DR12  | SF8 BW 500 KHz  | Downlink
+| 13           | DR13  | SF7 BW 500 KHz  | Downlink
+
+For US915 is important to remark that DR0-DR4 are only for UPLINKS
+and DR8-DR10 are only for DOWNLINKS
 
 *RFU: Reserved for future use
 
