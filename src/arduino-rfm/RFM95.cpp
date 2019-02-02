@@ -169,7 +169,7 @@ void RFM_Send_Package(sBuffer *RFM_Tx_Package, sSettings *LoRa_Settings)
   RFM_Write(0x01,0x83);
 
   //Wait for TxDone
-  while(digitalRead(DIO0) == LOW)
+  while(digitalRead(RFM_pins.DIO0) == LOW)
   {
   }
 
@@ -216,12 +216,12 @@ message_t RFM_Single_Receive(sSettings *LoRa_Settings)
 
   //Wait until RxDone or Timeout
   //Wait until timeout or RxDone interrupt
-  while((digitalRead(DIO0) == LOW) && (digitalRead(DIO1) == LOW))
+  while((digitalRead(RFM_pins.DIO0) == LOW) && (digitalRead(RFM_pins.DIO1) == LOW))
   {
   }
 
   //Check for Timeout
-  if(digitalRead(DIO1) == HIGH)
+  if(digitalRead(RFM_pins.DIO1) == HIGH)
   {
     //Clear interrupt register
     RFM_Write(0x12,0xE0);
@@ -231,7 +231,7 @@ message_t RFM_Single_Receive(sSettings *LoRa_Settings)
   }
 
   //Check for RxDone
-  if(digitalRead(DIO0) == HIGH)
+  if(digitalRead(RFM_pins.DIO0) == HIGH)
   {
 	  Message_Status = NEW_MESSAGE;
   }
@@ -339,7 +339,7 @@ unsigned char RFM_Read(unsigned char RFM_Address)
   unsigned char RFM_Data;
 
   //Set NSS pin low to start SPI communication
-  digitalWrite(CS,LOW);
+  digitalWrite(RFM_pins.CS,LOW);
 
   //Send Address
   SPI.transfer(RFM_Address);
@@ -347,7 +347,7 @@ unsigned char RFM_Read(unsigned char RFM_Address)
   RFM_Data = SPI.transfer(0x00);
 
   //Set NSS high to end communication
-  digitalWrite(CS,HIGH);
+  digitalWrite(RFM_pins.CS,HIGH);
 
   //Return received data
   return RFM_Data;
@@ -365,7 +365,7 @@ unsigned char RFM_Read(unsigned char RFM_Address)
 void RFM_Write(unsigned char RFM_Address, unsigned char RFM_Data)
 {
   //Set NSS pin Low to start communication
-  digitalWrite(CS,LOW);
+  digitalWrite(RFM_pins.CS,LOW);
 
   //Send Addres with MSB 1 to make it a writ command
   SPI.transfer(RFM_Address | 0x80);
@@ -373,7 +373,7 @@ void RFM_Write(unsigned char RFM_Address, unsigned char RFM_Data)
   SPI.transfer(RFM_Data);
 
   //Set NSS pin High to end communication
-  digitalWrite(CS,HIGH);
+  digitalWrite(RFM_pins.CS,HIGH);
 }
 
 /*
@@ -661,7 +661,7 @@ void RFM_Switch_Mode(unsigned char Mode)
 
 	//Wait on mode ready
   #ifdef BOARD_DRAGINO_SHIELD
-    // while(digitalRead(DIO5) == LOW)
+    // while(digitalRead(RFM_pins.DIO5) == LOW)
     // {
     // }
   #endif

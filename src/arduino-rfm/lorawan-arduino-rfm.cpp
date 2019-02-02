@@ -120,23 +120,23 @@ bool LoRaWANClass::init(void)
     Message_Rx.Direction = 0x01; //Set down direction for Rx message
 
     //Initialize I/O pins
-    pinMode(DIO0,INPUT);
-    pinMode(DIO1,INPUT);
+    pinMode(RFM_pins.DIO0,INPUT);
+    pinMode(RFM_pins.DIO1,INPUT);
     #ifdef BOARD_DRAGINO_SHIELD
-    pinMode(DIO5,INPUT);
+    pinMode(RFM_pins.DIO5,INPUT);
     #endif
-    pinMode(DIO2,INPUT);
-    pinMode(CS,OUTPUT);
-    pinMode(RST,OUTPUT);
+    pinMode(RFM_pins.DIO2,INPUT);
+    pinMode(RFM_pins.CS,OUTPUT);
+    pinMode(RFM_pins.RST,OUTPUT);
     
-    digitalWrite(CS,HIGH);
+    digitalWrite(RFM_pins.CS,HIGH);
     
     // Reset
-    digitalWrite(RST,HIGH);
+    digitalWrite(RFM_pins.RST,HIGH);
     delay(10);
-    digitalWrite(RST,LOW);
+    digitalWrite(RFM_pins.RST,LOW);
     delay(10);
-    digitalWrite(RST,HIGH);
+    digitalWrite(RFM_pins.RST,HIGH);
 
     //Initialise the SPI port
     SPI.begin();
@@ -369,7 +369,7 @@ void LoRaWANClass::update(void)
       }
 
       //Receive
-      if(digitalRead(DIO0) == HIGH)
+      if(digitalRead(RFM_pins.DIO0) == HIGH)
       {
         //Get data
         LORA_Receive_Data(&Buffer_Rx, &Session_Data, &OTAA_Data, &Message_Rx, &LoRa_Settings);
