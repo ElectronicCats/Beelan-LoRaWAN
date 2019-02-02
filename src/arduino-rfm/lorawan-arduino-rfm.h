@@ -67,15 +67,14 @@ class LoRaWANClass
         
         bool init(void);
         void join(void);
+        void setDeviceClass(devclass_t dev_class);
         void setNwkSKey(unsigned char *NwkKey_in);
         void setNwkSKey(char *NwkKey_in);
         void setAppSKey(unsigned char *ApskKey_in);
         void setAppSKey(char *ApskKey_in);
         void setDevAddr(unsigned char *devAddr_in);
         void setDevAddr(char *devAddr_in);
-        void setDeviceClass(devclass_t dev_class);
         void sendUplink(unsigned char *data, unsigned int len, unsigned char confirm);
-        String makeData(int data1, int data2, int data3, String ddata1, String ddata2, String ddata3);
         void sendUplink(char *data, unsigned int len, unsigned char confirm);
         void setDataRate(unsigned char data_rate);
         void setTxPower(unsigned char power_idx);

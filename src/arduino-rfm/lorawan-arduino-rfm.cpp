@@ -46,8 +46,6 @@ bool LoRaWANClass::init(void)
 {
     // Lora Setting Class
     dev_class = CLASS_A;
-    // unsigned char semtech_key[] = "2B7E151628AED2A6ABF7158809CF4F3C";
-
     // Random seed
     randomSeed(analogRead(0));
 
@@ -257,46 +255,7 @@ void LoRaWANClass::sendUplink(char *data, unsigned int len, unsigned char confir
     sendUplink((unsigned char *)data, len, confirm);
 }
 
-// 
-String LoRaWANClass::makeData(int data1, int data2, int data3, String ddata1, String ddata2, String ddata3)
-{
-  String dataKirim="@";
-  String StringOne="";
-  if(data1 && ddata1)
-  {
-      StringOne += data1;
-      StringOne += ",";
-      StringOne += ddata1;
-      dataKirim += StringOne + "{";
-  }
-  else{
-      StringOne= "";
-  }
 
-  String StringTwo="";
-  if(data2 && ddata2){
-      StringTwo += data2;
-      StringTwo += ",";
-      StringTwo += ddata2;
-      dataKirim += StringTwo + "{";
-  }
-  else{
-      StringTwo="";
-  }
-
-  String StringThree="";
-  if(data3 && ddata3)
-  {
-      StringThree += data3;
-      StringThree += ",";
-      StringThree += ddata3, 2;
-      dataKirim   += StringThree + "{";
-  }
-  else{
-      StringThree="";
-  }
-  return dataKirim;
-}
 void LoRaWANClass::setDataRate(unsigned char data_rate)
 {
     drate_common = data_rate;
