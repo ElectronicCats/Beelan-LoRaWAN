@@ -56,10 +56,12 @@ typedef enum {NO_RX, NEW_RX} rx_t;
 *****************************************************************************************
 */
 
+extern const sRFM_pins RFM_pins;
+
 class LoRaWANClass
 {
     public:
-    
+
         LoRaWANClass();
         ~LoRaWANClass();
         
@@ -106,6 +108,8 @@ class LoRaWANClass
 
         // Declare LoRA settings struct
         sSettings LoRa_Settings;
+        sRFM_pins LoRa_Pins;
+
         unsigned char drate_common;
 
         // Lora Setting Class

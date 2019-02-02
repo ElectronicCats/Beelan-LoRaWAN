@@ -36,6 +36,16 @@
 ********************************************************************************************
 */
 
+struct sRFM_pins{
+    int CS;
+    int RST;
+    int DIO0;
+    int DIO1;
+    int DIO2;
+    int DIO5;
+};
+
+
 //Struct used for Buffers
 typedef struct {
     unsigned char *Data;
