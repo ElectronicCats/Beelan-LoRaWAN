@@ -1,5 +1,5 @@
 /*
-    loraid-arduino-rfm.h
+    lorawan-arduino-rfm.h
     Copyright © 2018 lora.id. All right reserved.
 
     Author: Andri Rahmadhani
@@ -28,8 +28,8 @@
     Use of this source code is governed by the MIT license that can be found in the LICENSE file.
 */
 
-#ifndef _LORAID_ARDUINO_RFM_H_
-#define _LORAID_ARDUINO_RFM_H_
+#ifndef _LORAWAN_ARDUINO_RFM_H_
+#define _LORAWAN_ARDUINO_RFM_H_
 
 #include <SPI.h>
 #include <Arduino.h>
@@ -49,19 +49,19 @@
 
 typedef enum {NO_RX, NEW_RX} rx_t;
 
-#define LORAID_VERSION "1.0.0"
+#define LORAWAN_VERSION "1.0.0"
 /*
 *****************************************************************************************
 * CLASS
 *****************************************************************************************
 */
 
-class LoRaIdClass
+class LoRaWANClass
 {
     public:
     
-        LoRaIdClass();
-        ~LoRaIdClass();
+        LoRaWANClass();
+        ~LoRaWANClass();
         
         bool init(void);
         void join(void);

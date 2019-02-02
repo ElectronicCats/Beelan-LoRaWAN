@@ -1,4 +1,4 @@
-#include <loraid.h>
+#include <lorawan.h>
 
 long interval = 10000;    // 10 s interval to send message
 long previousMillis = 0;  // will store last time message sent
@@ -8,15 +8,15 @@ void setup() {
   // Setup loraid access
   Serial.begin(115200);
   if(!lora.init()){
-  Serial.println("RFM95 not detected");
-  while(1);
+    Serial.println("RFM95 not detected");
+    while(1);
   }
 
   // Set LoRaWAN Class
-  lora.setDeviceClass(CLASS_A);
+  lora.setDeviceClass(CLASS_C);
 
   // Set Data Rate
-  lora.setDataRate(3);
+  lora.setDataRate(2);
   
   // Put ABP Key and DevAddress here
   lora.setNwkSKey("b7300d9f68b649ed30530f9dd69f9afe");

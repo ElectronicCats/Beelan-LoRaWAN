@@ -29,7 +29,7 @@
 #include <SPI.h>
 #include "LoRaMAC.h"
 #include "RFM95.h"
-#include "loraid-arduino-rfm.h"
+#include "lorawan-arduino-rfm.h"
 #include <Arduino.h>
 #include "Struct.h"
 #include "Commands.h"

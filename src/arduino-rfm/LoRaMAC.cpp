@@ -38,7 +38,7 @@
 #include "LoRaMAC.h"
 #include "Struct.h"
 #include "Commands.h"
-#include "loraid-arduino-rfm.h"
+#include "lorawan-arduino-rfm.h"
 
 /*
 *****************************************************************************************

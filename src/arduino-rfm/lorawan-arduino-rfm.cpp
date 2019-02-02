@@ -12,10 +12,10 @@
         *Class switching between Class A and Class C motes
         *Channel hopping
         *
-        *The following settings kan be done
+        *The following settings can be done
         *Channel Receive and Transmit
         *Datarate Receive and Transmit
-        *Tranmit power
+        *Transmit power
         *Confirmed or unconfirmed messages
         *Device Addres
         *Application Session Key
@@ -29,20 +29,20 @@
 */
 
 
-#include "loraid-arduino-rfm.h"
+#include "lorawan-arduino-rfm.h"
 
 
-LoRaIdClass::LoRaIdClass()
+LoRaWANClass::LoRaWANClass()
 {
  
 }
 
-LoRaIdClass::~LoRaIdClass()
+LoRaWANClass::~LoRaWANClass()
 {
 
 }
 
-bool LoRaIdClass::init(void)
+bool LoRaWANClass::init(void)
 {
     // Lora Setting Class
     dev_class = CLASS_A;
@@ -152,7 +152,7 @@ bool LoRaIdClass::init(void)
     return 1;
 }
 
-void LoRaIdClass::join(void)
+void LoRaWANClass::join(void)
 {
     //Check if there is no command pending
     if(RFM_Command_Status == NO_RFM_COMMAND)
@@ -165,8 +165,7 @@ void LoRaIdClass::join(void)
 }
 
 
-
-void LoRaIdClass::setNwkSKey(unsigned char *NwkKey_in)
+void LoRaWANClass::setNwkSKey(unsigned char *NwkKey_in)
 {
     Mac_NwkSKey(NwkKey_in, NwkSKey);
     //Reset frame counter
@@ -176,13 +175,13 @@ void LoRaIdClass::setNwkSKey(unsigned char *NwkKey_in)
     RFM_Command_Status = NO_RFM_COMMAND;
 }
 
-void LoRaIdClass::setNwkSKey(char *NwkKey_in)
+void LoRaWANClass::setNwkSKey(char *NwkKey_in)
 {
     setNwkSKey((unsigned char *)NwkKey_in);
 }
 
 
-void LoRaIdClass::setAppSKey(unsigned char *ApskKey_in)
+void LoRaWANClass::setAppSKey(unsigned char *ApskKey_in)
 {
     Mac_AppSKey(ApskKey_in, AppSKey);
     //Reset frame counter
@@ -192,14 +191,13 @@ void LoRaIdClass::setAppSKey(unsigned char *ApskKey_in)
     RFM_Command_Status = NO_RFM_COMMAND;
 }
 
-void LoRaIdClass::setAppSKey(char *ApskKey_in)
+void LoRaWANClass::setAppSKey(char *ApskKey_in)
 {
     setAppSKey((unsigned char *)ApskKey_in);
 }
 
 
-
-void LoRaIdClass::setDevAddr(unsigned char *devAddr_in)
+void LoRaWANClass::setDevAddr(unsigned char *devAddr_in)
 {
     memset(Session_Data.DevAddr, 0x30, sizeof(Session_Data.DevAddr));
 
@@ -212,12 +210,12 @@ void LoRaIdClass::setDevAddr(unsigned char *devAddr_in)
     RFM_Command_Status = NO_RFM_COMMAND;
 }
 
-void LoRaIdClass::setDevAddr(char *devAddr_in)
+void LoRaWANClass::setDevAddr(char *devAddr_in)
 {
     setDevAddr((unsigned char *)devAddr_in);
 }
 
-void LoRaIdClass::setDeviceClass(devclass_t dev_class)
+void LoRaWANClass::setDeviceClass(devclass_t dev_class)
 {
     Mac_Class(dev_class, &LoRa_Settings);
     
@@ -225,7 +223,7 @@ void LoRaIdClass::setDeviceClass(devclass_t dev_class)
     RFM_Command_Status = NO_RFM_COMMAND;
 }
 
-void LoRaIdClass::sendUplink(unsigned char *data, unsigned int len, unsigned char confirm)
+void LoRaWANClass::sendUplink(unsigned char *data, unsigned int len, unsigned char confirm)
 {
     unsigned char freq_idx;
 
@@ -256,13 +254,13 @@ void LoRaIdClass::sendUplink(unsigned char *data, unsigned int len, unsigned cha
     Mac_Data(data, len, &Buffer_Tx);
 }
 
-void LoRaIdClass::sendUplink(char *data, unsigned int len, unsigned char confirm)
+void LoRaWANClass::sendUplink(char *data, unsigned int len, unsigned char confirm)
 {
     sendUplink((unsigned char *)data, len, confirm);
 }
 
 // 
-String LoRaIdClass::makeData(int data1, int data2, int data3, String ddata1, String ddata2, String ddata3)
+String LoRaWANClass::makeData(int data1, int data2, int data3, String ddata1, String ddata2, String ddata3)
 {
   String dataKirim="@";
   String StringOne="";
@@ -301,7 +299,7 @@ String LoRaIdClass::makeData(int data1, int data2, int data3, String ddata1, Str
   }
   return dataKirim;
 }
-void LoRaIdClass::setDataRate(unsigned char data_rate)
+void LoRaWANClass::setDataRate(unsigned char data_rate)
 {
     drate_common = data_rate;
     Mac_DrTx(data_rate, &LoRa_Settings.Datarate_Tx);
@@ -310,12 +308,12 @@ void LoRaIdClass::setDataRate(unsigned char data_rate)
     RFM_Command_Status = NO_RFM_COMMAND;
 }
 
-void LoRaIdClass::setTxPower(unsigned char power_idx)
+void LoRaWANClass::setTxPower(unsigned char power_idx)
 {
     Mac_Power(power_idx, &LoRa_Settings.Transmit_Power);
 }
 
-int LoRaIdClass::readData(char *outBuff)
+int LoRaWANClass::readData(char *outBuff)
 {
     int res = 0;
 
@@ -335,7 +333,7 @@ int LoRaIdClass::readData(char *outBuff)
     return res;
 }
 
-void LoRaIdClass::update(void)
+void LoRaWANClass::update(void)
 {
     //Type A mote transmit receive cycle
     if((RFM_Command_Status == NEW_RFM_COMMAND || RFM_Command_Status == JOIN) && LoRa_Settings.Mote_Class == 0x00)
@@ -394,4 +392,4 @@ void LoRaIdClass::update(void)
     }
 }
 
-LoRaIdClass lora;
+LoRaWANClass lora;
