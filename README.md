@@ -7,6 +7,24 @@ This repository is all based on this [repo]( https://git.antares.id/lorawan-lora
 
 To find out how to use the library itself, see the examples, or see the PDF file in the doc subdirectory.
 
+Features
+--------
+The arduino LoRaWAN library supports LoRaWAN Class A and Class C implementations operating in EU-868, AS-923 and US-915 bands. Note that this library is fairly simple with the aim of demonstrating the LoRaWAN capabilities.
+
+What certainly works:
+ - Sending packets uplink, taking into account duty cycling.
+ - Custom frequencies and datarate settings.
+
+What has not been tested:
+ - Receiving downlink packets in the RX1 window.
+ - Receiving downlink packets in the RX2 window.
+ - Receiving and processing MAC commands.
+ - Over-the-air activation (OTAA / joining).
+ - Class C operation.
+
+If you try one of these untested features and it works, be sure to let
+us know (creating a github issue is probably the best way for that).
+
 Installing
 ----------
 To install this library:
@@ -20,9 +38,6 @@ To install this library:
 
 For more info, see https://www.arduino.cc/en/Guide/Libraries
 
-Features
---------
-The arduino LoRaWAN library supports LoRaWAN Class A and Class C implementations operating in EU-868, AS-923 and US-915 bands. Note that this library is fairly simple with the aim of demonstrating the LoRaWAN capabilities.
 
 Configuration
 -------------
