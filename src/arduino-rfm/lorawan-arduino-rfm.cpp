@@ -34,7 +34,7 @@
 
 LoRaWANClass::LoRaWANClass()
 {
- 
+
 }
 
 LoRaWANClass::~LoRaWANClass()
@@ -127,16 +127,16 @@ bool LoRaWANClass::init(void)
     #endif
     pinMode(DIO2,INPUT);
     pinMode(CS,OUTPUT);
-    pinMode(RFM_RST,OUTPUT);
+    pinMode(RST,OUTPUT);
     
     digitalWrite(CS,HIGH);
     
     // Reset
-    digitalWrite(RFM_RST,HIGH);
+    digitalWrite(RST,HIGH);
     delay(10);
-    digitalWrite(RFM_RST,LOW);
+    digitalWrite(RST,LOW);
     delay(10);
-    digitalWrite(RFM_RST,HIGH);
+    digitalWrite(RST,HIGH);
 
     //Initialise the SPI port
     SPI.begin();
@@ -164,7 +164,6 @@ void LoRaWANClass::join(void)
     }
 }
 
-
 void LoRaWANClass::setNwkSKey(unsigned char *NwkKey_in)
 {
     Mac_NwkSKey(NwkKey_in, NwkSKey);
@@ -179,7 +178,6 @@ void LoRaWANClass::setNwkSKey(char *NwkKey_in)
 {
     setNwkSKey((unsigned char *)NwkKey_in);
 }
-
 
 void LoRaWANClass::setAppSKey(unsigned char *ApskKey_in)
 {
