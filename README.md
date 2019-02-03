@@ -14,12 +14,14 @@ The arduino LoRaWAN library supports LoRaWAN Class A and Class C implementations
 What certainly works:
  - Sending packets uplink, taking into account duty cycling.
  - Custom frequencies and datarate settings.
+ - Receiving downlink packets in the RX1 window (EU_868, AS923).
+  - Over-the-air activation (OTAA / joining) (EU_868, AS923).
 
 What has not been tested:
- - Receiving downlink packets in the RX1 window.
+ - Receiving downlink packets in the RX1 window (US_915).
  - Receiving downlink packets in the RX2 window.
  - Receiving and processing MAC commands.
- - Over-the-air activation (OTAA / joining).
+ - Over-the-air activation (OTAA / joining) (US_915). 
  - Class C operation.
 
 If you try one of these untested features and it works, be sure to let
