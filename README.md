@@ -1,4 +1,4 @@
-Arduino LoRaWAN library
+Arduino LoRaWAN library by Beelan
 ====================
 This repository contains the simple LoRaWAN library originally created by Ideetron B.V. This library is slightly
 modified and encapsulated to run in the generic platform, allowing using the SX1272, SX1276 tranceivers and compatible modules (such as some HopeRF RFM9x modules).
@@ -65,6 +65,7 @@ and RFM95 boards (which supposedly contain an SX1272 and SX1276 chip
 respectively).
 
 Some of the supported pre-built board currently available in the market are:
+
 - [Cytron Shield LoRa-RFM](https://www.cytron.io/p-shield-lora-rfm) 
 - [Dragino](http://www.dragino.com/products/module/item/102-lora-shield.html) 
 - [Electronic Cats CatWAN USB-Stick](https://www.tindie.com/products/electroniccats/catwan-usb-stick/)
@@ -72,6 +73,7 @@ Some of the supported pre-built board currently available in the market are:
 - [Electronic Cats CatWAN Shield](https://www.tindie.com/products/electroniccats/catwan-shield-lora-and-lorawan-for-arduino/)
 
 This library has been tested using:
+
 - Arduino Uno
 - WeMos D1 R2 (ESP8266 family board)
 
@@ -104,15 +106,15 @@ API
 --------
 This library provides a high-level API for connecting the device to Antares server.
 
-#### LoRa module initialization
+### LoRa module initialization
 Initialize LoRa/LoRaWAN module. Must be called once in the Arduino setup block.
 
-##### Syntax
+#### Syntax
 ```c
   void init(void);
 ```
 
-##### Example
+#### Example
 ```c
 void setup() {
   // Setup loraid access
@@ -121,16 +123,16 @@ void setup() {
 }
 ```
 
-#### Setup Authentication Keys
+### Setup Authentication Keys
 Setup authentication keys for your LoRaWAN device, including device address.
 
-##### Syntax
+#### Syntax
 ```c
 void setAppSKey(unsigned char *ApskKey_in);
 void setNwkSKey(unsigned char *NwkKey_in);
 ```
 
-##### Example
+#### Example
 ```c
 void setup() {
   // Setup loraid access
@@ -148,15 +150,15 @@ void setup() {
 }
 ```
 
-#### Setup Device address
+### Setup Device address
 Setup device address for activating the device.
 
-##### Syntax
+#### Syntax
 ```c
 void setDevAddr(unsigned char *devAddr_in);
 ```
 
-##### Example
+#### Example
 ```c
 void setup() {
   // Setup loraid access
@@ -173,14 +175,14 @@ void setup() {
 }
 ```
 
-#### Set Device Class
+### Set Device Class
 Set class of the device (Class A or Class C). Input as `CLASS_A` or `CLASS_C` enum.
-##### Syntax
+#### Syntax
 ```c
 void setDeviceClass(devclass_t dev_class);
 ```
 
-##### Example
+#### Example
 ```c
 void setup() {
   // Setup loraid access
@@ -197,10 +199,10 @@ void setup() {
 
 ```
 
-#### Set Data Rate
+### Set Data Rate
 You can set data rate allowed in your region (AS_923, EU_868 or US915).
 
-###	For AS923 or EU868
+##	For AS923 or EU868
 | data_rate | Name | Config          |Direction
 |-----------|------|-----------------|----------------
 | 0         | DR0  | SF12 BW 125 KHz | Uplink/Downlink
@@ -211,7 +213,7 @@ You can set data rate allowed in your region (AS_923, EU_868 or US915).
 | 5         | DR5  | SF7 BW 125 KHz  | Uplink/Downlink
 | 6         | DR6  | SF7 BW 250 KHz  | Uplink/Downlink
 
-### For US915
+## For US915
 | data_rate    | Name  | Config          | Direction   
 |--------------|-------|-----------------|----------
 | 0            | DR0   | SF12 BW 125 KHz | Uplink
@@ -232,12 +234,12 @@ and DR8-DR10 are only for DOWNLINKS
 
 *RFU: Reserved for future use
 
-##### Syntax
+### Syntax
 ```c
 void setDataRate(unsigned char data_rate);
 ```
 
-##### Example
+#### Example
 ```c
 void setup() {
   // Setup loraid access
@@ -253,7 +255,7 @@ void setup() {
 
 ```
 
-#### Send data to LoRaWAN
+### Send data to LoRaWAN
 You need to specify the length of data you want to send and also the message type (unconfirmed or confirmed message). Set `confirm = 0` to send unconfirmed message and `confirm = 1`' to send confirmed message.
 
 #### Syntax
@@ -261,7 +263,7 @@ You need to specify the length of data you want to send and also the message typ
 void sendUplink(unsigned char *data, unsigned int len, unsigned char confirm);
 ```        
 
-##### Example
+#### Example
 ```c
 void loop() {
   // put your main code here, to run repeatedly:
@@ -274,14 +276,15 @@ void loop() {
 ```
 
 
-#### Update and run LoRa FSM
+### Update and run LoRa FSM
 Update and run the LoRa Finite State Machine (FSM). This line should be put inside the Arduino `loop` block.
-##### Syntax
+
+#### Syntax
 ```c
 void update(void);
 ```
 
-##### Example
+#### Example
 ```c
 void loop() {
   ...
@@ -294,14 +297,14 @@ void loop() {
 
 In this version we'll try to use interrupts in order to eliminate this FSM.
 
-#### Check and retrieve incoming data
+### Check and retrieve incoming data
 Check for the latest incoming data from server either in binary or string format. You need to provide char buffer to read the data.
-##### Syntax
+#### Syntax
 ```c
 void readData(void);
 ```
 
-##### Example
+#### Example
 ```c
 
 char buffer_rx[255];
@@ -332,9 +335,15 @@ This library currently provides two examples:
  - `loraid-send-class-A.ino` shows basic usage of Class A LoRaWAN.
  - `loraid-send-class-C.ino` shows basic usage of Class C LoRaWAN.
 
+Maintainer
+-------
+
+Beelan invests time and resources providing this open source design, please support Beelan!
+
 License
 -------
 Most source files in this repository are made available under the
 MIT License. The examples which use a more liberal
 license. Some of the AES code is available under the LGPL. Refer to each
 individual source file for more details.
+
