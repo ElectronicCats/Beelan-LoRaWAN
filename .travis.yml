@@ -19,6 +19,7 @@ before_install:
     fi
   - buildExampleSketch() { arduino --verbose-build --verify --board $BOARD $PWD/examples/$1/$1.ino; }
 install:
+  - arduino --install-library "Electronic Cats Internal Temperature Zero Library"
   - mkdir -p $HOME/Arduino/libraries
   - ln -s $PWD $HOME/Arduino/libraries/Arduino_LoRaWAN_by_Beelan
 script:
