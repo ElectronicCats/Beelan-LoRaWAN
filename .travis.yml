@@ -25,6 +25,6 @@ install:
 script:
   - buildExampleSketch lorawan-send-class-A
   - if [[ "$BOARD" == "arduino:samd:arduino_zero_edbg" ]] || [[ "$BOARD" == "arduino:samd:mkr1000" ]] || [[ "$BOARD" == "arduino:samd:mkrzero" ]]; then
-      buildExampleSketch lorawan-send-class-A-temperature;
+      buildExampleSketch lorawan-send-class-A;
     fi
   - buildExampleSketch lorawan-send-class-C
