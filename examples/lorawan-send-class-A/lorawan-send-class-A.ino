@@ -5,12 +5,12 @@ long previousMillis = 0;  // will store last time message sent
 unsigned int counter = 0;     // message counter
 
 const sRFM_pins RFM_pins = {
-  .CS = SS,
-  .RST = RFM_RST,
-  .DIO0 = RFM_DIO0,
-  .DIO1 = RFM_DIO1,
-  .DIO2 = RFM_DIO2,
-  .DIO5 = RFM_DIO5,
+  .CS = 10,
+  .RST = 9,
+  .DIO0 = 2,
+  .DIO1 = 3,
+  .DIO2 = 4,
+  .DIO5 = 5,
   };
 
 void setup() {
