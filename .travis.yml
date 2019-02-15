@@ -24,5 +24,7 @@ install:
   - ln -s $PWD $HOME/Arduino/libraries/Arduino_LoRaWAN_by_Beelan
 script:
   - buildExampleSketch lorawan-send-class-A
-  - buildExampleSketch lorawan-send-class-A-temperature
+  - if [[ "$BOARD" != "arduino:samd" ]]; then
+      buildExampleSketch lorawan-send-class-A-temperature;
+    fi
   - buildExampleSketch lorawan-send-class-C
