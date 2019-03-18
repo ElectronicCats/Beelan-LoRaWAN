@@ -415,7 +415,7 @@ void Mac_Channel_Hopping(unsigned char hop_enable, unsigned char *Channel_Hoppin
   }
 }
 
-void Mac_Class(devclass_t dev_class, sSettings *LoRa_Settings)
+int Mac_Class(devclass_t dev_class, sSettings *LoRa_Settings)
 {
   if(dev_class == CLASS_A) 
   {
@@ -427,23 +427,21 @@ void Mac_Class(devclass_t dev_class, sSettings *LoRa_Settings)
   }
 
   //Send answer and switch rfm to standby or receive
-  Serial.write("Mote Class: ");
   if(LoRa_Settings->Mote_Class == 0x00)
   {
 
     //Switch RFM to standby
     RFM_Switch_Mode(0x01);
     
-    Serial.write("A");
+    return 0x01; //Class A;
   }
   else
   {
     //Switch RFM to continuou receive
     RFM_Continuous_Receive(LoRa_Settings);
     
-    Serial.write("C");
+    return 0x03; //Class C;
   }
-  UART_Send_Newline();
 }
 
 void Mac_Data(unsigned char *buffer, unsigned int len, sBuffer *RFM_Buffer)

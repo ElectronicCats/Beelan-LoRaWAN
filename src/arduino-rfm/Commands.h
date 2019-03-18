@@ -52,7 +52,7 @@ void Mac_ChRx(unsigned char ch_rx_idx, unsigned char *Channel);
 void Mac_Power(unsigned char pwr_idx, unsigned char *Power);
 void Mac_Confirm(unsigned char confirm_msg, unsigned char *Confirm);
 void Mac_Channel_Hopping(unsigned char hop_enable, unsigned char *Channel_Hopping);
-void Mac_Class(devclass_t dev_class, sSettings *LoRa_Settings);
+int Mac_Class(devclass_t dev_class, sSettings *LoRa_Settings);
 void Mac_Data(unsigned char *buffer, unsigned int len, sBuffer *RFM_Buffer);
 
 #endif
