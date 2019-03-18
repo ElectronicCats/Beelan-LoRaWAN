@@ -341,6 +341,13 @@ unsigned char RFM_Read(unsigned char RFM_Address)
   //Set NSS high to end communication
   digitalWrite(RFM_pins.CS,HIGH);
 
+  #ifdef DEBUG
+  Serial.print("SPI Read ADDR: ");
+  Serial.print(RFM_Address, HEX);
+  Serial.print(" DATA: ");
+  Serial.println(RFM_Data, HEX);
+  #endif
+
   //Return received data
   return RFM_Data;
 }
@@ -356,6 +363,14 @@ unsigned char RFM_Read(unsigned char RFM_Address)
 
 void RFM_Write(unsigned char RFM_Address, unsigned char RFM_Data)
 {
+  // br: SPI Transfer Debug
+  #ifdef DEBUG
+    Serial.print("SPI Write ADDR: ");
+    Serial.print(RFM_Address, HEX);
+    Serial.print(" DATA: ");
+    Serial.println(RFM_Data, HEX);
+  #endif
+  
   //Set NSS pin Low to start communication
   digitalWrite(RFM_pins.CS,LOW);
 
