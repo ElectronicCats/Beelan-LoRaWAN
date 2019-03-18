@@ -294,18 +294,10 @@ message_t RFM_Get_Package(sBuffer *RFM_Rx_Package)
   if((RFM_Interrupts & 0x20) != 0x20)
   {
 	  Message_Status = CRC_OK;
-
-	  Serial.write("CRC OK");
-
-	  UART_Send_Newline();
   }
   else
   {
 	  Message_Status = WRONG_MESSAGE;
-
-	  Serial.write("CRC NOK");
-
-	  UART_Send_Newline();
   }
 
   RFM_Package_Location = RFM_Read(0x10); /*Read start position of received package*/
@@ -658,12 +650,5 @@ void RFM_Switch_Mode(unsigned char Mode)
 
     //Switch mode on RFM module
     RFM_Write(0x01,Mode);
-
-	//Wait on mode ready
-  #ifdef BOARD_DRAGINO_SHIELD
-    // while(digitalRead(RFM_pins.DIO5) == LOW)
-    // {
-    // }
-  #endif
 }
 
