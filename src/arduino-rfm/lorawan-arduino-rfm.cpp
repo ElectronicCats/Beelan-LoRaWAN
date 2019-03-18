@@ -345,8 +345,6 @@ void LoRaWANClass::update(void)
     if(Rx_Status == NEW_RX)
     {
       UART_Send_Data(Buffer_Rx.Data,Buffer_Rx.Counter);
-	  UART_Send_Newline();
-      UART_Send_Newline();
     }
 }
 

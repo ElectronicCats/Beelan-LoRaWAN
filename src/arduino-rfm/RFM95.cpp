@@ -226,8 +226,6 @@ message_t RFM_Single_Receive(sSettings *LoRa_Settings)
     //Clear interrupt register
     RFM_Write(0x12,0xE0);
     Message_Status = TIMEOUT;
-    UART_Send_Newline();
-    UART_Send_Newline();
   }
 
   //Check for RxDone
@@ -370,7 +368,7 @@ void RFM_Write(unsigned char RFM_Address, unsigned char RFM_Data)
     Serial.print(" DATA: ");
     Serial.println(RFM_Data, HEX);
   #endif
-  
+
   //Set NSS pin Low to start communication
   digitalWrite(RFM_pins.CS,LOW);
 

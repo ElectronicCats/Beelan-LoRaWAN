@@ -36,8 +36,6 @@
 * FUNCTION PROTOTYPES
 *****************************************************************************************
 */
-
-void UART_Send_Newline();
 void UART_Send_Data(unsigned char *Data, unsigned char Length);
 void UART_Send_Datarate(unsigned char *Datarate);
 void UART_Send_Channel(unsigned char *Channel);
