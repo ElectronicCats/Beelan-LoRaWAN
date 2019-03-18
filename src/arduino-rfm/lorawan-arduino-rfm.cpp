@@ -147,16 +147,20 @@ bool LoRaWANClass::init(void)
     return 1;
 }
 
-void LoRaWANClass::join(void)
+bool LoRaWANClass::join(void)
 {
     //Check if there is no command pending
     if(RFM_Command_Status == NO_RFM_COMMAND)
     {
-        Serial.write("Join");
-
         //Set join command
         RFM_Command_Status = JOIN;
+        return true;
     }
+    else
+    {
+        return false;
+    }
+    
 }
 
 void LoRaWANClass::setNwkSKey(unsigned char *NwkKey_in)

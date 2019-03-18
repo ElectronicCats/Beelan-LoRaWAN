@@ -66,7 +66,7 @@ class LoRaWANClass
         ~LoRaWANClass();
         
         bool init(void);
-        void join(void);
+        bool join(void);
         void setDeviceClass(devclass_t dev_class);
         void setNwkSKey(unsigned char *NwkKey_in);
         void setNwkSKey(char *NwkKey_in);
