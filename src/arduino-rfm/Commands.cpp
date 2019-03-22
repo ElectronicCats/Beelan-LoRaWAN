@@ -39,12 +39,6 @@
 #include "Struct.h"
 #include "Config.h"
 
-void UART_Send_Newline()
-{
-  Serial.write(0x0D); //Carriage return
-  Serial.write(0x0A); //Line feed
-}
-
 void UART_Send_Data(unsigned char *Data, unsigned char Length)
 {
   unsigned char i;
@@ -124,8 +118,6 @@ void UART_Send_Datarate(unsigned char *Datarate)
           break;     
     #endif
   }
-
-  UART_Send_Newline();
 }
 
 void UART_Send_Channel(unsigned char *Channel)
@@ -251,9 +243,6 @@ void UART_Send_Channel(unsigned char *Channel)
       #endif // Sub-Band
     #endif
   }
-
-    UART_Send_Newline();
-
 }
 
 void Mac_DevAddr(unsigned char *buffer, unsigned char *DevAddr)
@@ -264,11 +253,6 @@ void Mac_DevAddr(unsigned char *buffer, unsigned char *DevAddr)
   DevAddr[1] = ASCII2Hex(buffer[2],buffer[3]);
   DevAddr[2] = ASCII2Hex(buffer[4],buffer[5]);
   DevAddr[3] = ASCII2Hex(buffer[6],buffer[7]);
-
-  //Send set DevAddr
-  Serial.write("DevAddr: ");
-  UART_Send_Data(DevAddr, 0x04);
-  UART_Send_Newline();
 }
 
 void Mac_NwkSKey(unsigned char *buffer, unsigned char *NwkSKey)
@@ -279,11 +263,6 @@ void Mac_NwkSKey(unsigned char *buffer, unsigned char *NwkSKey)
   {
     NwkSKey[i] = ASCII2Hex(buffer[i*2],buffer[(i*2)+1]);
   }
-
-  //Send NwkSkey
-  Serial.write("NwkSKey: ");
-  UART_Send_Data(NwkSKey,0x10);
-  UART_Send_Newline();
 }
 
 void Mac_AppSKey(unsigned char *buffer, unsigned char *AppSKey)
@@ -294,11 +273,6 @@ void Mac_AppSKey(unsigned char *buffer, unsigned char *AppSKey)
   {
     AppSKey[i] = ASCII2Hex(buffer[i*2],buffer[(i*2)+1]);
   }
-
-  //Send AppSkey
-  Serial.write("AppSKey: ");
-  UART_Send_Data(AppSKey,0x10);
-  UART_Send_Newline();
 }
 
 void Mac_AppKey(unsigned char *buffer, unsigned char *AppKey)
@@ -309,12 +283,6 @@ void Mac_AppKey(unsigned char *buffer, unsigned char *AppKey)
   {
     AppKey[i] = ASCII2Hex(buffer[i*2],buffer[(i*2)+1]);
   }
-
-  //Send AppKey
-  Serial.write("AppKey: ");
-  UART_Send_Data(AppKey,0x10);
-  UART_Send_Newline();
-
 }
 
 void Mac_AppEUI(unsigned char *buffer, unsigned char *AppEUI)
@@ -325,11 +293,6 @@ void Mac_AppEUI(unsigned char *buffer, unsigned char *AppEUI)
   {
     AppEUI[i] = ASCII2Hex(buffer[i*2],buffer[(i*2)+1]);
   }
-
-  //Send AppEUI
-  Serial.write("AppEUI: ");
-  UART_Send_Data(AppEUI,0x08);
-  UART_Send_Newline();
 }
 
 void Mac_DevEUI(unsigned char *buffer, unsigned char *DevEUI)
@@ -340,11 +303,6 @@ void Mac_DevEUI(unsigned char *buffer, unsigned char *DevEUI)
   {
     DevEUI[i] = ASCII2Hex(buffer[i*2],buffer[(i*2)+1]);
   }
-
-  //Send DevEUI
-  Serial.write("DevEUI: ");
-  UART_Send_Data(DevEUI,0x08);
-  UART_Send_Newline();
 }
 
 void Mac_DrTx(unsigned char drate_tx, unsigned char *Datarate)
@@ -359,10 +317,6 @@ void Mac_DrTx(unsigned char drate_tx, unsigned char *Datarate)
   {
     *Datarate = Datarate_Temp;
   }
-
-  Serial.write("Datarate Tx: ");
-
-  UART_Send_Datarate(Datarate);
 }
 
 void Mac_DrRx(unsigned char drate_rx, unsigned char *Datarate)
@@ -377,10 +331,6 @@ void Mac_DrRx(unsigned char drate_rx, unsigned char *Datarate)
   {
     *Datarate = Datarate_Temp;
   }
-
-  Serial.write("Datarate Rx: ");
-
-  UART_Send_Datarate(Datarate);
 }
 
 void Mac_ChTx(unsigned char ch_tx_idx, unsigned char *Channel)
@@ -402,10 +352,6 @@ void Mac_ChTx(unsigned char ch_tx_idx, unsigned char *Channel)
     *Channel = Channel_Temp;
   }
   #endif
-
-  Serial.write("Channel Tx: ");
-
-  UART_Send_Channel(Channel);
 }
 
 void Mac_ChRx(unsigned char ch_rx_idx, unsigned char *Channel)
@@ -427,10 +373,6 @@ void Mac_ChRx(unsigned char ch_rx_idx, unsigned char *Channel)
     *Channel = Channel_Temp;
   }
   #endif
-
-  Serial.write("Channel Rx: ");
-
-  UART_Send_Channel(Channel);
 }
 
 void Mac_Power(unsigned char pwr_idx, unsigned char *Power)
@@ -451,11 +393,6 @@ void Mac_Power(unsigned char pwr_idx, unsigned char *Power)
 
   //Write power to RFM module
   RFM_Write(0x09,RFM_Data);
-
-  //Send answer
-  Serial.write("Power: ");
-  UART_Send_Data(Power,0x01);
-  UART_Send_Newline();
 }
 
 void Mac_Confirm(unsigned char confirm_msg, unsigned char *Confirm)
@@ -466,11 +403,6 @@ void Mac_Confirm(unsigned char confirm_msg, unsigned char *Confirm)
   {
     *Confirm = 0x01;
   }
-
-  //Send answer
-  Serial.write("Confirm: ");
-  UART_Send_Data(Confirm,0x01);
-  UART_Send_Newline();
 }
 
 void Mac_Channel_Hopping(unsigned char hop_enable, unsigned char *Channel_Hopping)
@@ -481,14 +413,9 @@ void Mac_Channel_Hopping(unsigned char hop_enable, unsigned char *Channel_Hoppin
   {
     *Channel_Hopping = 0x01;
   }
-
-  //Send answer
-  Serial.write("Channel Hopping: ");
-  UART_Send_Data(Channel_Hopping,0x01);
-  UART_Send_Newline();
 }
 
-void Mac_Class(devclass_t dev_class, sSettings *LoRa_Settings)
+int Mac_Class(devclass_t dev_class, sSettings *LoRa_Settings)
 {
   if(dev_class == CLASS_A) 
   {
@@ -500,47 +427,25 @@ void Mac_Class(devclass_t dev_class, sSettings *LoRa_Settings)
   }
 
   //Send answer and switch rfm to standby or receive
-  Serial.write("Mote Class: ");
   if(LoRa_Settings->Mote_Class == 0x00)
   {
 
     //Switch RFM to standby
     RFM_Switch_Mode(0x01);
     
-    Serial.write("A");
+    return 0x01; //Class A;
   }
   else
   {
     //Switch RFM to continuou receive
     RFM_Continuous_Receive(LoRa_Settings);
     
-    Serial.write("C");
+    return 0x03; //Class C;
   }
-  UART_Send_Newline();
 }
 
 void Mac_Data(unsigned char *buffer, unsigned int len, sBuffer *RFM_Buffer)
 {
   RFM_Buffer->Counter = len;
   memcpy(RFM_Buffer->Data, buffer, len);
-  // unsigned int len_temp = len;
-  // unsigned char i;
-
-  // //Check for an even number of received data bytes other wise fill whit 0x00
-  // if(len % 2)
-  // {
-  //   buffer[len] = 0x00;
-  //   len_temp++;
-  // }
-
-  // RFM_Buffer->Counter = len_temp / 2;
-
-  // for(i = 0x00; i < RFM_Buffer->Counter; i++)
-  // {
-  //   RFM_Buffer->Data[i] = ASCII2Hex(buffer[i*2],buffer[(i*2)+1]);
-  // }
-
-  Serial.write("Data ");
-  UART_Send_Data(RFM_Buffer->Data,RFM_Buffer->Counter);
-  UART_Send_Newline();
 }

@@ -226,8 +226,6 @@ message_t RFM_Single_Receive(sSettings *LoRa_Settings)
     //Clear interrupt register
     RFM_Write(0x12,0xE0);
     Message_Status = TIMEOUT;
-    UART_Send_Newline();
-    UART_Send_Newline();
   }
 
   //Check for RxDone
@@ -294,18 +292,10 @@ message_t RFM_Get_Package(sBuffer *RFM_Rx_Package)
   if((RFM_Interrupts & 0x20) != 0x20)
   {
 	  Message_Status = CRC_OK;
-
-	  Serial.write("CRC OK");
-
-	  UART_Send_Newline();
   }
   else
   {
 	  Message_Status = WRONG_MESSAGE;
-
-	  Serial.write("CRC NOK");
-
-	  UART_Send_Newline();
   }
 
   RFM_Package_Location = RFM_Read(0x10); /*Read start position of received package*/
@@ -349,6 +339,13 @@ unsigned char RFM_Read(unsigned char RFM_Address)
   //Set NSS high to end communication
   digitalWrite(RFM_pins.CS,HIGH);
 
+  #ifdef DEBUG
+  Serial.print("SPI Read ADDR: ");
+  Serial.print(RFM_Address, HEX);
+  Serial.print(" DATA: ");
+  Serial.println(RFM_Data, HEX);
+  #endif
+
   //Return received data
   return RFM_Data;
 }
@@ -364,6 +361,14 @@ unsigned char RFM_Read(unsigned char RFM_Address)
 
 void RFM_Write(unsigned char RFM_Address, unsigned char RFM_Data)
 {
+  // br: SPI Transfer Debug
+  #ifdef DEBUG
+    Serial.print("SPI Write ADDR: ");
+    Serial.print(RFM_Address, HEX);
+    Serial.print(" DATA: ");
+    Serial.println(RFM_Data, HEX);
+  #endif
+
   //Set NSS pin Low to start communication
   digitalWrite(RFM_pins.CS,LOW);
 
@@ -658,12 +663,5 @@ void RFM_Switch_Mode(unsigned char Mode)
 
     //Switch mode on RFM module
     RFM_Write(0x01,Mode);
-
-	//Wait on mode ready
-  #ifdef BOARD_DRAGINO_SHIELD
-    // while(digitalRead(RFM_pins.DIO5) == LOW)
-    // {
-    // }
-  #endif
 }
 

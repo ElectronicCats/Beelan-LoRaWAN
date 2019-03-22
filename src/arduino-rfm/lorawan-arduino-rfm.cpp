@@ -53,9 +53,6 @@ bool LoRaWANClass::init(void)
     RFM_Command_Status = NO_RFM_COMMAND;
     Rx_Status = NO_RX;
 
-    // Serial Init
-    Serial.begin(9600);
-
     // Initialise session data struct (Semtech default key)
     memset(Address_Tx, 0x00, 4);
     memset(NwkSKey, 0x00, 16);
@@ -150,16 +147,20 @@ bool LoRaWANClass::init(void)
     return 1;
 }
 
-void LoRaWANClass::join(void)
+bool LoRaWANClass::join(void)
 {
     //Check if there is no command pending
     if(RFM_Command_Status == NO_RFM_COMMAND)
     {
-        Serial.write("Join");
-
         //Set join command
         RFM_Command_Status = JOIN;
+        return true;
     }
+    else
+    {
+        return false;
+    }
+    
 }
 
 void LoRaWANClass::setNwkSKey(unsigned char *NwkKey_in)
@@ -344,8 +345,6 @@ void LoRaWANClass::update(void)
     if(Rx_Status == NEW_RX)
     {
       UART_Send_Data(Buffer_Rx.Data,Buffer_Rx.Counter);
-	  UART_Send_Newline();
-      UART_Send_Newline();
     }
 }
 

@@ -23,7 +23,6 @@
 ****************************************************************************************/
 /****************************************************************************************
 * Created on:         06-01-2017
-* Supported Hardware: ID150119-02 Nexus board with RFM95
 ****************************************************************************************/
 /*
 *****************************************************************************************
@@ -370,17 +369,10 @@ void LORA_Receive_Data(sBuffer *Data_Rx, sLoRa_Session *Session_Data, sLoRa_OTAA
 			if(MIC_Check == 0x04)
 			{
 				Message_Status = MIC_OK;
-
-				Serial.write("MIC OK");
-				UART_Send_Newline();
 			}
 			else
 			{
 				Message_Status = WRONG_MESSAGE;
-
-				//Send NOK
-				Serial.write("MIC NOK");
-				UART_Send_Newline();
 			}
 
 			//Get Key's and data from package when MIC is OK
@@ -444,20 +436,6 @@ void LORA_Receive_Data(sBuffer *Data_Rx, sLoRa_Session *Session_Data, sLoRa_OTAA
 				//Reset Frame counter
 				*Session_Data->Frame_Counter = 0x0000;
 
-				//Send dat over USB
-				Serial.write("DevAddr: ");
-				UART_Send_Data(Session_Data->DevAddr,0x04);
-				UART_Send_Newline();
-
-				Serial.write("NwkSKey: ");
-				UART_Send_Data(Session_Data->NwkSKey,0x10);
-				UART_Send_Newline();
-
-				Serial.write("AppSKey: ");
-				UART_Send_Data(Session_Data->AppSKey,0x10);
-				UART_Send_Newline();
-				UART_Send_Newline();
-
 				//Clear Data counter
 				Data_Rx->Counter = 0x00;
 			}
@@ -500,19 +478,11 @@ void LORA_Receive_Data(sBuffer *Data_Rx, sLoRa_Session *Session_Data, sLoRa_OTAA
       		if(MIC_Check == 0x04)
       		{
       		  Message_Status = MIC_OK;
-
-      		  Serial.write("MIC OK");
       		}
       		else
       		{
       		  Message_Status = WRONG_MESSAGE;
-
-      		  //Send NOK
-      		  Serial.write("MIC NOK");
-
       		}
-
-      		UART_Send_Newline();
 
       		Address_Check = 0;
 
@@ -531,44 +501,16 @@ void LORA_Receive_Data(sBuffer *Data_Rx, sLoRa_Session *Session_Data, sLoRa_OTAA
 		  	if(Address_Check == 0x04)
 		  	{
 				Message_Status = ADDRESS_OK;
-
-				Serial.write("ADDRESS OK");
 		  	}
 		  	else
 		  	{
 				Message_Status = WRONG_MESSAGE;
-
-				//Send NOK
-				Serial.write("ADDRESS NOK");
-
 		  	}
-
-		  	UART_Send_Newline();
 
 			//if the address is OK then decrypt the data
 			//Send the data to USB
 			if(Message_Status == ADDRESS_OK)
 			{
-				//Send Mac Header
-				Serial.write("Mac Header: ");
-				UART_Send_Data(&Message->MAC_Header, 0x01);
-				UART_Send_Newline();
-
-				//Send Dev addr
-				Serial.write("Dev addr: ");
-				UART_Send_Data(Message->DevAddr,0x04);
-				UART_Send_Newline();
-
-				//Send Frame control field
-				Serial.write("Frame Control: ");
-				UART_Send_Data(&Message->Frame_Control,0x01);
-				UART_Send_Newline();
-
-				//Send frame counter
-				Serial.write("Frame Counter: ");
-				UART_Send_Data(&RFM_Data[7],0x01);
-				UART_Send_Data(&RFM_Data[6],0x01);
-				UART_Send_Newline();
 
 				Data_Location = 8;
 
@@ -587,11 +529,6 @@ void LORA_Receive_Data(sBuffer *Data_Rx, sLoRa_Session *Session_Data, sLoRa_OTAA
 				{
 					//Get port field when ther is data
 					Message->Frame_Port = RFM_Data[8];
-
-					//Send Port field
-					Serial.write("Frame Port: ");
-					UART_Send_Data(&(Message->Frame_Port),0x01);
-					UART_Send_Newline();
 
 					//Calculate the amount of data in the package
 					Data_Rx->Counter = (RFM_Package.Counter - Data_Location -1);
