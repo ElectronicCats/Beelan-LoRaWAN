@@ -76,16 +76,16 @@ bool RFM_Init()
     return 0;
   }
   //Switch RFM to sleep
-  //DONT USE Switch mode function
+  //DON'T USE Switch mode function
   RFM_Write(0x01,0x00);
 
   //Wait until RFM is in sleep mode
   delay(50);
  
   //Set RFM in LoRa mode
-  //DONT USE Switch mode function
+  //DON'T USE Switch mode function
   RFM_Write(0x01,0x80);
-  //Swtich RFM to standby
+  //Switch RFM to standby
   RFM_Switch_Mode(0x01);
   //Set channel to channel 0
   RFM_Change_Channel(0x00);
@@ -113,9 +113,9 @@ bool RFM_Init()
   RFM_Write(0x39,0x34);
 
   //Set FIFO pointers
-  //TX base adress
+  //TX base address
   RFM_Write(0x0E,0x80);
-  //Rx base adress
+  //Rx base address
   RFM_Write(0x0F,0x00);
   return 1;
 }
@@ -316,7 +316,7 @@ message_t RFM_Get_Package(sBuffer *RFM_Rx_Package)
 
 /*
 *****************************************************************************************
-* Description : Funtion that reads a register from the RFM and returns the value
+* Description : Function that reads a register from the RFM and returns the value
 *
 * Arguments   : RFM_Address Address of register to be read
 *
@@ -352,7 +352,7 @@ unsigned char RFM_Read(unsigned char RFM_Address)
 
 /*
 *****************************************************************************************
-* Description : Funtion that writes a register from the RFM
+* Description : Function that writes a register from the RFM
 *
 * Arguments   : RFM_Address Address of register to be written
 *         RFM_Data    Data to be written
@@ -372,7 +372,7 @@ void RFM_Write(unsigned char RFM_Address, unsigned char RFM_Data)
   //Set NSS pin Low to start communication
   digitalWrite(RFM_pins.CS,LOW);
 
-  //Send Addres with MSB 1 to make it a writ command
+  //Send Address with MSB 1 to make it a writ command
   SPI.transfer(RFM_Address | 0x80);
   //Send Data
   SPI.transfer(RFM_Data);
@@ -384,7 +384,7 @@ void RFM_Write(unsigned char RFM_Address, unsigned char RFM_Data)
 /*
 *****************************************************************************************
 * Description : Function to change the datarate of the RFM module. Setting the following
-*				register: Spreading factor, Bandwith and low datarate optimisation.
+*				register: Spreading factor, Bandwidth and low datarate optimisation.
 *
 * Arguments   : Datarate the datarate to set
 *****************************************************************************************

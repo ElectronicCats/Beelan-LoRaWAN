@@ -1,7 +1,7 @@
 Arduino LoRaWAN library by Beelan
 ====================
 This repository contains the simple LoRaWAN library originally created by Ideetron B.V. This library is slightly
-modified and encapsulated to run in the generic platform, allowing using the SX1272, SX1276 tranceivers and compatible modules (such as some HopeRF RFM9x modules).
+modified and encapsulated to run in the generic platform, allowing using the SX1272, SX1276 transceivers and compatible modules (such as some HopeRF RFM9x modules).
 
 This repository is all based on this [repo]( https://git.antares.id/lorawan-loraid/arduino-loraid), with the principal purpose to port it to the frequencies of america US915.
 
