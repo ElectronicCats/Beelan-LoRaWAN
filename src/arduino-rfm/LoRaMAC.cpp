@@ -76,7 +76,7 @@ void LORA_Cycle(sBuffer *Data_Tx, sBuffer *Data_Rx, RFM_command_t *RFM_Command, 
 
 	if(*RFM_Command == JOIN)
   	{
-  	  //Send join Reqest message
+  	  //Send join Request message
   	  LoRa_Send_JoinReq(OTAA_Data, LoRa_Settings);
 
       delay(Receive_Delay_JoinAck);
@@ -158,7 +158,7 @@ void LORA_Send_Data(sBuffer *Data_Tx, sLoRa_Session *Session_Data, sSettings *Lo
   Message.Frame_Port = 0x01; //Frame port always 1 for now
   Message.Frame_Control = 0x00;
 
-  //Load device addres from session data into the message
+  //Load device address from session data into the message
   Message.DevAddr[0] = Session_Data->DevAddr[0];
   Message.DevAddr[1] = Session_Data->DevAddr[1];
   Message.DevAddr[2] = Session_Data->DevAddr[2];
@@ -221,7 +221,7 @@ void LORA_Send_Data(sBuffer *Data_Tx, sLoRa_Session *Session_Data, sSettings *Lo
       RFM_Data[RFM_Package.Counter + i] = Data_Tx->Data[i];
     }
 
-    //Add data Lenth to package counter
+    //Add data Length to package counter
     RFM_Package.Counter = RFM_Package.Counter + Data_Tx->Counter;
   }
 
@@ -624,7 +624,7 @@ void LoRa_Send_JoinReq(sLoRa_OTAA *OTAA_Data, sSettings *LoRa_Settings)
     RFM_Data[21] = Message.MIC[2];
     RFM_Data[22] = Message.MIC[3];
 
-    //Set lenght of package to the right length
+    //Set length of package to the right length
     RFM_Package.Counter = 23;
 
     //Send Package
@@ -633,8 +633,8 @@ void LoRa_Send_JoinReq(sLoRa_OTAA *OTAA_Data, sSettings *LoRa_Settings)
 
 /*
 *****************************************************************************************
-* Description : Function that is used to generate device nonce used in the join reqeust function
-*				This is based on a psuedo random function in the arduino library
+* Description : Function that is used to generate device nonce used in the join request function
+*				This is based on a pseudo random function in the arduino library
 *
 * Arguments   : *Devnonce pointer to the devnonce arry of withc is unsigned char[2]
 *****************************************************************************************

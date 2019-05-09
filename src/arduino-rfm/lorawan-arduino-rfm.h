@@ -17,7 +17,7 @@
         *Datarate Receive and Transmit
         *Tranmit power
         *Confirmed or unconfirmed messages
-        *Device Addres
+        *Device Address
         *Application Session Key
         *Network Session Key
         *Device EUI

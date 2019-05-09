@@ -79,7 +79,7 @@ void AES_Encrypt(unsigned char *Data, unsigned char *Key)
 	//  Add round key
 	AES_Add_Round_Key( Round_Key, State );
 
-	//  Preform 9 full rounds with mixed collums
+	//  Perform 9 full rounds with mixed collums
 	for( Round = 1 ; Round < 10 ; Round++ )
 	{
 		//  Perform Byte substitution with S table
@@ -266,7 +266,7 @@ void AES_Calculate_Round_Key(unsigned char Round, unsigned char *Round_Key)
 	}
     
 	//  Calculate first Temp
-	//  Copy laste byte from previous key and subsitute the byte, but shift the array contents around by 1.
+	//  Copy laste byte from previous key and substitute the byte, but shift the array contents around by 1.
     Temp[0] = AES_Sub_Byte( Round_Key[12 + 1] );
     Temp[1] = AES_Sub_Byte( Round_Key[12 + 2] );
     Temp[2] = AES_Sub_Byte( Round_Key[12 + 3] );

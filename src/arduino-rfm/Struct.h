@@ -32,7 +32,7 @@
 
 /*
 ********************************************************************************************
-* STRUCT DEFENITIONS
+* STRUCT DEFINITIONS
 ********************************************************************************************
 */
 
@@ -52,7 +52,7 @@ typedef struct {
     unsigned char Counter;
 } sBuffer;
 
-//Stuct used to store session data of a LoRaWAN session
+//Struct used to store session data of a LoRaWAN session
 typedef struct {
     unsigned char *NwkSKey;
     unsigned char *AppSKey;

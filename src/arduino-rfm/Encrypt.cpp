@@ -46,7 +46,7 @@
 *****************************************************************************************
 * Description : Function used to encrypt and decrypt the data in a LoRaWAN data message
 *
-* Arguments   : *Buffer pointer to the buffer cointaining the data to de/encrypt
+* Arguments   : *Buffer pointer to the buffer containing the data to de/encrypt
 *				*Session_Data pointer to sLoRa_Session sturct
 *				*Message pointer to sLoRa_Message struct containing the message specific variables
 *****************************************************************************************
@@ -122,7 +122,7 @@ void Encrypt_Payload(sBuffer *Buffer, unsigned char *Key, sLoRa_Message *Message
 *****************************************************************************************
 * Description : Function used to build a the data that is used for calculating the MIC of a data message
 *
-* Arguments   : *Buffer pointer to the buffer cointaining the data
+* Arguments   : *Buffer pointer to the buffer containing the data
 *				*Session_Data pointer to sLoRa_Session sturct
 *				*Message pointer to sLoRa_Message struct containing the message specific variables
 *****************************************************************************************
@@ -181,7 +181,7 @@ void Construct_Data_MIC(sBuffer *Buffer, sLoRa_Session *Session_Data, sLoRa_Mess
 *****************************************************************************************
 * Description : Function used to calculate the MIC of data
 *
-* Arguments   : *Buffer pointer to the buffer cointaining the data the MIC should be calculated from
+* Arguments   : *Buffer pointer to the buffer containing the data the MIC should be calculated from
 *				*Key pointer to key used for the MIC calculation
 *				*Message pointer to sLoRa_Message struct containing the message specific variables
 *****************************************************************************************
@@ -222,7 +222,7 @@ void Calculate_MIC(sBuffer *Buffer, unsigned char *Key, sLoRa_Message *Message)
 
 	Generate_Keys(Key, Key_K1, Key_K2);
 
-	//Preform full calculating until n-1 messsage blocks
+	//Perform full calculating until n-1 message blocks
     for(j = 0x0; j < (Number_of_Blocks - 1); j++)
 	{
 		//Copy data into array
@@ -231,10 +231,10 @@ void Calculate_MIC(sBuffer *Buffer, unsigned char *Key, sLoRa_Message *Message)
 			New_Data[i] = Buffer->Data[(j*16)+i];
 		}
 
-		//Preform XOR with old data
+		//Perform XOR with old data
 		XOR(New_Data,Old_Data);
 
-		//Preform AES encryption
+		//Perform AES encryption
 		AES_Encrypt(New_Data,Key);
 
 		//Copy New_Data to Old_Data
@@ -254,13 +254,13 @@ void Calculate_MIC(sBuffer *Buffer, unsigned char *Key, sLoRa_Message *Message)
 			New_Data[i] = Buffer->Data[((Number_of_Blocks -1)*16)+i];
 		}
 
-		//Preform XOR with Key 1
+		//Perform XOR with Key 1
 		XOR(New_Data,Key_K1);
 
-		//Preform XOR with old data
+		//Perform XOR with old data
 		XOR(New_Data,Old_Data);
 
-		//Preform last AES routine
+		//Perform last AES routine
 		AES_Encrypt(New_Data,Key);
 	}
 	else
@@ -282,13 +282,13 @@ void Calculate_MIC(sBuffer *Buffer, unsigned char *Key, sLoRa_Message *Message)
 			}
 		}
 
-		//Preform XOR with Key 2
+		//Perform XOR with Key 2
 		XOR(New_Data,Key_K2);
 
-		//Preform XOR with Old data
+		//Perform XOR with Old data
 		XOR(New_Data,Old_Data);
 
-		//Preform last AES routine
+		//Perform last AES routine
 		AES_Encrypt(New_Data,Key);
 	}
 
