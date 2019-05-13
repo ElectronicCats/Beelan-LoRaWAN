@@ -77,6 +77,8 @@ class LoRaWANClass
         void sendUplink(unsigned char *data, unsigned int len, unsigned char confirm);
         void sendUplink(char *data, unsigned int len, unsigned char confirm);
         void setDataRate(unsigned char data_rate);
+        void setChannel(unsigned char channel);
+        void setChannel(sChannels channel);
         void setTxPower(unsigned char power_idx);
         int readData(char *outBuff);
         void update(void);
@@ -113,6 +115,9 @@ class LoRaWANClass
 
         // Lora Setting Class
         devclass_t dev_class;
+
+        // channel mode
+        unsigned char currentChannel;
 
         // UART
         RFM_command_t RFM_Command_Status;

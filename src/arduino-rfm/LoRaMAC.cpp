@@ -113,10 +113,10 @@ void LORA_Cycle(sBuffer *Data_Tx, sBuffer *Data_Rx, RFM_command_t *RFM_Command, 
 
 	  LORA_Receive_Data(Data_Rx, Session_Data, OTAA_Data, Message_Rx, LoRa_Settings);
 	  if(Data_Rx->Counter > 0) {
-		Serial.print((char *)Data_Rx->Data);
-	  } else {
-		Serial.println("No Data RX1");
-	  }
+			Serial.print((char *)Data_Rx->Data);
+	  } /*else {
+			Serial.println("No Data RX1");
+	  }*/
       // Wait for RX2 delay
       while(millis() - prevTime < Receive_Delay_2);
 
@@ -128,9 +128,9 @@ void LORA_Cycle(sBuffer *Data_Tx, sBuffer *Data_Rx, RFM_command_t *RFM_Command, 
     LORA_Receive_Data(Data_Rx, Session_Data, OTAA_Data, Message_Rx, LoRa_Settings);
 	if(Data_Rx->Counter > 0) {
 		Serial.print((char *)Data_Rx->Data);
-	} else {
+	} /*else {
 		Serial.println("No Data RX2");
-	}
+	}*/
 }
 
 /*

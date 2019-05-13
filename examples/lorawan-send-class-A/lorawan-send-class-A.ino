@@ -26,6 +26,9 @@ void setup() {
 
   // Set Data Rate
   lora.setDataRate(3);
+
+  // set channel to random
+  lora.setChannel(MULTI);
   
   // Put ABP Key and DevAddress here
   lora.setNwkSKey("b7300d9f68b649ed30530f9dd69f9afe");

@@ -93,6 +93,18 @@ typedef struct {
     unsigned char Transmit_Power;	//0x00 to 0x0F
 } sSettings;
 
+typedef enum rfm_channels {
+  CH0 = 0,
+  CH1 = 1,
+  CH2 = 2,
+  CH3 = 3,
+  CH4 = 4,
+  CH5 = 5,
+  CH6 = 6,
+  CH7 = 7,
+  MULTI = 20,
+} sChannels;
+
 typedef enum {CLASS_A, CLASS_C} devclass_t;
 
 #endif

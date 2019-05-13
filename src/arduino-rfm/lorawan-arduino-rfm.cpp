@@ -53,6 +53,9 @@ bool LoRaWANClass::init(void)
     RFM_Command_Status = NO_RFM_COMMAND;
     Rx_Status = NO_RX;
 
+    // current channel
+    currentChannel = MULTI;
+
     // Initialise session data struct (Semtech default key)
     memset(Address_Tx, 0x00, 4);
     memset(NwkSKey, 0x00, 16);
@@ -225,8 +228,11 @@ void LoRaWANClass::sendUplink(unsigned char *data, unsigned int len, unsigned ch
     unsigned char freq_idx;
 
     // Random freq
-    #ifdef AS_923
-    freq_idx = random(0, 9);
+#ifdef AS_923
+    if (currentChannel == MULTI)
+      freq_idx = random(0, 9);
+    else
+      freq_idx = currentChannel;
     // freq_idx = 4;    // test
     
     // limit drate, ch 8 -> sf7bw250
@@ -238,9 +244,12 @@ void LoRaWANClass::sendUplink(unsigned char *data, unsigned int len, unsigned ch
     {
         Mac_DrTx(drate_common, &LoRa_Settings.Datarate_Tx);
     }
-    #else
-    freq_idx = random(0, 8);
-    #endif
+#else
+    if (currentChannel == MULTI)
+      freq_idx = random(0, 8);
+    else
+      freq_idx = currentChannel;
+#endif
     Mac_ChTx(freq_idx, &LoRa_Settings.Channel_Tx);
 
     Mac_Confirm(confirm, &LoRa_Settings.Confirm);
@@ -264,6 +273,17 @@ void LoRaWANClass::setDataRate(unsigned char data_rate)
     
     //Reset RFM command
     RFM_Command_Status = NO_RFM_COMMAND;
+}
+
+void LoRaWANClass::setChannel(sChannels channel)
+{
+    if (channel <= 7 || channel == MULTI)
+      currentChannel = channel;
+}
+
+void LoRaWANClass::setChannel(unsigned char channel) 
+{
+    setChannel((sChannels)channel);
 }
 
 void LoRaWANClass::setTxPower(unsigned char power_idx)
