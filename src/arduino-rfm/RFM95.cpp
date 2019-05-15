@@ -36,30 +36,102 @@
 #include "Config.h"
 
 #ifdef US_915
-  #ifdef SUBND_1
-  const unsigned char LoRa_Frequency[9][3] = {
-	{ 0xE1, 0xF9, 0xC0 },		//Channel 0 903.900 MHz / 61.035 Hz = 14809536 = 0xE1F9C0
-	{ 0xE2, 0x06, 0x8C },		//Channel 1 904.100 MHz / 61.035 Hz = 14812812 = 0xE2068C
-	{ 0xE2, 0x13, 0x59 },		//Channel 2 904.300 MHz / 61.035 Hz = 14816089 = 0xE21359
-	{ 0xE2, 0x20, 0x26 },		//Channel 3 904.500 MHz / 61.035 Hz = 14819366 = 0xE22026
-	{ 0xE2, 0x2C, 0xF3 },		//Channel 4 904.700 MHz / 61.035 Hz = 14822643 = 0xE22CF3
-	{ 0xE2, 0x39, 0xC0 },		//Channel 5 904.900 MHz / 61.035 Hz = 14825920 = 0xE239C0
-	{ 0xE2, 0x46, 0x8C },		//Channel 6 905.100 MHz / 61.035 Hz = 14829196 = 0xE2468C
-	{ 0xE2, 0x53, 0x59 },		//Channel 7 905.300 MHz / 61.035 Hz = 14832473 = 0xE25359
-  { 0xE6, 0xD3, 0x5A },   //Channel RX2 window 923.3 MHz / 61.035 Hz = 0xE6D35A
-  };  
-  #else
-  const unsigned char LoRa_Frequency[9][3] = {
-    { 0xE3, 0xD3, 0x59 }, //Channel 48 911.900 MHz / 61.035 Hz = 0xE3D359
-    { 0xE4, 0x06, 0x8C }, //Channel 49 912.100 MHz / 61.035 Hz = 0xE4068C
-    { 0xE4, 0x13, 0x59 }, //Channel 50 912.300 MHz / 61.035 Hz = 0xE41359
-    { 0xE4, 0x20, 0x26 }, //Channel 51 912.500 MHz / 61.035 Hz = 0xE42026
-    { 0xE4, 0x2C, 0xF3 }, //Channel 52 912.700 MHz / 61.035 Hz = 0xE42CF3
-    { 0xE4, 0x39, 0xBF }, //Channel 53 912.900 MHz / 61.035 Hz = 0xE439BF
-    { 0xE4, 0x46, 0x8C }, //Channel 54 913.100 MHz / 61.035 Hz = 0xE4468C
-    { 0xE4, 0x53, 0x59 }, //Channel 55 913.300 MHz / 61.035 Hz = 0xE45359
-    { 0xE6, 0xD3, 0x5A }, //Channel RX2 window 923.3 MHz / 61.035 Hz = 0xE6D35A
-  };
+  #if defined(SUBND_1)//[902.3 - 903.7] MHz
+    const unsigned char LoRa_Frequency[9][3] = {
+      { 0xE1, 0x93, 0x59 }, //Channel [0], 902.3 MHz / 61.035 Hz = 14783321 = 0xE19359
+      { 0xE1, 0xA0, 0x26 }, //Channel [1], 902.5 MHz / 61.035 Hz = 14786598 = 0xE1A026
+      { 0xE1, 0xAC, 0xF3 }, //Channel [2], 902.7 MHz / 61.035 Hz = 14789875 = 0xE1ACF3
+      { 0xE1, 0xB9, 0xBF }, //Channel [3], 902.9 MHz / 61.035 Hz = 14793151 = 0xE1B9BF
+      { 0xE1, 0xC6, 0x8C }, //Channel [4], 903.1 MHz / 61.035 Hz = 14796428 = 0xE1C68C
+      { 0xE1, 0xD3, 0x59 }, //Channel [5], 903.3 MHz / 61.035 Hz = 14799705 = 0xE1D359
+      { 0xE1, 0xE0, 0x26 }, //Channel [6], 903.5 MHz / 61.035 Hz = 14802982 = 0xE1E026
+      { 0xE1, 0xEC, 0xF3 }, //Channel [7], 903.7 MHz / 61.035 Hz = 14806259 = 0xE1ECF3
+      { 0xE6, 0xD3, 0x5A }, //Channel RX2 window 923.3 MHz / 61.035 Hz = 0xE6D35A
+    };
+  #elif  defined(SUBND_2)//[903.9 - 905.3] MHz
+    const unsigned char LoRa_Frequency[9][3] = {
+      { 0xE1, 0xF9, 0xC0 }, //Channel [0], 903.9 MHz / 61.035 Hz = 14809536 = 0xE1F9C0
+      { 0xE2, 0x06, 0x8C }, //Channel [1], 904.1 MHz / 61.035 Hz = 14812812 = 0xE2068C
+      { 0xE2, 0x13, 0x59 }, //Channel [2], 904.3 MHz / 61.035 Hz = 14816089 = 0xE21359
+      { 0xE2, 0x20, 0x26 }, //Channel [3], 904.5 MHz / 61.035 Hz = 14819366 = 0xE22026
+      { 0xE2, 0x2C, 0xF3 }, //Channel [4], 904.7 MHz / 61.035 Hz = 14822643 = 0xE22CF3
+      { 0xE2, 0x39, 0xC0 }, //Channel [5], 904.9 MHz / 61.035 Hz = 14825920 = 0xE239C0
+      { 0xE2, 0x46, 0x8C }, //Channel [6], 905.1 MHz / 61.035 Hz = 14829196 = 0xE2468C
+      { 0xE2, 0x53, 0x59 }, //Channel [7], 905.3 MHz / 61.035 Hz = 14832473 = 0xE25359
+      { 0xE6, 0xD3, 0x5A }, //Channel RX2 window 923.3 MHz / 61.035 Hz = 0xE6D35A
+    };
+  #elif  defined(SUBND_3)//[905.5 - 906.9] MHz
+    const unsigned char LoRa_Frequency[9][3] = {
+      { 0xE2, 0x60, 0x26 }, //Channel [0], 905.5 MHz / 61.035 Hz = 14835750 = 0xE26026
+      { 0xE2, 0x6C, 0xF3 }, //Channel [1], 905.7 MHz / 61.035 Hz = 14839027 = 0xE26CF3
+      { 0xE2, 0x79, 0xC0 }, //Channel [2], 905.9 MHz / 61.035 Hz = 14842304 = 0xE279C0
+      { 0xE2, 0x86, 0x8C }, //Channel [3], 906.1 MHz / 61.035 Hz = 14845580 = 0xE2868C
+      { 0xE2, 0x93, 0x59 }, //Channel [4], 906.3 MHz / 61.035 Hz = 14848857 = 0xE29359
+      { 0xE2, 0xA0, 0x26 }, //Channel [5], 906.5 MHz / 61.035 Hz = 14852134 = 0xE2A026
+      { 0xE2, 0xAC, 0xF3 }, //Channel [6], 906.7 MHz / 61.035 Hz = 14855411 = 0xE2ACF3
+      { 0xE2, 0xB9, 0xC0 }, //Channel [7], 906.9 MHz / 61.035 Hz = 14858688 = 0xE2B9C0
+      { 0xE6, 0xD3, 0x5A }, //Channel RX2 window 923.3 MHz / 61.035 Hz = 0xE6D35A
+    };
+  #elif  defined(SUBND_4)//[907.1 - 908.5] MHz
+    const unsigned char LoRa_Frequency[9][3] = {
+      { 0xE2, 0xC6, 0x8C }, //Channel [0], 907.1 MHz / 61.035 Hz = 14861964 = 0xE2C68C
+      { 0xE2, 0xD3, 0x59 }, //Channel [1], 907.3 MHz / 61.035 Hz = 14865241 = 0xE2D359
+      { 0xE2, 0xE0, 0x26 }, //Channel [2], 907.5 MHz / 61.035 Hz = 14868518 = 0xE2E026
+      { 0xE2, 0xEC, 0xF3 }, //Channel [3], 907.7 MHz / 61.035 Hz = 14871795 = 0xE2ECF3
+      { 0xE2, 0xF9, 0xC0 }, //Channel [4], 907.9 MHz / 61.035 Hz = 14875072 = 0xE2F9C0
+      { 0xE3, 0x06, 0x8C }, //Channel [5], 908.1 MHz / 61.035 Hz = 14878348 = 0xE3068C
+      { 0xE3, 0x13, 0x59 }, //Channel [6], 908.3 MHz / 61.035 Hz = 14881625 = 0xE31359
+      { 0xE3, 0x20, 0x26 }, //Channel [7], 908.5 MHz / 61.035 Hz = 14884902 = 0xE32026
+      { 0xE6, 0xD3, 0x5A }, //Channel RX2 window 923.3 MHz / 61.035 Hz = 0xE6D35A
+    };
+  #elif  defined(SUBND_5)//[908.7 - 910.1] MHz
+    const unsigned char LoRa_Frequency[9][3] = {
+      { 0xE3, 0x2C, 0xF3 }, //Channel [0], 908.7 MHz / 61.035 Hz = 14888179 = 0xE32CF3
+      { 0xE3, 0x39, 0xC0 }, //Channel [1], 908.9 MHz / 61.035 Hz = 14891456 = 0xE339C0
+      { 0xE3, 0x46, 0x8D }, //Channel [2], 909.1 MHz / 61.035 Hz = 14894733 = 0xE3468D
+      { 0xE3, 0x53, 0x59 }, //Channel [3], 909.3 MHz / 61.035 Hz = 14898009 = 0xE35359
+      { 0xE3, 0x60, 0x26 }, //Channel [4], 909.5 MHz / 61.035 Hz = 14901286 = 0xE36026
+      { 0xE3, 0x6C, 0xF3 }, //Channel [5], 909.7 MHz / 61.035 Hz = 14904563 = 0xE36CF3
+      { 0xE3, 0x79, 0xC0 }, //Channel [6], 909.9 MHz / 61.035 Hz = 14907840 = 0xE379C0
+      { 0xE3, 0x86, 0x8D }, //Channel [7], 910.1 MHz / 61.035 Hz = 14911117 = 0xE3868D
+      { 0xE6, 0xD3, 0x5A }, //Channel RX2 window 923.3 MHz / 61.035 Hz = 0xE6D35A
+    };
+  #elif  defined(SUBND_6)//[910.3 - 911.7] MHz
+    const unsigned char LoRa_Frequency[9][3] = {
+      { 0xE3, 0x93, 0x59 }, //Channel [0], 910.3 MHz / 61.035 Hz = 14914393 = 0xE39359
+      { 0xE3, 0xA0, 0x26 }, //Channel [1], 910.5 MHz / 61.035 Hz = 14917670 = 0xE3A026
+      { 0xE3, 0xAC, 0xF3 }, //Channel [2], 910.7 MHz / 61.035 Hz = 14920947 = 0xE3ACF3
+      { 0xE3, 0xB9, 0xC0 }, //Channel [3], 910.9 MHz / 61.035 Hz = 14924224 = 0xE3B9C0
+      { 0xE3, 0xC6, 0x8D }, //Channel [4], 911.1 MHz / 61.035 Hz = 14927501 = 0xE3C68D
+      { 0xE3, 0xD3, 0x59 }, //Channel [5], 911.3 MHz / 61.035 Hz = 14930777 = 0xE3D359
+      { 0xE3, 0xE0, 0x26 }, //Channel [6], 911.5 MHz / 61.035 Hz = 14934054 = 0xE3E026
+      { 0xE3, 0xEC, 0xF3 }, //Channel [7], 911.7 MHz / 61.035 Hz = 14937331 = 0xE3ECF3
+      { 0xE6, 0xD3, 0x5A }, //Channel RX2 window 923.3 MHz / 61.035 Hz = 0xE6D35A
+    };
+  #elif  defined(SUBND_7)//[911.9 - 913.3] MHz
+    const unsigned char LoRa_Frequency[9][3] = {
+      { 0xE3, 0xF9, 0xC0 }, //Channel [0], 911.9 MHz / 61.035 Hz = 14940608 = 0xE3F9C0
+      { 0xE4, 0x06, 0x8D }, //Channel [1], 912.1 MHz / 61.035 Hz = 14943885 = 0xE4068D
+      { 0xE4, 0x13, 0x59 }, //Channel [2], 912.3 MHz / 61.035 Hz = 14947161 = 0xE41359
+      { 0xE4, 0x20, 0x26 }, //Channel [3], 912.5 MHz / 61.035 Hz = 14950438 = 0xE42026
+      { 0xE4, 0x2C, 0xF3 }, //Channel [4], 912.7 MHz / 61.035 Hz = 14953715 = 0xE42CF3
+      { 0xE4, 0x39, 0xC0 }, //Channel [5], 912.9 MHz / 61.035 Hz = 14956992 = 0xE439C0
+      { 0xE4, 0x46, 0x8D }, //Channel [6], 913.1 MHz / 61.035 Hz = 14960269 = 0xE4468D
+      { 0xE4, 0x53, 0x5A }, //Channel [7], 913.3 MHz / 61.035 Hz = 14963546 = 0xE4535A
+      { 0xE6, 0xD3, 0x5A }, //Channel RX2 window 923.3 MHz / 61.035 Hz = 0xE6D35A
+    };
+  #elif  defined(SUBND_8)//[913.5 - 914.9] MHz
+    const unsigned char LoRa_Frequency[9][3] = {
+      { 0xE4, 0x60, 0x26 }, //Channel [0], 913.5 MHz / 61.035 Hz = 14966822 = 0xE46026
+      { 0xE4, 0x6C, 0xF3 }, //Channel [1], 913.7 MHz / 61.035 Hz = 14970099 = 0xE46CF3
+      { 0xE4, 0x79, 0xC0 }, //Channel [2], 913.9 MHz / 61.035 Hz = 14973376 = 0xE479C0
+      { 0xE4, 0x86, 0x8D }, //Channel [3], 914.1 MHz / 61.035 Hz = 14976653 = 0xE4868D
+      { 0xE4, 0x93, 0x5A }, //Channel [4], 914.3 MHz / 61.035 Hz = 14979930 = 0xE4935A
+      { 0xE4, 0xA0, 0x26 }, //Channel [5], 914.5 MHz / 61.035 Hz = 14983206 = 0xE4A026
+      { 0xE4, 0xAC, 0xF3 }, //Channel [6], 914.7 MHz / 61.035 Hz = 14986483 = 0xE4ACF3
+      { 0xE4, 0xB9, 0xC0 }, //Channel [7], 914.9 MHz / 61.035 Hz = 14989760 = 0xE4B9C0
+      { 0xE6, 0xD3, 0x5A }, //Channel RX2 window 923.3 MHz / 61.035 Hz = 0xE6D35A
+    };
   #endif
 #endif
 /*
