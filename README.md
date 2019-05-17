@@ -14,15 +14,15 @@ The arduino LoRaWAN library supports LoRaWAN Class A and Class C implementations
 What certainly works:
  - Sending packets uplink, taking into account duty cycling.
  - Custom frequencies and datarate settings.
- - Receiving downlink packets in the RX1 window (EU_868, AS923).
-  - Over-the-air activation (OTAA / joining) (EU_868, AS923).
-
-What has not been tested:
+ - Receiving downlink packets in the RX1 window (EU_868, AS923,US_915).
+ - Over-the-air activation (OTAA / joining) (EU_868, AS923).
+ - Class C operation (US_915).
  - Receiving downlink packets in the RX1 window (US_915).
  - Receiving downlink packets in the RX2 window.
+
+What has not been tested:
  - Receiving and processing MAC commands.
  - Over-the-air activation (OTAA / joining) (US_915). 
- - Class C operation.
 
 If you try one of these untested features and it works, be sure to let
 us know (creating a github issue is probably the best way for that).
@@ -198,6 +198,30 @@ void setup() {
 }
 
 ```
+### Set Channel
+You can set channel allowed in your region (AS_923, EU_868 or US915).
+ - For US_915 the channels can be [0 - 7]
+ - Use MULTI if you want random channel
+
+### Syntax
+```c
+void setChannel(unsigned char channel);
+```
+#### Example
+```c
+void setup() {
+  // Setup loraid access
+  if(!lora.init()){
+    Serial.println("RFM95 not detected");
+    while(1);
+  }
+  ...
+
+  // Set random Channel
+  lora.setDataRate(MULTI);
+}
+
+```
 
 ### Set Data Rate
 You can set data rate allowed in your region (AS_923, EU_868 or US915).
@@ -334,6 +358,10 @@ This library currently provides two examples:
 
  - `loraid-send-class-A.ino` shows basic usage of Class A LoRaWAN.
  - `loraid-send-class-C.ino` shows basic usage of Class C LoRaWAN.
+
+Tests
+-------
+ - See [Test Folder](test/README.md) 
 
 Maintainer
 -------
