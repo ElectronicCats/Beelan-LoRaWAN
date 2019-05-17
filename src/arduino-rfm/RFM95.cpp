@@ -163,6 +163,161 @@
 
 /*
 *****************************************************************************************
+* Description : Function that reads a register from the RFM and returns the value
+*
+* Arguments   : RFM_Address Address of register to be read
+*
+* Returns   : Value of the register
+*****************************************************************************************
+*/
+
+static unsigned char RFM_Read(unsigned char RFM_Address)
+{
+  unsigned char RFM_Data;
+
+  //Set NSS pin low to start SPI communication
+  digitalWrite(RFM_pins.CS,LOW);
+
+  //Send Address
+  SPI.transfer(RFM_Address);
+  //Send 0x00 to be able to receive the answer from the RFM
+  RFM_Data = SPI.transfer(0x00);
+
+  //Set NSS high to end communication
+  digitalWrite(RFM_pins.CS,HIGH);
+
+  #ifdef DEBUG
+  Serial.print("SPI Read ADDR: ");
+  Serial.print(RFM_Address, HEX);
+  Serial.print(" DATA: ");
+  Serial.println(RFM_Data, HEX);
+  #endif
+
+  //Return received data
+  return RFM_Data;
+}
+/********************************************************************************************
+* Description : Change Spread Factor and Band Width
+* 
+* Arguments:    _SF = {6,7,,8,9,10,11,12}
+*               _BW = {0x00 -> 7.8khz   , 0x01 -> 10.4khz, 0x02 -> 15.6khz, 0x03 -> 20.8khz,
+*                      0x04 -> 31.25khz , 0x05 -> 41.7khz, 0x06 -> 62.5khz, 0x07 -> 125khz, 
+*                      0x08 -> 250khz   , 0x09 -> 500khz}
+********************************************************************************************/
+static void RFM_change_SF_BW(unsigned char _SF, unsigned char _BW)
+{
+	RFM_Write(0x1E,(_SF << 4) | 0x04); //SFx CRC On
+	RFM_Write(0x1D,(_BW << 4) | 0x02); //x kHz 4/5 coding rate explicit header mode
+	RFM_Write(0x26,0x04); //Mobile node, low datarate optimization on AGC acorging to register LnaGain
+}
+/*
+*****************************************************************************************
+* Description : Function to change the datarate of the RFM module. Setting the following
+*				register: Spreading factor, Bandwidth and low datarate optimisation.
+*
+* Arguments   : Datarate the datarate to set
+*****************************************************************************************
+*/
+static void RFM_Change_Datarate(unsigned char Datarate)
+{
+#if defined(US_915)
+  switch (Datarate) {
+  case 0x00:  // SF10BW125
+    RFM_change_SF_BW(10,0x07);
+    break;
+  case 0x01:  // SF9BW125
+    RFM_change_SF_BW(9,0x07);
+    break;
+  case 0x02:  // SF8BW125
+    RFM_change_SF_BW(8,0x07);
+    break;
+  case 0x03:  // SF7BW125
+    RFM_change_SF_BW(7,0x07);
+    break;
+  case 0x04:  // SF8BW500
+    RFM_change_SF_BW(8,0x09);
+    break;
+  case 0x08:  // SF12BW500
+    RFM_change_SF_BW(12,0x09);
+    break;
+  case 0x09:  // SF11BW500
+    RFM_change_SF_BW(11,0x09);
+    break;
+  case 0x0A:  // SF10BW500
+    RFM_change_SF_BW(10,0x09);
+    break;
+  case 0x0B:  // SF9BW500
+    RFM_change_SF_BW(9,0x09);
+    break;
+  case 0x0C:  // SF8BW500
+    RFM_change_SF_BW(8,0x09);
+    break;
+  case 0x0D:  // SF7BW500
+    RFM_change_SF_BW(7,0x09);
+    break;
+  }
+#else
+  switch (Datarate) {
+  case 0x00:  // SF12BW125
+    RFM_change_SF_BW(12,0x07);
+    break;
+  case 0x01:  // SF11BW125
+    RFM_change_SF_BW(11,0x07);
+    break;
+  case 0x02:  // SF10BW125
+    RFM_change_SF_BW(10,0x07);
+    break;
+  case 0x03:  // SF9BW125
+    RFM_change_SF_BW(9,0x07);
+    break;
+  case 0x04:  // SF8BW125
+    RFM_change_SF_BW(8,0x07);
+    break;
+  case 0x05:  // SF7BW125
+    RFM_change_SF_BW(7,0x07);
+    break;
+  case 0x06:  // SF7BW250
+    RFM_change_SF_BW(7,0x08);
+    break;
+  }
+#endif
+}
+/*
+*****************************************************************************************
+* Description : Function to change the channel of the RFM module. Setting the following
+*				register: Channel
+*
+* Arguments   : Channel the channel to set
+*****************************************************************************************
+*/
+static void RFM_Change_Channel(unsigned char Channel)
+{
+#if defined(AS_923)
+  if (Channel <= 0x08)
+    for(unsigned char i = 0 ; i < 3 ; ++i)
+      RFM_Write(0x06 + i, pgm_read_byte(&(LoRa_Frequency[Channel][i])));
+  else if (Channel == 0x10)
+    for(unsigned char i = 0 ; i < 3 ; ++i)
+      RFM_Write(0x06 + i, pgm_read_byte(&(LoRa_Frequency[0][i])));
+#elif defined(EU_868)
+  if (Channel <= 0x08)
+    for(unsigned char i = 0 ; i < 3 ; ++i)
+      RFM_Write(0x06 + i, pgm_read_byte(&(LoRa_Frequency[Channel][i])));
+  else if (Channel == 0x10)
+    for(unsigned char i = 0 ; i < 3 ; ++i)
+      RFM_Write(0x06 + i, pgm_read_byte(&(LoRa_Frequency[8][i])));
+#else   //US915
+  if (Channel <= 0x07)
+    for(unsigned char i = 0 ; i < 3 ; ++i)
+      RFM_Write(0x06 + i, pgm_read_byte(&(LoRa_TX_Freq[Channel][i])));
+  else if (Channel >= 0x08 && Channel <= 0x0F)
+    for(unsigned char i = 0 ; i < 3 ; ++i)
+      RFM_Write(0x06 + i, pgm_read_byte(&(LoRa_RX_Freq[Channel - 0x08][i])));
+#endif
+}
+
+/*
+*****************************************************************************************
 * Description: Function used to initialize the RFM module on startup
 *****************************************************************************************
 */
@@ -379,8 +534,6 @@ message_t RFM_Get_Package(sBuffer *RFM_Rx_Package)
   //Get interrupt register
   RFM_Interrupts = RFM_Read(0x12);
 
-  //UART_Send_Data(RFM_Interrupts,0x01);
-
   //Check CRC
   if((RFM_Interrupts & 0x20) != 0x20)
   {
@@ -405,42 +558,6 @@ message_t RFM_Get_Package(sBuffer *RFM_Rx_Package)
   RFM_Write(0x12,0xE0);
 
   return Message_Status;
-}
-
-/*
-*****************************************************************************************
-* Description : Function that reads a register from the RFM and returns the value
-*
-* Arguments   : RFM_Address Address of register to be read
-*
-* Returns   : Value of the register
-*****************************************************************************************
-*/
-
-unsigned char RFM_Read(unsigned char RFM_Address)
-{
-  unsigned char RFM_Data;
-
-  //Set NSS pin low to start SPI communication
-  digitalWrite(RFM_pins.CS,LOW);
-
-  //Send Address
-  SPI.transfer(RFM_Address);
-  //Send 0x00 to be able to receive the answer from the RFM
-  RFM_Data = SPI.transfer(0x00);
-
-  //Set NSS high to end communication
-  digitalWrite(RFM_pins.CS,HIGH);
-
-  #ifdef DEBUG
-  Serial.print("SPI Read ADDR: ");
-  Serial.print(RFM_Address, HEX);
-  Serial.print(" DATA: ");
-  Serial.println(RFM_Data, HEX);
-  #endif
-
-  //Return received data
-  return RFM_Data;
 }
 
 /*
@@ -472,126 +589,6 @@ void RFM_Write(unsigned char RFM_Address, unsigned char RFM_Data)
 
   //Set NSS pin High to end communication
   digitalWrite(RFM_pins.CS,HIGH);
-}
-/********************************************************************************************
-* Description : Change Spread Factor and Band Width
-* 
-* Arguments:    _SF = {6,7,,8,9,10,11,12}
-*               _BW = {0x00 -> 7.8khz   , 0x01 -> 10.4khz, 0x02 -> 15.6khz, 0x03 -> 20.8khz,
-*                      0x04 -> 31.25khz , 0x05 -> 41.7khz, 0x06 -> 62.5khz, 0x07 -> 125khz, 
-*                      0x08 -> 250khz   , 0x09 -> 500khz}
-********************************************************************************************/
-static void RFM_change_SF_BW(unsigned char _SF, unsigned char _BW)
-{
-	RFM_Write(0x1E,(_SF << 4) | 0x04); //SFx CRC On
-	RFM_Write(0x1D,(_BW << 4) | 0x02); //x kHz 4/5 coding rate explicit header mode
-	RFM_Write(0x26,0x04); //Mobile node, low datarate optimization on AGC acorging to register LnaGain
-}
-/*
-*****************************************************************************************
-* Description : Function to change the datarate of the RFM module. Setting the following
-*				register: Spreading factor, Bandwidth and low datarate optimisation.
-*
-* Arguments   : Datarate the datarate to set
-*****************************************************************************************
-*/
-void RFM_Change_Datarate(unsigned char Datarate)
-{
-#if defined(US_915)
-  switch (Datarate) {
-  case 0x00:  // SF10BW125
-    RFM_change_SF_BW(10,0x07);
-    break;
-  case 0x01:  // SF9BW125
-    RFM_change_SF_BW(9,0x07);
-    break;
-  case 0x02:  // SF8BW125
-    RFM_change_SF_BW(8,0x07);
-    break;
-  case 0x03:  // SF7BW125
-    RFM_change_SF_BW(7,0x07);
-    break;
-  case 0x04:  // SF8BW500
-    RFM_change_SF_BW(8,0x09);
-    break;
-  case 0x08:  // SF12BW500
-    RFM_change_SF_BW(12,0x09);
-    break;
-  case 0x09:  // SF11BW500
-    RFM_change_SF_BW(11,0x09);
-    break;
-  case 0x0A:  // SF10BW500
-    RFM_change_SF_BW(10,0x09);
-    break;
-  case 0x0B:  // SF9BW500
-    RFM_change_SF_BW(9,0x09);
-    break;
-  case 0x0C:  // SF8BW500
-    RFM_change_SF_BW(8,0x09);
-    break;
-  case 0x0D:  // SF7BW500
-    RFM_change_SF_BW(7,0x09);
-    break;
-  }
-#else
-  switch (Datarate) {
-  case 0x00:  // SF12BW125
-    RFM_change_SF_BW(12,0x07);
-    break;
-  case 0x01:  // SF11BW125
-    RFM_change_SF_BW(11,0x07);
-    break;
-  case 0x02:  // SF10BW125
-    RFM_change_SF_BW(10,0x07);
-    break;
-  case 0x03:  // SF9BW125
-    RFM_change_SF_BW(9,0x07);
-    break;
-  case 0x04:  // SF8BW125
-    RFM_change_SF_BW(8,0x07);
-    break;
-  case 0x05:  // SF7BW125
-    RFM_change_SF_BW(7,0x07);
-    break;
-  case 0x06:  // SF7BW250
-    RFM_change_SF_BW(7,0x08);
-    break;
-  }
-#endif
-}
-
-/*
-*****************************************************************************************
-* Description : Function to change the channel of the RFM module. Setting the following
-*				register: Channel
-*
-* Arguments   : Channel the channel to set
-*****************************************************************************************
-*/
-void RFM_Change_Channel(unsigned char Channel)
-{
-#if defined(AS_923)
-  if (Channel <= 0x08)
-    for(unsigned char i = 0 ; i < 3 ; ++i)
-      RFM_Write(0x06 + i, pgm_read_byte(&(LoRa_Frequency[Channel][i])));
-  else if (Channel == 0x10)
-    for(unsigned char i = 0 ; i < 3 ; ++i)
-      RFM_Write(0x06 + i, pgm_read_byte(&(LoRa_Frequency[0][i])));
-#elif defined(EU_868)
-  if (Channel <= 0x08)
-    for(unsigned char i = 0 ; i < 3 ; ++i)
-      RFM_Write(0x06 + i, pgm_read_byte(&(LoRa_Frequency[Channel][i])));
-  else if (Channel == 0x10)
-    for(unsigned char i = 0 ; i < 3 ; ++i)
-      RFM_Write(0x06 + i, pgm_read_byte(&(LoRa_Frequency[8][i])));
-#else   //US915
-  if (Channel <= 0x07)
-    for(unsigned char i = 0 ; i < 3 ; ++i)
-      RFM_Write(0x06 + i, pgm_read_byte(&(LoRa_TX_Freq[Channel][i])));
-  else if (Channel >= 0x08 && Channel <= 0x0F)
-    for(unsigned char i = 0 ; i < 3 ; ++i)
-      RFM_Write(0x06 + i, pgm_read_byte(&(LoRa_RX_Freq[Channel - 0x08][i])));
-#endif
 }
 
 /*

@@ -365,11 +365,7 @@ void LoRaWANClass::update(void)
       RFM_Command_Status = NO_RFM_COMMAND;
     }
 
-    //If there is new data print to uart
-    /*if(Rx_Status == NEW_RX)
-    {
-      UART_Send_Data(Buffer_Rx.Data,Buffer_Rx.Counter);
-    }*/
 }
 
+// define lora objet 
 LoRaWANClass lora;

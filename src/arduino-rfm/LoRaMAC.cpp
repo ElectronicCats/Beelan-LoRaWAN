@@ -535,7 +535,23 @@ void LORA_Receive_Data(sBuffer *Data_Rx, sLoRa_Session *Session_Data, sLoRa_OTAA
  		}
 	}
 }
+/*
+*****************************************************************************************
+* Description : Function that is used to generate device nonce used in the join request function
+*				This is based on a pseudo random function in the arduino library
+*
+* Arguments   : *Devnonce pointer to the devnonce arry of withc is unsigned char[2]
+*****************************************************************************************
+*/
+static void Generate_DevNonce(unsigned char *DevNonce)
+{
+  unsigned int RandNumber;
 
+  RandNumber = random(0xFFFF);
+
+  DevNonce[0] = RandNumber & 0x00FF;
+  DevNonce[1] = (RandNumber >> 8) & 0x00FF;
+}
 /*
 *****************************************************************************************
 * Description : Function that is used to send a join request to a network.
@@ -600,22 +616,6 @@ void LoRa_Send_JoinReq(sLoRa_OTAA *OTAA_Data, sSettings *LoRa_Settings)
     RFM_Send_Package(&RFM_Package, LoRa_Settings);
 }
 
-/*
-*****************************************************************************************
-* Description : Function that is used to generate device nonce used in the join request function
-*				This is based on a pseudo random function in the arduino library
-*
-* Arguments   : *Devnonce pointer to the devnonce arry of withc is unsigned char[2]
-*****************************************************************************************
-*/
-void Generate_DevNonce(unsigned char *DevNonce)
-{
-  unsigned int RandNumber;
 
-  RandNumber = random(0xFFFF);
-
-  DevNonce[0] = RandNumber & 0x00FF;
-  DevNonce[1] = (RandNumber >> 8) & 0x00FF;
-}
 
 

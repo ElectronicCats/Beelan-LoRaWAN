@@ -39,22 +39,6 @@
 #include "Struct.h"
 #include "Config.h"
 
-void UART_Send_Data(unsigned char *Data, unsigned char Length)
-{
-  unsigned char i;
-  unsigned char Upper_Nibble;
-  unsigned char Lower_Nibble;
-
-  for(i = 0; i < Length; i++)
-  {
-    Hex2ASCII(Data[i], &Upper_Nibble, &Lower_Nibble);
-
-    //Send the data
-    Serial.write(Upper_Nibble);
-    Serial.write(Lower_Nibble);
-  }
-}
-
 void Mac_DevAddr(unsigned char *buffer, unsigned char *DevAddr)
 {
 
