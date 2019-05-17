@@ -37,7 +37,7 @@
 #include "LoRaMAC.h"
 #include "Struct.h"
 #include "Commands.h"
-#include "lorawan-arduino-rfm.h"
+#include "Config.h"
 
 /*
 *****************************************************************************************
@@ -64,75 +64,42 @@
 void LORA_Cycle(sBuffer *Data_Tx, sBuffer *Data_Rx, RFM_command_t *RFM_Command, sLoRa_Session *Session_Data,
  									sLoRa_OTAA *OTAA_Data, sLoRa_Message *Message_Rx, sSettings *LoRa_Settings)
 {
-	unsigned char i;
-	unsigned int Receive_Delay_1 = 950;
-	unsigned int Receive_Delay_2 = 1950;
-	unsigned int Receive_Delay_JoinAck = 5950;
+	static const unsigned int Receive_Delay_1 = 500;
+	static const unsigned int Receive_Delay_2 = 1000;
 	unsigned long prevTime = 0;
-
-	unsigned char Channel_Rx_1 = LoRa_Settings->Channel_Tx;
-	unsigned char Datarate_Rx_1 = LoRa_Settings->Datarate_Tx;
-	unsigned char Channel_Rx_2 = LoRa_Settings->Channel_Rx;
-	unsigned char Datarate_Rx_2 = LoRa_Settings->Datarate_Rx;
 
 	if(*RFM_Command == JOIN)
   {
   	//Send join Request message
   	LoRa_Send_JoinReq(OTAA_Data, LoRa_Settings);
 
-    delay(Receive_Delay_JoinAck);
+    //delay(Receive_Delay_JoinAck);
+		*RFM_Command = NO_RFM_COMMAND;
   }
 
-	//Send normal data message
+  //Transmit
   if(*RFM_Command == NEW_RFM_COMMAND)
   {
+    //Lora send data
     LORA_Send_Data(Data_Tx, Session_Data, LoRa_Settings);
-	  
-		// Start timer
 		prevTime = millis();
-
-		// Class C open RX2 immediately after sending data
-		if(LoRa_Settings->Mote_Class == 0x01)
-		{
-			// RX2 window
-			LoRa_Settings->Channel_Rx = Channel_Rx_2;    // set Rx2 channel
-			LoRa_Settings->Datarate_Rx = Datarate_Rx_2;   //set data rate Rx2
-			LORA_Receive_Data(Data_Rx, Session_Data, OTAA_Data, Message_Rx, LoRa_Settings);
-			if(Data_Rx->Counter > 0) {
-				Serial.print((char *)Data_Rx->Data);
-			} else {
-				Serial.println("No Data RX2 Class C");
-			}
-		}
-
-		// Wait for RX1 delay
-		while(millis() - prevTime < Receive_Delay_1);
-
-		// Add RX1 window
-		LoRa_Settings->Channel_Rx = Channel_Rx_1;    // set Rx1 channel, same with Tx
-		LoRa_Settings->Datarate_Rx = Datarate_Rx_1;   //set data rate Rx1, same with Tx
-
-		LORA_Receive_Data(Data_Rx, Session_Data, OTAA_Data, Message_Rx, LoRa_Settings);
-		if(Data_Rx->Counter > 0) {
-			Serial.print((char *)Data_Rx->Data);
-		} else {
-			Serial.println("No Data RX1");
-		}
-    
-		// Wait for RX2 delay
-    while(millis() - prevTime < Receive_Delay_2);
-
-	  // RX2 window
-    LoRa_Settings->Channel_Rx = Channel_Rx_2;    // set Rx2 channel
-    LoRa_Settings->Datarate_Rx = Datarate_Rx_2;   //set data rate Rx2  	  
+    *RFM_Command = NO_RFM_COMMAND;
   }
 
-  LORA_Receive_Data(Data_Rx, Session_Data, OTAA_Data, Message_Rx, LoRa_Settings);
-	if(Data_Rx->Counter > 0) {
-		Serial.print((char *)Data_Rx->Data);
-	} else {
-		Serial.println("No Data RX2");
-	}
+	// wait rx1 window
+  while((digitalRead(RFM_pins.DIO0) != HIGH) && (millis() - prevTime < Receive_Delay_1));
+
+  //Get data
+	LORA_Receive_Data(Data_Rx, Session_Data, OTAA_Data, Message_Rx, LoRa_Settings);
+  *RFM_Command = NO_RFM_COMMAND;
+	
+	// wait rx2 window
+  while((digitalRead(RFM_pins.DIO0) != HIGH) && (millis() - prevTime < Receive_Delay_2));
+
+  //Get data
+	LORA_Receive_Data(Data_Rx, Session_Data, OTAA_Data, Message_Rx, LoRa_Settings);
+  *RFM_Command = NO_RFM_COMMAND;
+
 }
 
 /*

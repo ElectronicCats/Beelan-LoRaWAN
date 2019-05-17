@@ -55,196 +55,6 @@ void UART_Send_Data(unsigned char *Data, unsigned char Length)
   }
 }
 
-void UART_Send_Datarate(unsigned char *Datarate)
-{
-
-  switch(*Datarate)
-  {
-    #if defined(EU_868)||defined(AS_923)
-      case 0x00:
-          Serial.write("SF 12 BW 125");
-          break;
-      case 0x01:
-          Serial.write("SF 11 BW 125");
-          break;
-      case 0x02:
-          Serial.write("SF 10 BW 125");
-          break;
-      case 0x03:
-          Serial.write("SF 9 BW 125");
-          break;
-      case 0x04:
-          Serial.write("SF 8 BW 125");
-          break;
-      case 0x05:
-          Serial.write("SF 7 BW 125");
-          break;
-      case 0x06:
-          Serial.write("SF 7 BW 250");
-          break;
-    #else
-      case 0x00:
-          Serial.write("SF 10 BW 125");
-          break;
-      case 0x01:
-          Serial.write("SF 9 BW 125");
-          break;
-      case 0x02:
-          Serial.write("SF 8 BW 125");
-          break;
-      case 0x03:
-          Serial.write("SF 7 BW 125");
-          break;
-      case 0x04:
-          Serial.write("SF 8 BW 500");
-          break;
-      case 0x08:
-          Serial.write("SF 12 BW 500");
-          break;
-      case 0x09:
-          Serial.write("SF 11  BW 500");
-          break;
-      case 0x0A:
-          Serial.write("SF 10 BW 500");
-          break;
-      case 0x0B:
-          Serial.write("SF 9 BW 500");
-          break;
-      case 0x0C:
-          Serial.write("SF 8 BW 500");
-          break;
-      case 0x0D:
-          Serial.write("SF 7 BW 500");
-          break;     
-    #endif
-  }
-}
-
-void UART_Send_Channel(unsigned char *Channel)
-{
-  switch(*Channel)
-  {
-    #ifdef AS_923
-    case 0x00:
-      Serial.write("923.200");
-      break;
-    case 0x01:
-      Serial.write("923.400");
-      break;
-    case 0x02:
-      Serial.write("923.600");
-      break;
-    case 0x03:
-      Serial.write("923.800");
-      break;
-    case 0x04:
-      Serial.write("924.000");
-      break;
-    case 0x05:
-      Serial.write("924.200");
-      break;
-    case 0x06:
-      Serial.write("924.400");
-      break;
-    case 0x07:
-      Serial.write("924.600");
-      break;
-    case 0x08:
-      Serial.write("924.500");
-      break;
-    case 0x10:
-      Serial.write("923.200");
-      break;
-    #elif defined(EU_868)
-    case 0x00:
-      Serial.write("868.100");
-      break;
-    case 0x01:
-      Serial.write("868.300");
-      break;
-    case 0x02:
-      Serial.write("868.500");
-      break;
-    case 0x03:
-      Serial.write("867.100");
-      break;
-    case 0x04:
-      Serial.write("867.300");
-      break;
-    case 0x05:
-      Serial.write("867.500");
-      break;
-    case 0x06:
-      Serial.write("867.700");
-      break;
-    case 0x07:
-      Serial.write("867.900");
-      break;
-    case 0x10:
-      Serial.write("869.525");
-      break;
-    #else //US_915
-      #ifdef SUBND_6
-        case 0x00:
-          Serial.write("911.9");
-          break;
-        case 0x01:
-          Serial.write("912.1");
-          break;
-        case 0x02:
-          Serial.write("912.3");
-          break;
-        case 0x03:
-          Serial.write("912.5");
-          break;
-        case 0x04:
-          Serial.write("912.7");
-          break;
-        case 0x05:
-          Serial.write("912.9");
-          break;
-        case 0x06:
-          Serial.write("913.1");
-          break;
-        case 0x07:
-          Serial.write("913.3");
-          break;
-        case 0x10:
-          Serial.write("923.3");
-          break;
-      #else
-        case 0x00:
-          Serial.write("902.3");
-          break;
-        case 0x01:
-          Serial.write("902.5");
-          break;
-        case 0x02:
-          Serial.write("902.7");
-          break;
-        case 0x03:
-          Serial.write("902.9");
-          break;
-        case 0x04:
-          Serial.write("903.1");
-          break;
-        case 0x05:
-          Serial.write("903.3");
-          break;
-        case 0x06:
-          Serial.write("903.5");
-          break;
-        case 0x07:
-          Serial.write("903.7");
-          break;
-        case 0x10:
-          Serial.write("923.3");
-          break;
-      #endif // Sub-Band
-    #endif
-  }
-}
-
 void Mac_DevAddr(unsigned char *buffer, unsigned char *DevAddr)
 {
 
@@ -307,72 +117,54 @@ void Mac_DevEUI(unsigned char *buffer, unsigned char *DevEUI)
 
 void Mac_DrTx(unsigned char drate_tx, unsigned char *Datarate)
 {
-  unsigned char Datarate_Temp;
-
-  //Convert to temp
-  Datarate_Temp = drate_tx;
-
+#ifndef US_915
   //Check if the value is oke
-  if(Datarate_Temp <= 0x06)
+  if(drate_tx <= 0x06)
   {
-    *Datarate = Datarate_Temp;
+    *Datarate = drate_tx;
   }
+#else
+  if(drate_tx <= 0x04)
+    *Datarate = drate_tx;
+#endif
 }
 
 void Mac_DrRx(unsigned char drate_rx, unsigned char *Datarate)
 {
-  unsigned char Datarate_Temp;
-
-  //Convert to temp
-  Datarate_Temp = drate_rx;
-
+#ifndef US_915
   //Check if the value is oke
-  if(Datarate_Temp <= 0x06)
+  if(drate_rx <= 0x06)
   {
-    *Datarate = Datarate_Temp;
+    *Datarate = drate_rx;
   }
+#else
+  if (drate_rx >= 0x08 && drate_rx <= 0x0D) 
+    *Datarate = drate_rx;
+#endif
 }
 
 void Mac_ChTx(unsigned char ch_tx_idx, unsigned char *Channel)
 {
- unsigned char Channel_Temp;
-
-  //Convert to temp
-  Channel_Temp = ch_tx_idx;
-
   //Check if the value is oke
-  #ifdef AS_923
-  if(Channel_Temp <= 0x08 || Channel_Temp == 0x10)
-  {
-    *Channel = Channel_Temp;
-  }
-  #else
-  if(Channel_Temp <= 0x07 || Channel_Temp == 0x10)
-  {
-    *Channel = Channel_Temp;
-  }
-  #endif
+#ifdef AS_923
+  if(ch_tx_idx <= 0x08 || ch_tx_idx == 0x10)
+    *Channel = ch_tx_idx;
+#else
+  if(ch_tx_idx <= 0x07 )
+    *Channel = ch_tx_idx;
+#endif
 }
 
 void Mac_ChRx(unsigned char ch_rx_idx, unsigned char *Channel)
 {
-  unsigned char Channel_Temp;
-
-  //Convert to temp
-  Channel_Temp = ch_rx_idx;
-
   //Check if the value is oke
-  #ifdef AS_923
-  if(Channel_Temp <= 0x08 || Channel_Temp == 0x10)
-  {
-    *Channel = Channel_Temp;
-  }
-  #else
-  if(Channel_Temp <= 0x07 || Channel_Temp == 0x10)
-  {
-    *Channel = Channel_Temp;
-  }
-  #endif
+#ifdef AS_923
+  if(ch_rx_idx <= 0x08 || ch_rx_idx == 0x10)
+    *Channel = ch_rx_idx;
+#else
+  if(ch_rx_idx >= 0x08 || ch_rx_idx <= 0x0F)
+    *Channel = ch_rx_idx;
+#endif
 }
 
 void Mac_Power(unsigned char pwr_idx, unsigned char *Power)
@@ -390,14 +182,12 @@ void Mac_Power(unsigned char pwr_idx, unsigned char *Power)
 
   //Set all ther correct bits for the RFM register
   RFM_Data = *Power + 0xF0;
-
   //Write power to RFM module
   RFM_Write(0x09,RFM_Data);
 }
 
 void Mac_Confirm(unsigned char confirm_msg, unsigned char *Confirm)
 {
-  
   *Confirm = confirm_msg;
   if(*Confirm >= 0x01)
   {

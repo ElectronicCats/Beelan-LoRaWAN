@@ -37,8 +37,6 @@
 *****************************************************************************************
 */
 void UART_Send_Data(unsigned char *Data, unsigned char Length);
-void UART_Send_Datarate(unsigned char *Datarate);
-void UART_Send_Channel(unsigned char *Channel);
 void Mac_DevAddr(unsigned char *buffer, unsigned char *DevAddr);
 void Mac_NwkSKey(unsigned char *buffer, unsigned char *NwkSKey);
 void Mac_AppSKey(unsigned char *buffer, unsigned char *AppSKey);

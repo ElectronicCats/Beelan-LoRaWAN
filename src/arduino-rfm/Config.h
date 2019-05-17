@@ -1,6 +1,9 @@
 #ifndef _CONFIG_H_
 #define _CONFIG_H_
 
+// debug class A
+#define DEBUG_CA
+
 // LoRaWAN freq. band
 // #define AS_923
 // #define EU_868

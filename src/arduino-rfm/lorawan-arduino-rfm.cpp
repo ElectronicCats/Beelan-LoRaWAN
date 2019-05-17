@@ -87,21 +87,21 @@ bool LoRaWANClass::init(void)
     LoRa_Settings.Mote_Class = 0x00; //0x00 is type A, 0x01 is type C
     
     // Rx
-    #ifdef AS_923
+#if defined(AS_923)
     LoRa_Settings.Datarate_Rx = 0x02;   //set to SF10 BW 125 kHz
-    #elif defined(EU_868)
+#elif defined(EU_868)
     LoRa_Settings.Datarate_Rx = 0x03;   //set to SF9 BW 125 kHz
-    #else //US_915
-    LoRa_Settings.Datarate_Rx = 0x04;   //set to SF9 BW 125 kHz
-    #endif
-    LoRa_Settings.Channel_Rx = 0x10;    // set to recv channel
+#else //US_915
+    LoRa_Settings.Datarate_Rx = 0x0C;   //set to SF8 BW 500 kHz
+#endif
+    LoRa_Settings.Channel_Rx = 0x0A;    // set to recv channel
 
     // Tx
-    #ifndef US_915
+#if defined(US_915)
+    LoRa_Settings.Datarate_Tx = drate_common = 0x02;   //set to SF7 BW 125 kHz
+#else
     LoRa_Settings.Datarate_Tx = drate_common = 0x00;   //set to SF12 BW 125 kHz
-    #else
-    LoRa_Settings.Datarate_Tx = drate_common = 0x03;   //set to SF7 BW 125 kHz
-    #endif
+#endif
     LoRa_Settings.Channel_Tx = 0x00;    // set to channel 0
 
     LoRa_Settings.Confirm = 0x00; //0x00 unconfirmed, 0x01 confirmed
@@ -249,6 +249,7 @@ void LoRaWANClass::sendUplink(unsigned char *data, unsigned int len, unsigned ch
       freq_idx = random(0, 8);
     else
       freq_idx = currentChannel;
+    Mac_ChRx(freq_idx + 0x08, &LoRa_Settings.Channel_Rx);
 #endif
     Mac_ChTx(freq_idx, &LoRa_Settings.Channel_Tx);
 
@@ -270,7 +271,9 @@ void LoRaWANClass::setDataRate(unsigned char data_rate)
 {
     drate_common = data_rate;
     Mac_DrTx(data_rate, &LoRa_Settings.Datarate_Tx);
-    
+#ifdef US_915
+    Mac_DrRx(data_rate + 0x0A, &LoRa_Settings.Datarate_Rx);
+#endif
     //Reset RFM command
     RFM_Command_Status = NO_RFM_COMMAND;
 }
@@ -359,13 +362,14 @@ void LoRaWANClass::update(void)
           Rx_Status = NEW_RX;
         }        
       }
+      RFM_Command_Status = NO_RFM_COMMAND;
     }
 
-    //If there is new data
-    if(Rx_Status == NEW_RX)
+    //If there is new data print to uart
+    /*if(Rx_Status == NEW_RX)
     {
       UART_Send_Data(Buffer_Rx.Data,Buffer_Rx.Counter);
-    }
+    }*/
 }
 
 LoRaWANClass lora;
