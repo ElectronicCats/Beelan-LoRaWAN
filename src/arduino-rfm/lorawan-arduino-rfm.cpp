@@ -92,7 +92,7 @@ bool LoRaWANClass::init(void)
     #elif defined(EU_868)
     LoRa_Settings.Datarate_Rx = 0x03;   //set to SF9 BW 125 kHz
     #else //US_915
-    LoRa_Settings.Datarate_Rx = 0x08;   //set to SF9 BW 125 kHz
+    LoRa_Settings.Datarate_Rx = 0x04;   //set to SF9 BW 125 kHz
     #endif
     LoRa_Settings.Channel_Rx = 0x10;    // set to recv channel
 
@@ -275,7 +275,7 @@ void LoRaWANClass::setDataRate(unsigned char data_rate)
     RFM_Command_Status = NO_RFM_COMMAND;
 }
 
-void LoRaWANClass::setChannel(sChannels channel)
+void LoRaWANClass::setChannel(channel_t channel)
 {
     if (channel <= 7 || channel == MULTI)
       currentChannel = channel;
@@ -283,7 +283,7 @@ void LoRaWANClass::setChannel(sChannels channel)
 
 void LoRaWANClass::setChannel(unsigned char channel) 
 {
-    setChannel((sChannels)channel);
+    setChannel((channel_t)channel);
 }
 
 void LoRaWANClass::setTxPower(unsigned char power_idx)

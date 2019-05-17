@@ -56,8 +56,6 @@ typedef enum {NO_RX, NEW_RX} rx_t;
 *****************************************************************************************
 */
 
-extern const sRFM_pins RFM_pins;
-
 class LoRaWANClass
 {
     public:
@@ -78,7 +76,7 @@ class LoRaWANClass
         void sendUplink(char *data, unsigned int len, unsigned char confirm);
         void setDataRate(unsigned char data_rate);
         void setChannel(unsigned char channel);
-        void setChannel(sChannels channel);
+        void setChannel(channel_t channel);
         void setTxPower(unsigned char power_idx);
         int readData(char *outBuff);
         void update(void);
