@@ -25,7 +25,7 @@ void setup() {
   lora.setDeviceClass(CLASS_A);
 
   // Set Data Rate
-  lora.setDataRate(3);
+  lora.setDataRate(0);
 
   // set channel to random
   lora.setChannel(MULTI);

@@ -36,7 +36,6 @@
 #include "Encrypt.h"
 #include "LoRaMAC.h"
 #include "Struct.h"
-#include "Commands.h"
 #include "Config.h"
 
 /*

@@ -7,7 +7,7 @@ Hardware used:
 Frequencies:
  - Used US_915  BAND
  - Using SUB BAND 1 [ 903.9 - 905.3 Mhz] for Uplink
- - Using 903 - 914.2 Mz to Downlink
+ - Using 923.3 - 927.5 Mhz to Downlink
  - Using datarates acording to US_915
 
 In this example is used testFullFrequency program in test folder

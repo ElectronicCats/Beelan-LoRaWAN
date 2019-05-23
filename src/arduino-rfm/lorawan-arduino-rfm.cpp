@@ -30,7 +30,7 @@
 
 
 #include "lorawan-arduino-rfm.h"
-
+#include "Conversions.h"
 
 LoRaWANClass::LoRaWANClass()
 {
@@ -60,8 +60,7 @@ bool LoRaWANClass::init(void)
     memset(Address_Tx, 0x00, 4);
     memset(NwkSKey, 0x00, 16);
     memset(AppSKey, 0x00, 16);
-    // Mac_NwkSKey(semtech_key, NwkSKey);
-    // Mac_AppSKey(semtech_key, AppSKey);
+    
     Frame_Counter_Tx = 0x0000;
     Session_Data.NwkSKey = NwkSKey;
     Session_Data.AppSKey = AppSKey;
@@ -71,7 +70,7 @@ bool LoRaWANClass::init(void)
     //Initialize OTAA data struct
     memset(DevEUI, 0x00, 8);
     memset(AppEUI, 0x00, 8);
-    // Mac_AppKey(semtech_key, AppKey);
+
     memset(AppKey, 0x00, 16);
     memset(DevNonce, 0x00, 2);
     memset(AppNonce, 0x00, 3);
@@ -168,7 +167,9 @@ bool LoRaWANClass::join(void)
 
 void LoRaWANClass::setNwkSKey(unsigned char *NwkKey_in)
 {
-    Mac_NwkSKey(NwkKey_in, NwkSKey);
+    for (uint8_t i = 0; i < 16; ++i)
+        NwkSKey[i] = ASCII2Hex(NwkKey_in[i*2],NwkKey_in[(i*2)+1]);
+
     //Reset frame counter
     Frame_Counter_Tx = 0x0000;
 
@@ -183,7 +184,9 @@ void LoRaWANClass::setNwkSKey(char *NwkKey_in)
 
 void LoRaWANClass::setAppSKey(unsigned char *ApskKey_in)
 {
-    Mac_AppSKey(ApskKey_in, AppSKey);
+    for (uint8_t i = 0; i < 16; ++i)
+        AppSKey[i] = ASCII2Hex(ApskKey_in[i*2],ApskKey_in[(i*2)+1]);
+    
     //Reset frame counter
     Frame_Counter_Tx = 0x0000;
 
@@ -201,7 +204,11 @@ void LoRaWANClass::setDevAddr(unsigned char *devAddr_in)
 {
     memset(Session_Data.DevAddr, 0x30, sizeof(Session_Data.DevAddr));
 
-    Mac_DevAddr(devAddr_in, Address_Tx);
+    //Check if it is a set command and there is enough data sent
+    Address_Tx[0] = ASCII2Hex(devAddr_in[0],devAddr_in[1]);
+    Address_Tx[1] = ASCII2Hex(devAddr_in[2],devAddr_in[3]);
+    Address_Tx[2] = ASCII2Hex(devAddr_in[4],devAddr_in[5]);
+    Address_Tx[3] = ASCII2Hex(devAddr_in[6],devAddr_in[7]);
 
     //Reset frame counter
     Frame_Counter_Tx = 0x0000;
@@ -217,48 +224,31 @@ void LoRaWANClass::setDevAddr(char *devAddr_in)
 
 void LoRaWANClass::setDeviceClass(devclass_t dev_class)
 {
-    Mac_Class(dev_class, &LoRa_Settings);
-    
+    LoRa_Settings.Mote_Class = dev_class == CLASS_A? 0x00 : 0x01;
+
+    if (LoRa_Settings.Mote_Class == 0x00) {
+        RFM_Switch_Mode(0x01);
+    } else {
+        RFM_Continuous_Receive(&LoRa_Settings);
+    }
+
     //Reset RFM command
     RFM_Command_Status = NO_RFM_COMMAND;
 }
 
 void LoRaWANClass::sendUplink(unsigned char *data, unsigned int len, unsigned char confirm)
 {
-    unsigned char freq_idx;
-
-    // Random freq
-#ifdef AS_923
-    if (currentChannel == MULTI)
-      freq_idx = random(0, 9);
-    else
-      freq_idx = currentChannel;
-    // freq_idx = 4;    // test
-    
-    // limit drate, ch 8 -> sf7bw250
-    if(freq_idx == 0x08)
-    {
-        Mac_DrTx(0x06, &LoRa_Settings.Datarate_Tx);
+    if (currentChannel == MULTI) {
+        randomChannel();
     }
-    else
-    {
-        Mac_DrTx(drate_common, &LoRa_Settings.Datarate_Tx);
-    }
-#else
-    if (currentChannel == MULTI)
-      freq_idx = random(0, 8);
-    else
-      freq_idx = currentChannel;
-    Mac_ChRx(freq_idx + 0x08, &LoRa_Settings.Channel_Rx);
-#endif
-    Mac_ChTx(freq_idx, &LoRa_Settings.Channel_Tx);
 
-    Mac_Confirm(confirm, &LoRa_Settings.Confirm);
+    LoRa_Settings.Confirm = confirm >= 1 ? 1: confirm;
 
     //Set new command for RFM
     RFM_Command_Status = NEW_RFM_COMMAND;
     
-    Mac_Data(data, len, &Buffer_Tx);
+    Buffer_Tx.Counter = len;
+    memcpy(Buffer_Tx.Data,data,len);
 }
 
 void LoRaWANClass::sendUplink(char *data, unsigned int len, unsigned char confirm)
@@ -270,11 +260,19 @@ void LoRaWANClass::sendUplink(char *data, unsigned int len, unsigned char confir
 void LoRaWANClass::setDataRate(unsigned char data_rate)
 {
     drate_common = data_rate;
-    Mac_DrTx(data_rate, &LoRa_Settings.Datarate_Tx);
-#ifdef US_915
-    Mac_DrRx(data_rate + 0x0A, &LoRa_Settings.Datarate_Rx);
+#ifndef US_915
+  //Check if the value is oke
+  if(drate_common <= 0x06)
+  {
+    LoRa_Settings.Data_Tx = drate_common;
+  }
+#else
+  if(drate_common <= 0x04){
+    LoRa_Settings.Datarate_Tx = drate_common;
+    LoRa_Settings.Datarate_Rx = data_rate + 0x0A;
+  }
+
 #endif
-    //Reset RFM command
     RFM_Command_Status = NO_RFM_COMMAND;
 }
 
@@ -291,7 +289,10 @@ void LoRaWANClass::setChannel(unsigned char channel)
 
 void LoRaWANClass::setTxPower(unsigned char power_idx)
 {
-    Mac_Power(power_idx, &LoRa_Settings.Transmit_Power);
+    unsigned char RFM_Data;
+    LoRa_Settings.Transmit_Power = power_idx > 0x0F ? 0x0F : power_idx; 
+    RFM_Data = LoRa_Settings.Transmit_Power + 0x0F;
+    RFM_Write(0x09,RFM_Data);
 }
 
 int LoRaWANClass::readData(char *outBuff)
@@ -366,6 +367,21 @@ void LoRaWANClass::update(void)
     }
 
 }
+
+void LoRaWANClass::randomChannel()
+{
+    unsigned char freq_idx;
+#ifdef AS_923
+    freq_idx = random(0,9);
+    // limit drate, ch 8 -> sf7bw250
+    LoRa_Settings.Datarate_Tx = freq_idx == 0x08? 0x06 : drate_common;
+#else
+    freq_idx = random(0,8);
+    LoRa_Settings.Channel_Rx = freq_idx + 0x08;
+#endif
+    LoRa_Settings.Channel_Tx = freq_idx;
+}
+
 
 // define lora objet 
 LoRaWANClass lora;
