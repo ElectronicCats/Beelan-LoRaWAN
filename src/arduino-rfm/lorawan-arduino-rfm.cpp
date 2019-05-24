@@ -224,7 +224,7 @@ void LoRaWANClass::setDevAddr(char *devAddr_in)
 
 void LoRaWANClass::setDeviceClass(devclass_t dev_class)
 {
-    LoRa_Settings.Mote_Class = dev_class == CLASS_A? 0x00 : 0x01;
+    LoRa_Settings.Mote_Class = (dev_class == CLASS_A)? 0x00 : 0x01;
 
     if (LoRa_Settings.Mote_Class == 0x00) {
         RFM_Switch_Mode(0x01);
@@ -242,7 +242,7 @@ void LoRaWANClass::sendUplink(unsigned char *data, unsigned int len, unsigned ch
         randomChannel();
     }
 
-    LoRa_Settings.Confirm = confirm >= 1 ? 1: confirm;
+    LoRa_Settings.Confirm = (confirm == 0) ? 0 : 1;
 
     //Set new command for RFM
     RFM_Command_Status = NEW_RFM_COMMAND;
@@ -278,8 +278,15 @@ void LoRaWANClass::setDataRate(unsigned char data_rate)
 
 void LoRaWANClass::setChannel(channel_t channel)
 {
-    if (channel <= 7 || channel == MULTI)
-      currentChannel = channel;
+    if (channel <= 7) {
+        currentChannel = channel;
+        LoRa_Settings.Channel_Tx = channel;
+#ifdef US_915
+        LoRa_Settings.Channel_Rx = channel + 0x08;    
+#endif
+    } else if (channel == MULTI) {
+        currentChannel = MULTI;
+    }
 }
 
 void LoRaWANClass::setChannel(unsigned char channel) 
@@ -290,7 +297,7 @@ void LoRaWANClass::setChannel(unsigned char channel)
 void LoRaWANClass::setTxPower(unsigned char power_idx)
 {
     unsigned char RFM_Data;
-    LoRa_Settings.Transmit_Power = power_idx > 0x0F ? 0x0F : power_idx; 
+    LoRa_Settings.Transmit_Power = (power_idx > 0x0F) ? 0x0F : power_idx; 
     RFM_Data = LoRa_Settings.Transmit_Power + 0x0F;
     RFM_Write(0x09,RFM_Data);
 }
