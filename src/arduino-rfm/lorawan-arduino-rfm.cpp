@@ -298,7 +298,7 @@ void LoRaWANClass::setTxPower(unsigned char power_idx)
 {
     unsigned char RFM_Data;
     LoRa_Settings.Transmit_Power = (power_idx > 0x0F) ? 0x0F : power_idx; 
-    RFM_Data = LoRa_Settings.Transmit_Power + 0x0F;
+    RFM_Data = LoRa_Settings.Transmit_Power + 0xF0;
     RFM_Write(0x09,RFM_Data);
 }
 
