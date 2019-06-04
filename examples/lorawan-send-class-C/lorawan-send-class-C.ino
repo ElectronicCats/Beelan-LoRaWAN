@@ -1,8 +1,8 @@
 #include <lorawan.h>
 
-const char *devAddr = "26021477";
-const char *nwkSKey = "DEC93648B4E98B369E592181148566A0";
-const char *appSKey = "F51D8B6949759258B5EBF1C9BAF39851";
+const char *devAddr = "00000000";
+const char *nwkSKey = "00000000000000000000000000000000";
+const char *appSKey = "00000000000000000000000000000000";
 
 unsigned long interval = 10000;    // 10 s interval to send message
 unsigned previousMillis = 0;  // will store last time message sent
@@ -36,7 +36,7 @@ void setup() {
   lora.setDeviceClass(CLASS_C);
 
   // Set Data Rate
-  lora.setDataRate(SF9BW125);
+  lora.setDataRate(SF10BW125);
 
   // set channel to random
   lora.setChannel(MULTI);
