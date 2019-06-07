@@ -165,6 +165,24 @@ bool LoRaWANClass::join(void)
     
 }
 
+void LoRaWANClass::setDevEUI(const char *devEUI_in)
+{
+    for(byte i = 0; i < 8; ++i)
+        DevEUI[i] = ASCII2Hex(devEUI_in[i*2],devEUI_in[(i*2) + 1]);
+}
+
+void LoRaWANClass::setAppEUI(const char *appEUI_in)
+{
+    for(byte i = 0; i < 8; ++i)
+        AppEUI[i] = ASCII2Hex(appEUI_in[i*2],appEUI_in[(i*2) + 1]);
+}
+
+void LoRaWANClass::setAppKey(const char *appKey_in)
+{
+    for(byte i = 0; i < 16; ++i)
+        AppKey[i] = ASCII2Hex(appKey_in[i*2],appKey_in[(i*2) + 1]);
+}
+
 void LoRaWANClass::setNwkSKey(const char *NwkKey_in)
 {
     for (uint8_t i = 0; i < 16; ++i)

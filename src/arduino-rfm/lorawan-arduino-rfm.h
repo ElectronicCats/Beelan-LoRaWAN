@@ -64,6 +64,11 @@ class LoRaWANClass
         bool init(void);
         bool join(void);
         void setDeviceClass(devclass_t dev_class);
+        // OTAA credentials
+        void setDevEUI(const char *devEUI_in);
+        void setAppEUI(const char *appEUI_in);
+        void setAppKey(const char *appKey_in);
+        // ABP credentials
         void setNwkSKey(const char *NwkKey_in);
         void setAppSKey(const char *ApskKey_in);
         void setDevAddr(const char *devAddr_in);
