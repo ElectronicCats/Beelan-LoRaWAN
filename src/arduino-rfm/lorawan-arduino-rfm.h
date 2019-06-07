@@ -37,7 +37,6 @@
 #include "Encrypt.h"
 #include "RFM95.h"
 #include "LoRaMAC.h"
-#include "Commands.h"
 #include "Struct.h"
 #include "Config.h"
 
@@ -81,6 +80,9 @@ class LoRaWANClass
         void setTxPower(unsigned char power_idx);
         int readData(char *outBuff);
         void update(void);
+    
+    private:
+        void randomChannel();
 
     private:        
         // Messages
