@@ -165,7 +165,7 @@ bool LoRaWANClass::join(void)
     
 }
 
-void LoRaWANClass::setNwkSKey(unsigned char *NwkKey_in)
+void LoRaWANClass::setNwkSKey(const char *NwkKey_in)
 {
     for (uint8_t i = 0; i < 16; ++i)
         NwkSKey[i] = ASCII2Hex(NwkKey_in[i*2],NwkKey_in[(i*2)+1]);
@@ -177,12 +177,7 @@ void LoRaWANClass::setNwkSKey(unsigned char *NwkKey_in)
     RFM_Command_Status = NO_RFM_COMMAND;
 }
 
-void LoRaWANClass::setNwkSKey(char *NwkKey_in)
-{
-    setNwkSKey((unsigned char *)NwkKey_in);
-}
-
-void LoRaWANClass::setAppSKey(unsigned char *ApskKey_in)
+void LoRaWANClass::setAppSKey(const char *ApskKey_in)
 {
     for (uint8_t i = 0; i < 16; ++i)
         AppSKey[i] = ASCII2Hex(ApskKey_in[i*2],ApskKey_in[(i*2)+1]);
@@ -194,13 +189,7 @@ void LoRaWANClass::setAppSKey(unsigned char *ApskKey_in)
     RFM_Command_Status = NO_RFM_COMMAND;
 }
 
-void LoRaWANClass::setAppSKey(char *ApskKey_in)
-{
-    setAppSKey((unsigned char *)ApskKey_in);
-}
-
-
-void LoRaWANClass::setDevAddr(unsigned char *devAddr_in)
+void LoRaWANClass::setDevAddr(const char *devAddr_in)
 {
     memset(Session_Data.DevAddr, 0x30, sizeof(Session_Data.DevAddr));
 
@@ -217,11 +206,6 @@ void LoRaWANClass::setDevAddr(unsigned char *devAddr_in)
     RFM_Command_Status = NO_RFM_COMMAND;
 }
 
-void LoRaWANClass::setDevAddr(char *devAddr_in)
-{
-    setDevAddr((unsigned char *)devAddr_in);
-}
-
 void LoRaWANClass::setDeviceClass(devclass_t dev_class)
 {
     LoRa_Settings.Mote_Class = (dev_class == CLASS_A)? 0x00 : 0x01;
@@ -236,7 +220,7 @@ void LoRaWANClass::setDeviceClass(devclass_t dev_class)
     RFM_Command_Status = NO_RFM_COMMAND;
 }
 
-void LoRaWANClass::sendUplink(unsigned char *data, unsigned int len, unsigned char confirm)
+void LoRaWANClass::sendUplink(char *data, unsigned int len, unsigned char confirm)
 {
     if (currentChannel == MULTI) {
         randomChannel();
@@ -250,12 +234,6 @@ void LoRaWANClass::sendUplink(unsigned char *data, unsigned int len, unsigned ch
     Buffer_Tx.Counter = len;
     memcpy(Buffer_Tx.Data,data,len);
 }
-
-void LoRaWANClass::sendUplink(char *data, unsigned int len, unsigned char confirm)
-{
-    sendUplink((unsigned char *)data, len, confirm);
-}
-
 
 void LoRaWANClass::setDataRate(unsigned char data_rate)
 {
@@ -287,11 +265,6 @@ void LoRaWANClass::setChannel(channel_t channel)
     } else if (channel == MULTI) {
         currentChannel = MULTI;
     }
-}
-
-void LoRaWANClass::setChannel(unsigned char channel) 
-{
-    setChannel((channel_t)channel);
 }
 
 unsigned char LoRaWANClass::getChannel()
