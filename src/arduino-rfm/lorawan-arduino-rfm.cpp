@@ -289,6 +289,14 @@ void LoRaWANClass::setChannel(unsigned char channel)
     setChannel((channel_t)channel);
 }
 
+unsigned char LoRaWANClass::getChannel()
+{
+    return LoRa_Settings.Channel_Tx;
+}
+
+unsigned char LoRaWANClass::getDataRate() {
+    return LoRa_Settings.Datarate_Tx;
+}
 void LoRaWANClass::setTxPower(unsigned char power_idx)
 {
     Mac_Power(power_idx, &LoRa_Settings.Transmit_Power);
