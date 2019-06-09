@@ -18,14 +18,13 @@ char myStr[50];
 char outStr[255];
 byte recvStatus = 0;
 
-// from electronic cats usb stick 
 const sRFM_pins RFM_pins = {
-  .CS = SS,
-  .RST = RFM_RST,
-  .DIO0 = RFM_DIO0,
-  .DIO1 = RFM_DIO1,
-  .DIO2 = RFM_DIO2,
-  .DIO5 = RFM_DIO5,
+  .CS = 20,
+  .RST = 9,
+  .DIO0 = 0,
+  .DIO1 = 1,
+  .DIO2 = 2,
+  .DIO5 = 15,
 };
 
 void setup() {

@@ -67,15 +67,6 @@ void LORA_Cycle(sBuffer *Data_Tx, sBuffer *Data_Rx, RFM_command_t *RFM_Command, 
 	static const unsigned int Receive_Delay_2 = 1000;
 	unsigned long prevTime = 0;
 
-	if(*RFM_Command == JOIN)
-  {
-  	//Send join Request message
-  	LoRa_Send_JoinReq(OTAA_Data, LoRa_Settings);
-
-    //delay(Receive_Delay_JoinAck);
-		*RFM_Command = NO_RFM_COMMAND;
-  }
-
   //Transmit
   if(*RFM_Command == NEW_RFM_COMMAND)
   {

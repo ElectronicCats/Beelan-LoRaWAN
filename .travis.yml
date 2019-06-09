@@ -23,8 +23,8 @@ install:
   - mkdir -p $HOME/Arduino/libraries
   - ln -s $PWD $HOME/Arduino/libraries/Arduino_LoRaWAN_by_Beelan
 script:
-  - buildExampleSketch lorawan-send-class-A
+  - buildExampleSketch send-class-A_B-ABP
   - if [[ "$BOARD" == "arduino:samd:arduino_zero_edbg" ]] || [[ "$BOARD" == "arduino:samd:mkr1000" ]] || [[ "$BOARD" == "arduino:samd:mkrzero" ]]; then
-      buildExampleSketch lorawan-send-class-A;
+      buildExampleSketch send-class-A_B-ABP;
     fi
-  - buildExampleSketch lorawan-send-class-C
+  - buildExampleSketch send-class-A_B-OTAA

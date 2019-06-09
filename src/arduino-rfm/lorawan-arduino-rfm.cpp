@@ -363,16 +363,7 @@ void LoRaWANClass::update(void)
     //Type C mote transmit and receive handling
     if(LoRa_Settings.Mote_Class == 0x01)
     {
-      if(RFM_Command_Status == JOIN)
-      {
-        //Start join precedure
-        LoRa_Send_JoinReq(&OTAA_Data, &LoRa_Settings);
-
-        //Clear RFM_Command
-        RFM_Command_Status = NO_RFM_COMMAND;
-      }
-
-      //Transmit
+       //Transmit
       if(RFM_Command_Status == NEW_RFM_COMMAND)
       {
         //Lora send data
