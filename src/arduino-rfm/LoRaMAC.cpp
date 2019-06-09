@@ -256,7 +256,7 @@ void LORA_Receive_Data(sBuffer *Data_Rx, sLoRa_Session *Session_Data, sLoRa_OTAA
 	sBuffer RFM_Package = {&RFM_Data[0], 0x00};
 
 	unsigned char MIC_Check;
-  unsigned char Address_Check;
+  	unsigned char Address_Check;
 
 	unsigned char Frame_Options_Length;
 
@@ -295,119 +295,6 @@ void LORA_Receive_Data(sBuffer *Data_Rx, sLoRa_Session *Session_Data, sLoRa_OTAA
 	{
 		//Get MAC_Header
     	Message->MAC_Header = RFM_Data[0];
-
-		//Join Accept message
-		if(Message->MAC_Header == 0x20)
-		{
-			//Copy the data into the data array
-			for(i = 0x00; i < RFM_Package.Counter; i++)
-			{
-				Data_Rx->Data[i] = RFM_Package.Data[i];
-			}
-
-			//Set data counter
-			Data_Rx->Counter = RFM_Package.Counter;
-
-			//Decrypt the data
-			for(i = 0x00; i < ((Data_Rx->Counter - 1) / 16); i++)
-			{
-				AES_Encrypt(&(Data_Rx->Data[(i*16)+1]),OTAA_Data->AppKey);
-			}
-
-			//Calculate MIC
-			//Remove MIC from number of bytes
-			Data_Rx->Counter -= 4;
-
-			//Get MIC
-			Calculate_MIC(Data_Rx, OTAA_Data->AppKey, Message);
-
-			//Clear MIC check counter
-			MIC_Check = 0x00;
-
-			//Compare MIC
-			for(i = 0x00; i < 4; i++)
-			{
-				if(Data_Rx->Data[Data_Rx->Counter + i] == Message->MIC[i])
-				{
-					MIC_Check++;
-				}
-			}
-
-			//Check if MIC compares
-			if(MIC_Check == 0x04)
-			{
-				Message_Status = MIC_OK;
-			}
-			else
-			{
-				Message_Status = WRONG_MESSAGE;
-			}
-
-			//Get Key's and data from package when MIC is OK
-			if(Message_Status == MIC_OK)
-			{
-				//Get AppNonce
-				OTAA_Data->AppNonce[0] = Data_Rx->Data[1];
-				OTAA_Data->AppNonce[1] = Data_Rx->Data[2];
-				OTAA_Data->AppNonce[2] = Data_Rx->Data[3];
-
-				//Get Net ID
-				OTAA_Data->NetID[0] = Data_Rx->Data[4];
-				OTAA_Data->NetID[1] = Data_Rx->Data[5];
-				OTAA_Data->NetID[2] = Data_Rx->Data[6];
-
-				//Get session Device address
-				Session_Data->DevAddr[3] = Data_Rx->Data[7];
-				Session_Data->DevAddr[2] = Data_Rx->Data[8];
-				Session_Data->DevAddr[1] = Data_Rx->Data[9];
-				Session_Data->DevAddr[0] = Data_Rx->Data[10];
-
-				//Calculate Network Session Key
-				Session_Data->NwkSKey[0] = 0x01;
-
-				//Load AppNonce
-				Session_Data->NwkSKey[1] = OTAA_Data->AppNonce[0];
-				Session_Data->NwkSKey[2] = OTAA_Data->AppNonce[1];
-				Session_Data->NwkSKey[3] = OTAA_Data->AppNonce[2];
-
-				//Load NetID
-				Session_Data->NwkSKey[4] = OTAA_Data->NetID[0];
-				Session_Data->NwkSKey[5] = OTAA_Data->NetID[1];
-				Session_Data->NwkSKey[6] = OTAA_Data->NetID[2];
-
-				//Load Dev Nonce
-				Session_Data->NwkSKey[7] = OTAA_Data->DevNonce[0];
-				Session_Data->NwkSKey[8] = OTAA_Data->DevNonce[1];
-
-				//Pad with zeros
-				Session_Data->NwkSKey[9] = 0x00;
-				Session_Data->NwkSKey[10] = 0x00;
-				Session_Data->NwkSKey[11] = 0x00;
-				Session_Data->NwkSKey[12] = 0x00;
-				Session_Data->NwkSKey[13] = 0x00;
-				Session_Data->NwkSKey[14] = 0x00;
-				Session_Data->NwkSKey[15] = 0x00;
-
-				//Copy to AppSkey
-				for(i = 0x00; i < 16; i++)
-				{
-					Session_Data->AppSKey[i] = Session_Data->NwkSKey[i];
-				}
-
-				//Change first byte of AppSKey
-				Session_Data->AppSKey[0] = 0x02;
-
-				//Calculate the keys
-				AES_Encrypt(Session_Data->NwkSKey,OTAA_Data->AppKey);
-				AES_Encrypt(Session_Data->AppSKey,OTAA_Data->AppKey);
-
-				//Reset Frame counter
-				*Session_Data->Frame_Counter = 0x0000;
-
-				//Clear Data counter
-				Data_Rx->Counter = 0x00;
-			}
-		}
 
 		//Data message
 		if(Message->MAC_Header == 0x40 || Message->MAC_Header == 0x60 || Message->MAC_Header == 0x80 || Message->MAC_Header == 0xA0)
@@ -614,7 +501,131 @@ void LoRa_Send_JoinReq(sLoRa_OTAA *OTAA_Data, sSettings *LoRa_Settings)
     //Send Package
     RFM_Send_Package(&RFM_Package, LoRa_Settings);
 }
+bool LORA_join_Accept(sBuffer *Data_Rx,sLoRa_Session *Session_Data, sLoRa_OTAA *OTAA_Data, sLoRa_Message *Message, sSettings *LoRa_Settings)
+{
+	bool joinStatus = false;
+	unsigned char i;
+    //Initialise RFM buffer
+	unsigned char RFM_Data[64];
+	sBuffer RFM_Package = {&RFM_Data[0], 0x00};
+	unsigned char MIC_Check;
 
+	message_t Message_Status = NO_MESSAGE;
+
+	//RFM to single receive
+	Message_Status = RFM_Single_Receive(LoRa_Settings);  
+
+	//If there is a message received get the data from the RFM
+	if(Message_Status == NEW_MESSAGE)
+		Message_Status = RFM_Get_Package(&RFM_Package);
+
+	//if CRC ok breakdown package
+	if(Message_Status == CRC_OK)
+	{
+		//Get MAC_Header
+    	Message->MAC_Header = RFM_Data[0];
+
+		//Join Accept message
+		if(Message->MAC_Header == 0x20)
+		{	
+			//Copy the data into the data array
+			for(i = 0x00; i < RFM_Package.Counter; i++)
+				Data_Rx->Data[i] = RFM_Package.Data[i];
+
+			//Set data counter
+			Data_Rx->Counter = RFM_Package.Counter;
+
+			//Decrypt the data
+			for(i = 0x00; i < ((Data_Rx->Counter - 1) / 16); i++)
+				AES_Encrypt(&(Data_Rx->Data[(i*16)+1]),OTAA_Data->AppKey);
+
+			//Calculate MIC
+			//Remove MIC from number of bytes
+			Data_Rx->Counter -= 4;
+
+			//Get MIC
+			Calculate_MIC(Data_Rx, OTAA_Data->AppKey, Message);
+
+			//Clear MIC check counter
+			MIC_Check = 0x00;
+
+			//Compare MIC
+			for(i = 0x00; i < 4; i++)
+				if(Data_Rx->Data[Data_Rx->Counter + i] == Message->MIC[i])
+					MIC_Check++;
+
+			//Check if MIC compares
+			if(MIC_Check == 0x04)
+				Message_Status = MIC_OK;
+			else
+				Message_Status = WRONG_MESSAGE;
+
+			//Get Key's and data from package when MIC is OK
+			if(Message_Status == MIC_OK)
+			{
+				//Get AppNonce
+				for(i = 0; i< 3; i++)
+					OTAA_Data->AppNonce[i] = Data_Rx->Data[i+1];
+
+				//Get Net ID
+				for(i = 0; i< 3; i++)
+					OTAA_Data->NetID[i] = Data_Rx->Data[i + 4];
+
+				//Get session Device address
+				for(i = 0; i< 4; i++)
+					Session_Data->DevAddr[3-i] = Data_Rx->Data[i + 7];
+
+				//Calculate Network Session Key
+				Session_Data->NwkSKey[0] = 0x01;
+
+				//Load AppNonce
+				for(i = 0; i < 3; i++)
+					Session_Data->NwkSKey[i+1] = OTAA_Data->AppNonce[i];
+
+				//Load NetID
+				for(i = 0; i < 3; i++)
+					Session_Data->NwkSKey[i+4] = OTAA_Data->NetID[i];
+
+				//Load Dev Nonce
+				Session_Data->NwkSKey[7] = OTAA_Data->DevNonce[0];
+				Session_Data->NwkSKey[8] = OTAA_Data->DevNonce[1];
+
+				//Pad with zeros
+				for(i = 9; i <= 15; i++)
+					Session_Data->NwkSKey[i] = 0x00;
+
+				//Copy to AppSkey
+				for(i = 0x00; i < 16; i++)
+					Session_Data->AppSKey[i] = Session_Data->NwkSKey[i];
+
+				//Change first byte of AppSKey
+				Session_Data->AppSKey[0] = 0x02;
+
+				//Calculate the keys
+				AES_Encrypt(Session_Data->NwkSKey,OTAA_Data->AppKey);
+				AES_Encrypt(Session_Data->AppSKey,OTAA_Data->AppKey);
+
+				//Reset Frame counter
+				*Session_Data->Frame_Counter = 0x0000;
+
+				//Clear Data counter
+				Data_Rx->Counter = 0x00;
+
+#ifdef DEBUG
+				Serial.print("NwkSKey: ");
+				for(byte i = 0; i < 16 ;++i)
+					Serial.print(Session_Data->NwkSKey[i],HEX);
+				Serial.print("\nAppSKey: ");
+				for(byte i = 0; i < 16 ;++i)
+					Serial.print(Session_Data->AppSKey[i],HEX);
+				Serial.println();
+#endif	
+				joinStatus = true;
+			}
+		}
+	}
+	return joinStatus;
+}
 
 
 

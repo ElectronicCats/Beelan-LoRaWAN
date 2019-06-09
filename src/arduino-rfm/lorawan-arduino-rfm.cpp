@@ -150,37 +150,60 @@ bool LoRaWANClass::init(void)
 }
 
 bool LoRaWANClass::join(void)
-{
-    //Check if there is no command pending
-    if(RFM_Command_Status == NO_RFM_COMMAND)
-    {
-        //Set join command
-        RFM_Command_Status = JOIN;
-        return true;
+{    
+    bool join_status;
+    const unsigned long timeout = 6000;
+    unsigned long prev_millis;
+    unsigned char i = 0; 
+
+    if (currentChannel == MULTI) {
+        randomChannel();
     }
-    else
-    {
-        return false;
-    }
-    
+    // join request
+    LoRa_Send_JoinReq(&OTAA_Data, &LoRa_Settings);
+
+    // loop for <timeout> wait for join accept
+    prev_millis = millis();
+    do {
+        join_status = LORA_join_Accept(&Buffer_Rx, &Session_Data, &OTAA_Data, &Message_Rx, &LoRa_Settings);
+
+    }while ((millis() - prev_millis) < timeout && !join_status);
+
+    return join_status;
 }
 
 void LoRaWANClass::setDevEUI(const char *devEUI_in)
 {
     for(byte i = 0; i < 8; ++i)
         DevEUI[i] = ASCII2Hex(devEUI_in[i*2],devEUI_in[(i*2) + 1]);
+    //Reset frame counter
+    Frame_Counter_Tx = 0x0000;
+
+    //Reset RFM command status
+    RFM_Command_Status = NO_RFM_COMMAND;
 }
 
 void LoRaWANClass::setAppEUI(const char *appEUI_in)
 {
     for(byte i = 0; i < 8; ++i)
         AppEUI[i] = ASCII2Hex(appEUI_in[i*2],appEUI_in[(i*2) + 1]);
+    //Reset frame counter
+    Frame_Counter_Tx = 0x0000;
+
+    //Reset RFM command status
+    RFM_Command_Status = NO_RFM_COMMAND;
 }
 
 void LoRaWANClass::setAppKey(const char *appKey_in)
 {
     for(byte i = 0; i < 16; ++i)
         AppKey[i] = ASCII2Hex(appKey_in[i*2],appKey_in[(i*2) + 1]);
+    //Reset frame counter
+    Frame_Counter_Tx = 0x0000;
+
+    //Reset RFM command status
+    RFM_Command_Status = NO_RFM_COMMAND;
+
 }
 
 void LoRaWANClass::setNwkSKey(const char *NwkKey_in)
