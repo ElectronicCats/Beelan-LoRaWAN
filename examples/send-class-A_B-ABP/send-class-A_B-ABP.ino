@@ -1,13 +1,19 @@
+/**
+ * Example of ABP device
+ *      Author: Ivan Moreno
+ *  June 2019
+ */
 #include <lorawan.h>
 
+//ABP Credentials 
 const char *devAddr = "00000000";
 const char *nwkSKey = "00000000000000000000000000000000";
 const char *appSKey = "00000000000000000000000000000000";
 
-unsigned long interval = 10000;    // 10 s interval to send message
-unsigned previousMillis = 0;  // will store last time message sent
-unsigned long currentMillis;
+const unsigned long interval = 10000;    // 10 s interval to send message
+unsigned long previousMillis = 0;  // will store last time message sent
 unsigned int counter = 0;     // message counter
+
 char myStr[50];
 char outStr[255];
 byte recvStatus = 0;
@@ -32,32 +38,32 @@ void setup() {
     return;
   }
 
-  // Set LoRaWAN Class
-  lora.setDeviceClass(CLASS_C);
+  // Set LoRaWAN Class change CLASS_A or CLASS_C
+  lora.setDeviceClass(CLASS_A);
 
   // Set Data Rate
-  lora.setDataRate(SF10BW125);
+  lora.setDataRate(SF8BW125);
 
   // set channel to random
   lora.setChannel(MULTI);
   
   // Put ABP Key and DevAddress here
-  lora.setNwkSKey((char *)nwkSKey);
-  lora.setAppSKey((char *)appSKey);
-  lora.setDevAddr((char *)devAddr);
+  lora.setNwkSKey(nwkSKey);
+  lora.setAppSKey(appSKey);
+  lora.setDevAddr(devAddr);
 }
 
 void loop() {
-  currentMillis = millis();
-
   // Check interval overflow
-  if(currentMillis - previousMillis > interval) {
-    previousMillis = currentMillis; 
+  if(millis() - previousMillis > interval) {
+    previousMillis = millis(); 
 
     sprintf(myStr, "Counter-%d", counter); 
+
     Serial.print("Sending: ");
     Serial.println(myStr);
-    lora.sendUplink((unsigned char *)myStr, strlen(myStr), 0);
+    
+    lora.sendUplink(myStr, strlen(myStr), 0);
     counter++;
   }
 
