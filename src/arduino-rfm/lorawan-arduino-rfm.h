@@ -74,7 +74,7 @@ class LoRaWANClass
         void setDevAddr(const char *devAddr_in);
         void sendUplink(char *data, unsigned int len, unsigned char confirm);
         void setDataRate(unsigned char data_rate);
-        void setChannel(channel_t channel);
+        void setChannel(unsigned char channel);
         unsigned char getChannel();
         unsigned char getDataRate();
         void setTxPower(unsigned char power_idx);

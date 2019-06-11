@@ -295,7 +295,7 @@ void LoRaWANClass::setDataRate(unsigned char data_rate)
     RFM_Command_Status = NO_RFM_COMMAND;
 }
 
-void LoRaWANClass::setChannel(channel_t channel)
+void LoRaWANClass::setChannel(unsigned char channel)
 {
     if (channel <= 7) {
         currentChannel = channel;

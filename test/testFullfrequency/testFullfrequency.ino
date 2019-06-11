@@ -30,7 +30,7 @@ union _cntCI {
   unsigned int val;
 } counter;
 
-unsigned char payload[10];
+char payload[10];
 char outStr[100];
 byte recvStatus = 0;
 
@@ -38,14 +38,13 @@ byte _dataRate;
 byte _channel;
 byte _times;
 
-// Tested on USB STICK CATWAN from electronic cats 
 const sRFM_pins RFM_pins = {
-  .CS = SS,
-  .RST = RFM_RST,
-  .DIO0 = RFM_DIO0,
-  .DIO1 = RFM_DIO1,
-  .DIO2 = RFM_DIO2,
-  .DIO5 = RFM_DIO5,
+  .CS = 20,
+  .RST = 9,
+  .DIO0 = 0,
+  .DIO1 = 1,
+  .DIO2 = 2,
+  .DIO5 = 15,
 };
 
 void setup() {
@@ -69,9 +68,9 @@ void setup() {
   _times = 0;
 
   // Put ABP Key and DevAddress here
-  lora.setNwkSKey((char *)nwkSKey);
-  lora.setAppSKey((char *)appSKey);
-  lora.setDevAddr((char *)devAddr);
+  lora.setNwkSKey(nwkSKey);
+  lora.setAppSKey(appSKey);
+  lora.setDevAddr(devAddr);
 }
 
 void loop() {

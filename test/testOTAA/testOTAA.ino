@@ -37,15 +37,15 @@ byte _dataRate;
 byte _channel;
 byte _times;
 
-// Tested on USB STICK CATWAN from electronic cats 
 const sRFM_pins RFM_pins = {
-  .CS = SS,
-  .RST = RFM_RST,
-  .DIO0 = RFM_DIO0,
-  .DIO1 = RFM_DIO1,
-  .DIO2 = RFM_DIO2,
-  .DIO5 = RFM_DIO5,
+  .CS = 20,
+  .RST = 9,
+  .DIO0 = 0,
+  .DIO1 = 1,
+  .DIO2 = 2,
+  .DIO5 = 15,
 };
+
 
 void setup() {
   Serial.begin(115200);
@@ -95,7 +95,7 @@ void loop() {
         }
     }
     // Set Channel
-    lora.setChannel((channel_t)_channel);
+    lora.setChannel(_channel);
 
     // Set Data Rate
     lora.setDataRate(_dataRate);
