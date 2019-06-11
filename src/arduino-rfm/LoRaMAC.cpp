@@ -36,8 +36,7 @@
 #include "Encrypt.h"
 #include "LoRaMAC.h"
 #include "Struct.h"
-#include "Commands.h"
-#include "lorawan-arduino-rfm.h"
+#include "Config.h"
 
 /*
 *****************************************************************************************
@@ -61,76 +60,36 @@
 *				*LoRa_Settings pointer to sSetting struct
 *****************************************************************************************
 */
-void LORA_Cycle(sBuffer *Data_Tx, sBuffer *Data_Rx, RFM_command_t *RFM_Command, sLoRa_Session *Session_Data, sLoRa_OTAA *OTAA_Data, sLoRa_Message *Message_Rx, sSettings *LoRa_Settings)
+void LORA_Cycle(sBuffer *Data_Tx, sBuffer *Data_Rx, RFM_command_t *RFM_Command, sLoRa_Session *Session_Data,
+ 									sLoRa_OTAA *OTAA_Data, sLoRa_Message *Message_Rx, sSettings *LoRa_Settings)
 {
-	unsigned char i;
-	unsigned int Receive_Delay_1 = 950;
-	unsigned int Receive_Delay_2 = 1950;
-	unsigned int Receive_Delay_JoinAck = 5950;
+	static const unsigned int Receive_Delay_1 = 500;
+	static const unsigned int Receive_Delay_2 = 1000;
 	unsigned long prevTime = 0;
 
-	unsigned char Channel_Rx_1 = LoRa_Settings->Channel_Tx;
-	unsigned char Datarate_Rx_1 = LoRa_Settings->Datarate_Tx;
-	unsigned char Channel_Rx_2 = LoRa_Settings->Channel_Rx;
-	unsigned char Datarate_Rx_2 = LoRa_Settings->Datarate_Rx;
+  //Transmit
+  if(*RFM_Command == NEW_RFM_COMMAND)
+  {
+    //Lora send data
+    LORA_Send_Data(Data_Tx, Session_Data, LoRa_Settings);
+		prevTime = millis();
+    *RFM_Command = NO_RFM_COMMAND;
+  }
 
-	if(*RFM_Command == JOIN)
-  	{
-  	  //Send join Request message
-  	  LoRa_Send_JoinReq(OTAA_Data, LoRa_Settings);
+	// wait rx1 window
+  while((digitalRead(RFM_pins.DIO0) != HIGH) && (millis() - prevTime < Receive_Delay_1));
 
-      delay(Receive_Delay_JoinAck);
-  	}
+  //Get data
+	LORA_Receive_Data(Data_Rx, Session_Data, OTAA_Data, Message_Rx, LoRa_Settings);
+  *RFM_Command = NO_RFM_COMMAND;
+	
+	// wait rx2 window
+  while((digitalRead(RFM_pins.DIO0) != HIGH) && (millis() - prevTime < Receive_Delay_2));
 
-	//Send normal data message
-  	if(*RFM_Command == NEW_RFM_COMMAND)
-  	{
-  	  LORA_Send_Data(Data_Tx, Session_Data, LoRa_Settings);
-	  
-	  // Start timer
-	  prevTime = millis();
+  //Get data
+	LORA_Receive_Data(Data_Rx, Session_Data, OTAA_Data, Message_Rx, LoRa_Settings);
+  *RFM_Command = NO_RFM_COMMAND;
 
-	  // Class C open RX2 immediately after sending data
-      if(LoRa_Settings->Mote_Class == 0x01)
-	  {
-	    // RX2 window
-        LoRa_Settings->Channel_Rx = Channel_Rx_2;    // set Rx2 channel
-        LoRa_Settings->Datarate_Rx = Datarate_Rx_2;   //set data rate Rx2
-	  	LORA_Receive_Data(Data_Rx, Session_Data, OTAA_Data, Message_Rx, LoRa_Settings);
-		if(Data_Rx->Counter > 0) {
-			Serial.print((char *)Data_Rx->Data);
-		} else {
-			Serial.println("No Data RX2 Class C");
-		}
-	  }
-
-	  // Wait for RX1 delay
-	  while(millis() - prevTime < Receive_Delay_1);
-
-	  // Add RX1 window
-      LoRa_Settings->Channel_Rx = Channel_Rx_1;    // set Rx1 channel, same with Tx
-      LoRa_Settings->Datarate_Rx = Datarate_Rx_1;   //set data rate Rx1, same with Tx
-
-	  LORA_Receive_Data(Data_Rx, Session_Data, OTAA_Data, Message_Rx, LoRa_Settings);
-	  if(Data_Rx->Counter > 0) {
-		Serial.print((char *)Data_Rx->Data);
-	  } else {
-		Serial.println("No Data RX1");
-	  }
-      // Wait for RX2 delay
-      while(millis() - prevTime < Receive_Delay_2);
-
-	  // RX2 window
-      LoRa_Settings->Channel_Rx = Channel_Rx_2;    // set Rx2 channel
-      LoRa_Settings->Datarate_Rx = Datarate_Rx_2;   //set data rate Rx2  	  
-    }
-
-    LORA_Receive_Data(Data_Rx, Session_Data, OTAA_Data, Message_Rx, LoRa_Settings);
-	if(Data_Rx->Counter > 0) {
-		Serial.print((char *)Data_Rx->Data);
-	} else {
-		Serial.println("No Data RX2");
-	}
 }
 
 /*
@@ -288,7 +247,7 @@ void LORA_Receive_Data(sBuffer *Data_Rx, sLoRa_Session *Session_Data, sLoRa_OTAA
 	sBuffer RFM_Package = {&RFM_Data[0], 0x00};
 
 	unsigned char MIC_Check;
-  unsigned char Address_Check;
+  	unsigned char Address_Check;
 
 	unsigned char Frame_Options_Length;
 
@@ -327,119 +286,6 @@ void LORA_Receive_Data(sBuffer *Data_Rx, sLoRa_Session *Session_Data, sLoRa_OTAA
 	{
 		//Get MAC_Header
     	Message->MAC_Header = RFM_Data[0];
-
-		//Join Accept message
-		if(Message->MAC_Header == 0x20)
-		{
-			//Copy the data into the data array
-			for(i = 0x00; i < RFM_Package.Counter; i++)
-			{
-				Data_Rx->Data[i] = RFM_Package.Data[i];
-			}
-
-			//Set data counter
-			Data_Rx->Counter = RFM_Package.Counter;
-
-			//Decrypt the data
-			for(i = 0x00; i < ((Data_Rx->Counter - 1) / 16); i++)
-			{
-				AES_Encrypt(&(Data_Rx->Data[(i*16)+1]),OTAA_Data->AppKey);
-			}
-
-			//Calculate MIC
-			//Remove MIC from number of bytes
-			Data_Rx->Counter -= 4;
-
-			//Get MIC
-			Calculate_MIC(Data_Rx, OTAA_Data->AppKey, Message);
-
-			//Clear MIC check counter
-			MIC_Check = 0x00;
-
-			//Compare MIC
-			for(i = 0x00; i < 4; i++)
-			{
-				if(Data_Rx->Data[Data_Rx->Counter + i] == Message->MIC[i])
-				{
-					MIC_Check++;
-				}
-			}
-
-			//Check if MIC compares
-			if(MIC_Check == 0x04)
-			{
-				Message_Status = MIC_OK;
-			}
-			else
-			{
-				Message_Status = WRONG_MESSAGE;
-			}
-
-			//Get Key's and data from package when MIC is OK
-			if(Message_Status == MIC_OK)
-			{
-				//Get AppNonce
-				OTAA_Data->AppNonce[0] = Data_Rx->Data[1];
-				OTAA_Data->AppNonce[1] = Data_Rx->Data[2];
-				OTAA_Data->AppNonce[2] = Data_Rx->Data[3];
-
-				//Get Net ID
-				OTAA_Data->NetID[0] = Data_Rx->Data[4];
-				OTAA_Data->NetID[1] = Data_Rx->Data[5];
-				OTAA_Data->NetID[2] = Data_Rx->Data[6];
-
-				//Get session Device address
-				Session_Data->DevAddr[3] = Data_Rx->Data[7];
-				Session_Data->DevAddr[2] = Data_Rx->Data[8];
-				Session_Data->DevAddr[1] = Data_Rx->Data[9];
-				Session_Data->DevAddr[0] = Data_Rx->Data[10];
-
-				//Calculate Network Session Key
-				Session_Data->NwkSKey[0] = 0x01;
-
-				//Load AppNonce
-				Session_Data->NwkSKey[1] = OTAA_Data->AppNonce[0];
-				Session_Data->NwkSKey[2] = OTAA_Data->AppNonce[1];
-				Session_Data->NwkSKey[3] = OTAA_Data->AppNonce[2];
-
-				//Load NetID
-				Session_Data->NwkSKey[4] = OTAA_Data->NetID[0];
-				Session_Data->NwkSKey[5] = OTAA_Data->NetID[1];
-				Session_Data->NwkSKey[6] = OTAA_Data->NetID[2];
-
-				//Load Dev Nonce
-				Session_Data->NwkSKey[7] = OTAA_Data->DevNonce[0];
-				Session_Data->NwkSKey[8] = OTAA_Data->DevNonce[1];
-
-				//Pad with zeros
-				Session_Data->NwkSKey[9] = 0x00;
-				Session_Data->NwkSKey[10] = 0x00;
-				Session_Data->NwkSKey[11] = 0x00;
-				Session_Data->NwkSKey[12] = 0x00;
-				Session_Data->NwkSKey[13] = 0x00;
-				Session_Data->NwkSKey[14] = 0x00;
-				Session_Data->NwkSKey[15] = 0x00;
-
-				//Copy to AppSkey
-				for(i = 0x00; i < 16; i++)
-				{
-					Session_Data->AppSKey[i] = Session_Data->NwkSKey[i];
-				}
-
-				//Change first byte of AppSKey
-				Session_Data->AppSKey[0] = 0x02;
-
-				//Calculate the keys
-				AES_Encrypt(Session_Data->NwkSKey,OTAA_Data->AppKey);
-				AES_Encrypt(Session_Data->AppSKey,OTAA_Data->AppKey);
-
-				//Reset Frame counter
-				*Session_Data->Frame_Counter = 0x0000;
-
-				//Clear Data counter
-				Data_Rx->Counter = 0x00;
-			}
-		}
 
 		//Data message
 		if(Message->MAC_Header == 0x40 || Message->MAC_Header == 0x60 || Message->MAC_Header == 0x80 || Message->MAC_Header == 0xA0)
@@ -566,7 +412,23 @@ void LORA_Receive_Data(sBuffer *Data_Rx, sLoRa_Session *Session_Data, sLoRa_OTAA
  		}
 	}
 }
+/*
+*****************************************************************************************
+* Description : Function that is used to generate device nonce used in the join request function
+*				This is based on a pseudo random function in the arduino library
+*
+* Arguments   : *Devnonce pointer to the devnonce arry of withc is unsigned char[2]
+*****************************************************************************************
+*/
+static void Generate_DevNonce(unsigned char *DevNonce)
+{
+  unsigned int RandNumber;
 
+  RandNumber = random(0xFFFF);
+
+  DevNonce[0] = RandNumber & 0x00FF;
+  DevNonce[1] = (RandNumber >> 8) & 0x00FF;
+}
 /*
 *****************************************************************************************
 * Description : Function that is used to send a join request to a network.
@@ -630,23 +492,131 @@ void LoRa_Send_JoinReq(sLoRa_OTAA *OTAA_Data, sSettings *LoRa_Settings)
     //Send Package
     RFM_Send_Package(&RFM_Package, LoRa_Settings);
 }
-
-/*
-*****************************************************************************************
-* Description : Function that is used to generate device nonce used in the join request function
-*				This is based on a pseudo random function in the arduino library
-*
-* Arguments   : *Devnonce pointer to the devnonce arry of withc is unsigned char[2]
-*****************************************************************************************
-*/
-void Generate_DevNonce(unsigned char *DevNonce)
+bool LORA_join_Accept(sBuffer *Data_Rx,sLoRa_Session *Session_Data, sLoRa_OTAA *OTAA_Data, sLoRa_Message *Message, sSettings *LoRa_Settings)
 {
-  unsigned int RandNumber;
+	bool joinStatus = false;
+	unsigned char i;
+    //Initialise RFM buffer
+	unsigned char RFM_Data[64];
+	sBuffer RFM_Package = {&RFM_Data[0], 0x00};
+	unsigned char MIC_Check;
 
-  RandNumber = random(0xFFFF);
+	message_t Message_Status = NO_MESSAGE;
 
-  DevNonce[0] = RandNumber & 0x00FF;
-  DevNonce[1] = (RandNumber >> 8) & 0x00FF;
+	//RFM to single receive
+	Message_Status = RFM_Single_Receive(LoRa_Settings);  
+
+	//If there is a message received get the data from the RFM
+	if(Message_Status == NEW_MESSAGE)
+		Message_Status = RFM_Get_Package(&RFM_Package);
+
+	//if CRC ok breakdown package
+	if(Message_Status == CRC_OK)
+	{
+		//Get MAC_Header
+    	Message->MAC_Header = RFM_Data[0];
+
+		//Join Accept message
+		if(Message->MAC_Header == 0x20)
+		{	
+			//Copy the data into the data array
+			for(i = 0x00; i < RFM_Package.Counter; i++)
+				Data_Rx->Data[i] = RFM_Package.Data[i];
+
+			//Set data counter
+			Data_Rx->Counter = RFM_Package.Counter;
+
+			//Decrypt the data
+			for(i = 0x00; i < ((Data_Rx->Counter - 1) / 16); i++)
+				AES_Encrypt(&(Data_Rx->Data[(i*16)+1]),OTAA_Data->AppKey);
+
+			//Calculate MIC
+			//Remove MIC from number of bytes
+			Data_Rx->Counter -= 4;
+
+			//Get MIC
+			Calculate_MIC(Data_Rx, OTAA_Data->AppKey, Message);
+
+			//Clear MIC check counter
+			MIC_Check = 0x00;
+
+			//Compare MIC
+			for(i = 0x00; i < 4; i++)
+				if(Data_Rx->Data[Data_Rx->Counter + i] == Message->MIC[i])
+					MIC_Check++;
+
+			//Check if MIC compares
+			if(MIC_Check == 0x04)
+				Message_Status = MIC_OK;
+			else
+				Message_Status = WRONG_MESSAGE;
+
+			//Get Key's and data from package when MIC is OK
+			if(Message_Status == MIC_OK)
+			{
+				//Get AppNonce
+				for(i = 0; i< 3; i++)
+					OTAA_Data->AppNonce[i] = Data_Rx->Data[i+1];
+
+				//Get Net ID
+				for(i = 0; i< 3; i++)
+					OTAA_Data->NetID[i] = Data_Rx->Data[i + 4];
+
+				//Get session Device address
+				for(i = 0; i< 4; i++)
+					Session_Data->DevAddr[3-i] = Data_Rx->Data[i + 7];
+
+				//Calculate Network Session Key
+				Session_Data->NwkSKey[0] = 0x01;
+
+				//Load AppNonce
+				for(i = 0; i < 3; i++)
+					Session_Data->NwkSKey[i+1] = OTAA_Data->AppNonce[i];
+
+				//Load NetID
+				for(i = 0; i < 3; i++)
+					Session_Data->NwkSKey[i+4] = OTAA_Data->NetID[i];
+
+				//Load Dev Nonce
+				Session_Data->NwkSKey[7] = OTAA_Data->DevNonce[0];
+				Session_Data->NwkSKey[8] = OTAA_Data->DevNonce[1];
+
+				//Pad with zeros
+				for(i = 9; i <= 15; i++)
+					Session_Data->NwkSKey[i] = 0x00;
+
+				//Copy to AppSkey
+				for(i = 0x00; i < 16; i++)
+					Session_Data->AppSKey[i] = Session_Data->NwkSKey[i];
+
+				//Change first byte of AppSKey
+				Session_Data->AppSKey[0] = 0x02;
+
+				//Calculate the keys
+				AES_Encrypt(Session_Data->NwkSKey,OTAA_Data->AppKey);
+				AES_Encrypt(Session_Data->AppSKey,OTAA_Data->AppKey);
+
+				//Reset Frame counter
+				*Session_Data->Frame_Counter = 0x0000;
+
+				//Clear Data counter
+				Data_Rx->Counter = 0x00;
+
+#ifdef DEBUG
+				Serial.print("NwkSKey: ");
+				for(byte i = 0; i < 16 ;++i)
+					Serial.print(Session_Data->NwkSKey[i],HEX);
+				Serial.print("\nAppSKey: ");
+				for(byte i = 0; i < 16 ;++i)
+					Serial.print(Session_Data->AppSKey[i],HEX);
+				Serial.println();
+#endif	
+				joinStatus = true;
+			}
+		}
+	}
+	return joinStatus;
 }
+
 
 

@@ -42,6 +42,46 @@
 *****************************************************************************************
 */
 
+static void XOR(unsigned char *New_Data,unsigned char *Old_Data)
+{
+	unsigned char i;
+
+	for(i = 0; i < 16; i++)
+	{
+		New_Data[i] = New_Data[i] ^ Old_Data[i];
+	}
+}
+
+static void Shift_Left(unsigned char *Data)
+{
+	unsigned char i;
+	unsigned char Overflow = 0;
+	//unsigned char High_Byte, Low_Byte;
+
+	for(i = 0; i < 16; i++)
+	{
+		//Check for overflow on next byte except for the last byte
+		if(i < 15)
+		{
+			//Check if upper bit is one
+			if((Data[i+1] & 0x80) == 0x80)
+			{
+				Overflow = 1;
+			}
+			else
+			{
+				Overflow = 0;
+			}
+		}
+		else
+		{
+			Overflow = 0;
+		}
+
+		//Shift one left
+		Data[i] = (Data[i] << 1) + Overflow;
+	}
+}
 /*
 *****************************************************************************************
 * Description : Function used to encrypt and decrypt the data in a LoRaWAN data message
@@ -361,46 +401,7 @@ void Generate_Keys(unsigned char *Key, unsigned char *K1, unsigned char *K2)
 	}
 }
 
-void Shift_Left(unsigned char *Data)
-{
-	unsigned char i;
-	unsigned char Overflow = 0;
-	//unsigned char High_Byte, Low_Byte;
 
-	for(i = 0; i < 16; i++)
-	{
-		//Check for overflow on next byte except for the last byte
-		if(i < 15)
-		{
-			//Check if upper bit is one
-			if((Data[i+1] & 0x80) == 0x80)
-			{
-				Overflow = 1;
-			}
-			else
-			{
-				Overflow = 0;
-			}
-		}
-		else
-		{
-			Overflow = 0;
-		}
-
-		//Shift one left
-		Data[i] = (Data[i] << 1) + Overflow;
-	}
-}
-
-void XOR(unsigned char *New_Data,unsigned char *Old_Data)
-{
-	unsigned char i;
-
-	for(i = 0; i < 16; i++)
-	{
-		New_Data[i] = New_Data[i] ^ Old_Data[i];
-	}
-}
 
 
 

@@ -37,7 +37,6 @@
 #include "Encrypt.h"
 #include "RFM95.h"
 #include "LoRaMAC.h"
-#include "Commands.h"
 #include "Struct.h"
 #include "Config.h"
 
@@ -47,7 +46,6 @@
 ********************************************************************************************
 */
 
-typedef enum {NO_RX, NEW_RX} rx_t;
 
 #define LORAWAN_VERSION "1.0.0"
 /*
@@ -55,8 +53,6 @@ typedef enum {NO_RX, NEW_RX} rx_t;
 * CLASS
 *****************************************************************************************
 */
-
-extern const sRFM_pins RFM_pins;
 
 class LoRaWANClass
 {
@@ -68,18 +64,25 @@ class LoRaWANClass
         bool init(void);
         bool join(void);
         void setDeviceClass(devclass_t dev_class);
-        void setNwkSKey(unsigned char *NwkKey_in);
-        void setNwkSKey(char *NwkKey_in);
-        void setAppSKey(unsigned char *ApskKey_in);
-        void setAppSKey(char *ApskKey_in);
-        void setDevAddr(unsigned char *devAddr_in);
-        void setDevAddr(char *devAddr_in);
-        void sendUplink(unsigned char *data, unsigned int len, unsigned char confirm);
+        // OTAA credentials
+        void setDevEUI(const char *devEUI_in);
+        void setAppEUI(const char *appEUI_in);
+        void setAppKey(const char *appKey_in);
+        // ABP credentials
+        void setNwkSKey(const char *NwkKey_in);
+        void setAppSKey(const char *ApskKey_in);
+        void setDevAddr(const char *devAddr_in);
         void sendUplink(char *data, unsigned int len, unsigned char confirm);
         void setDataRate(unsigned char data_rate);
+        void setChannel(unsigned char channel);
+        unsigned char getChannel();
+        unsigned char getDataRate();
         void setTxPower(unsigned char power_idx);
         int readData(char *outBuff);
         void update(void);
+    
+    private:
+        void randomChannel();
 
     private:        
         // Messages
@@ -113,6 +116,9 @@ class LoRaWANClass
 
         // Lora Setting Class
         devclass_t dev_class;
+
+        // channel mode
+        unsigned char currentChannel;
 
         // UART
         RFM_command_t RFM_Command_Status;

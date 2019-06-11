@@ -44,7 +44,8 @@ struct sRFM_pins{
     int DIO2;
     int DIO5;
 };
-
+// common def
+extern const sRFM_pins RFM_pins;
 
 //Struct used for Buffers
 typedef struct {
@@ -93,7 +94,34 @@ typedef struct {
     unsigned char Transmit_Power;	//0x00 to 0x0F
 } sSettings;
 
+typedef enum {
+  CH0 = 0,
+  CH1 = 1,
+  CH2 = 2,
+  CH3 = 3,
+  CH4 = 4,
+  CH5 = 5,
+  CH6 = 6,
+  CH7 = 7,
+  MULTI = 20
+} channel_t;
+
+typedef enum {
+    SF10BW125   = 0x00,
+    SF9BW125    = 0x01,
+    SF8BW125    = 0x02,
+    SF7BW125    = 0x03,
+    SF8BW500    = 0x04,
+    SF12BW500   = 0x08,
+    SF11BW500   = 0x09,
+    SF10BW500   = 0x0A,
+    SF9BW500    = 0x0B,
+    SF7BW500    = 0x0D
+} dataRates_t;
+
 typedef enum {CLASS_A, CLASS_C} devclass_t;
+
+typedef enum {NO_RX, NEW_RX} rx_t;
 
 #endif
 

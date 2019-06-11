@@ -47,8 +47,6 @@ void Construct_Data_MIC(sBuffer *Buffer, sLoRa_Session *Session_Data, sLoRa_Mess
 void Calculate_MIC(sBuffer *Buffer, unsigned char *Key, sLoRa_Message *Message);
 void Encrypt_Payload(sBuffer *Buffer, unsigned char *Key, sLoRa_Message *Message);
 void Generate_Keys(unsigned char *Key, unsigned char *K1, unsigned char *K2);
-void Shift_Left(unsigned char *Data);
-void XOR(unsigned char *New_Data,unsigned char *Old_Data);
 
 #endif
 
