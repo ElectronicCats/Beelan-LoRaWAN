@@ -80,7 +80,11 @@ class LoRaWANClass
         void setTxPower(unsigned char power_idx);
         int readData(char *outBuff);
         void update(void);
-    
+
+        // frame counter
+        unsigned int getFrameCounter();
+        void setFrameCounter(unsigned int FrameCounter);
+
     private:
         void randomChannel();
 

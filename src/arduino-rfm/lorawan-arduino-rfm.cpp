@@ -402,6 +402,15 @@ void LoRaWANClass::randomChannel()
     LoRa_Settings.Channel_Tx = freq_idx;
 }
 
+unsigned int LoRaWANClass::getFrameCounter() {
+    return Frame_Counter_Tx;
+}
+
+void LoRaWANClass::setFrameCounter(unsigned int FrameCounter) {
+    Frame_Counter_Tx = FrameCounter;
+}
+
+
 
 // define lora objet 
 LoRaWANClass lora;
