@@ -17,12 +17,9 @@ before_install:
   - if [[ "$BOARD" =~ "arduino:samd:" ]]; then
       arduino --install-boards arduino:samd &> /dev/null;
     fi
-  - buildExampleSketch() { arduino --verbose-build --verify --board $BOARD $PWD/examples/$1/$1.ino; }
+  - buildExampleSketch() { find $PWD -name "*.ino" | while read sketch; do arduino --verbose-build --verify --board $BOARD $sketch; done }
 install:
   - mkdir -p $HOME/Arduino/libraries
   - ln -s $PWD $HOME/Arduino/libraries/Arduino_LoRaWAN_by_Beelan
 script:
-  - buildExampleSketch send-class-A_B-ABP
-  - buildExampleSketch send-class-A_B-OTAA
-  - arduino --verbose-build --verify --board $BOARD $PWD/test/testOTAA/testOTAA.ino;
-  - arduino --verbose-build --verify --board $BOARD $PWD/test/testFullfrequency/testFullfrequency.ino;
+  - buildExampleSketch
