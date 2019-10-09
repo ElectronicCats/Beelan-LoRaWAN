@@ -37,6 +37,7 @@
 #include "LoRaMAC.h"
 #include "Struct.h"
 #include "Config.h"
+#include "Arduino.h"
 
 /*
 *****************************************************************************************
