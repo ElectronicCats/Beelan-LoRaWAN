@@ -23,3 +23,6 @@ install:
   - ln -s $PWD $HOME/Arduino/libraries/Arduino_LoRaWAN_by_Beelan
 script:
   - buildExampleSketch
+  branches:	
+  only:	
+    - master
