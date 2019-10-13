@@ -29,7 +29,11 @@ What has not been tested:
 If you try one of these untested features and it works, be sure to let
 us know (creating a github issue is probably the best way for that).
 
-Installing
+Quick Installing
+----------
+To install, use the Arduino Library Manager and search for "Beelan LoraWAN" and install the library.
+
+Manual Installing
 ----------
 To install this library:
 
