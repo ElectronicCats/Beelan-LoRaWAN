@@ -1,3 +1,5 @@
+[![Build Status](https://travis-ci.org/BeelanMX/Beelan-LoRaWAN.svg?branch=master)](https://travis-ci.org/BeelanMX/Beelan-LoRaWAN)
+
 Arduino LoRaWAN library by Beelan
 ====================
 This repository contains the simple LoRaWAN library originally created by Ideetron B.V. This library is slightly
