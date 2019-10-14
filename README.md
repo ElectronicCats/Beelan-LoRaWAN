@@ -82,6 +82,7 @@ This library has been tested using:
 
 - Arduino Uno
 - WeMos D1 R2 (ESP8266 family board)
+- ESP32
 
 Connections
 -----------
