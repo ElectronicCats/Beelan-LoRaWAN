@@ -107,7 +107,7 @@ typedef enum {
 } channel_t;
 
 typedef enum {
-#ifdef US_915
+#if defined(US_915)
     SF10BW125   = 0x00,
     SF9BW125    = 0x01,
     SF8BW125    = 0x02,
