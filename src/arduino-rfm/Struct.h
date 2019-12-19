@@ -107,6 +107,7 @@ typedef enum {
 } channel_t;
 
 typedef enum {
+#ifdef US_915
     SF10BW125   = 0x00,
     SF9BW125    = 0x01,
     SF8BW125    = 0x02,
@@ -117,6 +118,15 @@ typedef enum {
     SF10BW500   = 0x0A,
     SF9BW500    = 0x0B,
     SF7BW500    = 0x0D
+#elif defined(EU_868)
+    SF12BW125   = 0x00,
+    SF11BW125   = 0x01,
+    SF10BW125   = 0x02,
+    SF9BW125    = 0x03,
+    SF8BW125    = 0x04,
+    SF7BW125    = 0x05,
+    SF7BW250    = 0x06
+#endif
 } dataRates_t;
 
 typedef enum {CLASS_A, CLASS_C} devclass_t;
