@@ -283,7 +283,7 @@ void LoRaWANClass::setDataRate(unsigned char data_rate)
   //Check if the value is oke
   if(drate_common <= 0x06)
   {
-    LoRa_Settings.Data_Tx = drate_common;
+    LoRa_Settings.Datarate_Tx = drate_common;
   }
 #else
   if(drate_common <= 0x04){
