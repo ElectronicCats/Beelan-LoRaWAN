@@ -84,7 +84,7 @@ This library has been tested using:
 - WeMos D1 R2 (ESP8266 family board)
 - ESP32
 - Electronic Cats CatWAN USB-Stick
-- Electronic Cats Bast-WAN (Based on SAMR35)
+- Electronic Cats Bast-WAN (Based on SAMR34)
 
 Connections
 -----------
