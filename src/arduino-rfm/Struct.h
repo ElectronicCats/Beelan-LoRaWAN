@@ -26,6 +26,7 @@
 * Supported Hardware: ID150119-02 Nexus board with RFM95
 ****************************************************************************************/
 
+#include "Config.h"
 
 #ifndef STRUCT_H
 #define STRUCT_H
