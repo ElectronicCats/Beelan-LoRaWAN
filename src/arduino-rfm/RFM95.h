@@ -47,6 +47,34 @@ typedef enum {NO_MESSAGE,NEW_MESSAGE,CRC_OK,MIC_OK,ADDRESS_OK,MESSAGE_DONE,TIMEO
 
 /*
 *****************************************************************************************
+* REGISTER DEFINITIONS
+*****************************************************************************************
+*/
+
+typedef enum {
+    RFM_REG_FIFO            = 0x00,
+    RFM_REG_OP_MODE         = 0x01,
+    RFM_REG_FIFO_ADDR_PTR   = 0x0D,
+    RFM_REG_IRQ_FLAGS       = 0x12,
+    RFM_REG_MODEM_CONFIG1   = 0x1D,
+    RFM_REG_MODEM_CONFIG2   = 0x1E,
+    RFM_REG_DIO_MAPPING1     = 0x40,
+    RFM_REG_DIO_MAPPING2     = 0x41
+    
+    } rfm_register_t;
+
+typedef enum {
+    RFM_MODE_SLEEP      = 0b000,
+    RFM_MODE_STANDBY    = 0b001,
+    RFM_MODE_FSTX       = 0b010,
+    RFM_MODE_TX         = 0b011,
+    RFM_MODE_FSRX       = 0b100,
+    RFM_MODE_FSRX       = 0b101
+    } frm_mode_t;
+
+
+/*
+*****************************************************************************************
 * FUNCTION PROTOTYPES
 *****************************************************************************************
 */

@@ -257,14 +257,14 @@ void LORA_Receive_Data(sBuffer *Data_Rx, sLoRa_Session *Session_Data, sLoRa_OTAA
 	message_t Message_Status = NO_MESSAGE;
 
 	//If it is a type A device switch RFM to single receive
-	if(LoRa_Settings->Mote_Class == 0x00)
+	if(LoRa_Settings->Mote_Class == CLASS_A)
 	{
 		Message_Status = RFM_Single_Receive(LoRa_Settings);  
 	}
 	else
 	{
 		//Switch RFM to standby
-		RFM_Switch_Mode(0x01);
+		RFM_Switch_Mode(RFM_MODE_STANDBY);
 
 		Message_Status = NEW_MESSAGE;
 	}
@@ -275,7 +275,7 @@ void LORA_Receive_Data(sBuffer *Data_Rx, sLoRa_Session *Session_Data, sLoRa_OTAA
 		Message_Status = RFM_Get_Package(&RFM_Package);
 
 		//If mote class C switch RFM back to continuous receive
-		if(LoRa_Settings->Mote_Class == 0x01)
+		if(LoRa_Settings->Mote_Class == CLASS_C)
 		{
 			//Switch RFM to Continuous Receive
 			RFM_Continuous_Receive(LoRa_Settings);

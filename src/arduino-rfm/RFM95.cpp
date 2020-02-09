@@ -199,15 +199,15 @@ static unsigned char RFM_Read(unsigned char RFM_Address)
 /********************************************************************************************
 * Description : Change Spread Factor and Band Width
 * 
-* Arguments:    _SF = {6,7,,8,9,10,11,12}
+* Arguments:    _SF = {6,7,8,9,10,11,12}
 *               _BW = {0x00 -> 7.8khz   , 0x01 -> 10.4khz, 0x02 -> 15.6khz, 0x03 -> 20.8khz,
 *                      0x04 -> 31.25khz , 0x05 -> 41.7khz, 0x06 -> 62.5khz, 0x07 -> 125khz, 
 *                      0x08 -> 250khz   , 0x09 -> 500khz}
 ********************************************************************************************/
 static void RFM_change_SF_BW(unsigned char _SF, unsigned char _BW)
 {
-	RFM_Write(0x1E,(_SF << 4) | 0x04); //SFx CRC On
-	RFM_Write(0x1D,(_BW << 4) | 0x02); //x kHz 4/5 coding rate explicit header mode
+	RFM_Write(RFM_REG_MODEM_CONFIG2,(_SF << 4) | 0x04); //SFx CRC On
+	RFM_Write(RFM_REG_MODEM_CONFIG1,(_BW << 4) | 0x02); //x kHz 4/5 coding rate explicit header mode
 	RFM_Write(0x26,0x04); //Mobile node, low datarate optimization on AGC acorging to register LnaGain
 }
 /*
@@ -388,7 +388,7 @@ void RFM_Send_Package(sBuffer *RFM_Tx_Package, sSettings *LoRa_Settings)
   unsigned char RFM_Tx_Location = 0x00;
 
   //Set RFM in Standby mode
-  RFM_Switch_Mode(0x01);
+  RFM_Switch_Mode(RFM_MODE_STANDBY);
 
   //Switch Datarate
   RFM_Change_Datarate(LoRa_Settings->Datarate_Tx);
@@ -532,7 +532,7 @@ message_t RFM_Get_Package(sBuffer *RFM_Rx_Package)
   message_t Message_Status;
 
   //Get interrupt register
-  RFM_Interrupts = RFM_Read(0x12);
+  RFM_Interrupts = RFM_Read(RFM_REG_IRQ_FLAGS);
 
   //Check CRC
   if((RFM_Interrupts & 0x20) != 0x20)
@@ -551,11 +551,11 @@ message_t RFM_Get_Package(sBuffer *RFM_Rx_Package)
 
   for (i = 0x00; i < RFM_Rx_Package->Counter; i++)
   {
-    RFM_Rx_Package->Data[i] = RFM_Read(0x00);
+    RFM_Rx_Package->Data[i] = RFM_Read(RFM_REG_FIFO);
   }
 
   //Clear interrupt register
-  RFM_Write(0x12,0xE0);
+  RFM_Write(RFM_REG_IRQ_FLAGS,0xE0);
 
   return Message_Status;
 }
@@ -605,6 +605,6 @@ void RFM_Switch_Mode(unsigned char Mode)
     Mode = Mode | 0x80; //Set high bit for LoRa mode
 
     //Switch mode on RFM module
-    RFM_Write(0x01,Mode);
+    RFM_Write(RFM_REG_OP_MODE,Mode);
 }
 
