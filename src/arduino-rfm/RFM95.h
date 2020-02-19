@@ -58,8 +58,10 @@ typedef enum {
     RFM_REG_IRQ_FLAGS       = 0x12,
     RFM_REG_MODEM_CONFIG1   = 0x1D,
     RFM_REG_MODEM_CONFIG2   = 0x1E,
-    RFM_REG_DIO_MAPPING1     = 0x40,
-    RFM_REG_DIO_MAPPING2     = 0x41
+    RFM_REG_INVERT_IQ       = 0x33,
+    RFM_REG_INVERT_IQ2      = 0x3b,
+    RFM_REG_DIO_MAPPING1    = 0x40,
+    RFM_REG_DIO_MAPPING2    = 0x41
     
     } rfm_register_t;
 

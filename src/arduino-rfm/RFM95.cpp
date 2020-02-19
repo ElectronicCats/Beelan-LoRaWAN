@@ -453,8 +453,8 @@ message_t RFM_Single_Receive(sSettings *LoRa_Settings)
   RFM_Write(0x40,0x00);
 
   //Invert IQ Back
-  RFM_Write(0x33,0x67);
-  RFM_Write(0x3B,0x19);
+  RFM_Write(RFM_REG_INVERT_IQ, 0x67);
+  RFM_Write(RFM_REG_INVERT_IQ2, 0x19);
 
   //Change Datarate
   RFM_Change_Datarate(LoRa_Settings->Datarate_Rx);
@@ -463,7 +463,7 @@ message_t RFM_Single_Receive(sSettings *LoRa_Settings)
   RFM_Change_Channel(LoRa_Settings->Channel_Rx);
 
   //Switch RFM to Single reception
-  RFM_Switch_Mode(0x06);
+  RFM_Switch_Mode(RFM_MODE_RXSINGLE);
 
   //Wait until RxDone or Timeout
   //Wait until timeout or RxDone interrupt
@@ -473,7 +473,7 @@ message_t RFM_Single_Receive(sSettings *LoRa_Settings)
   if(digitalRead(RFM_pins.DIO1) == HIGH)
   {
     //Clear interrupt register
-    RFM_Write(0x12,0xE0);
+    RFM_Write(RFM_REG_IRQ_FLAGS,0xE0);
     Message_Status = TIMEOUT;
   }
 
@@ -496,12 +496,12 @@ message_t RFM_Single_Receive(sSettings *LoRa_Settings)
 */
 void RFM_Continuous_Receive(sSettings *LoRa_Settings)
 {
-  //Change DIO 0 back to RxDone
-  RFM_Write(0x40,0x00);
+  //Change DIO 0 back to RxDone and DIO 1 to rx timeout
+  RFM_Write(RFM_REG_DIO_MAPPING1,0x00);
 
   //Invert IQ Back
-  RFM_Write(0x33,0x67);
-  RFM_Write(0x3B,0x19);
+  RFM_Write(RFM_REG_INVERT_IQ, 0x67);
+  RFM_Write(RFM_REG_INVERT_IQ2, 0x19);
   
 	//Change Datarate
 	RFM_Change_Datarate(LoRa_Settings->Datarate_Rx);
@@ -510,7 +510,7 @@ void RFM_Continuous_Receive(sSettings *LoRa_Settings)
 	RFM_Change_Channel(LoRa_Settings->Channel_Rx);
 
 	//Switch to continuous receive
-	RFM_Switch_Mode(0x05);
+	RFM_Switch_Mode(RFM_MODE_RXCONT);
 }
 
 /*
