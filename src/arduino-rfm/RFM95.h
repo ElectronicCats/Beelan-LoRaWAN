@@ -69,7 +69,9 @@ typedef enum {
     RFM_MODE_FSTX       = 0b010,
     RFM_MODE_TX         = 0b011,
     RFM_MODE_FSRX       = 0b100,
-    RFM_MODE_FSRX       = 0b101
+    RFM_MODE_RXCONT     = 0b101,
+    RFM_MODE_RXSINGLE   = 0b110,
+    RFM_MODE_CAD        = 0b111
     } frm_mode_t;
 
 
