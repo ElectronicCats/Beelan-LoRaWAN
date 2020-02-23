@@ -26,16 +26,16 @@ char outStr[255];
 byte recvStatus = 0;
 
 const sRFM_pins RFM_pins = {
-  .CS = 20,
-  .RST = 9,
-  .DIO0 = 0,
-  .DIO1 = 1,
-  .DIO2 = 2,
-  .DIO5 = 15,
+  .CS = SS,
+  .RST = RFM_RST,
+  .DIO0 = RFM_DIO0,
+  .DIO1 = RFM_DIO1,
+  .DIO2 = RFM_DIO2,
+  .DIO5 = RFM_DIO5,
 };
 
 void setup() {
-  // Setup loraid access
+  // Setup lora access
   Serial.begin(115200);
   delay(2000);
   if(!lora.init()){
