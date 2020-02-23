@@ -157,7 +157,7 @@
     { 0xD8, 0xE0, 0x24 }, //Channel [5], 867.5 MHz / 61.035 Hz = 14213156 = 0xD8E024
     { 0xD8, 0xEC, 0xF1 }, //Channel [6], 867.7 MHz / 61.035 Hz = 14216433 = 0xD8ECF1
     { 0xD8, 0xF9, 0xBE }, //Channel [7], 867.9 MHz / 61.035 Hz = 14219710 = 0xD8F9BE
-    { 0xD9, 0x61, 0xBE }, //Receive channel 869.525 MHz / 61.035 Hz = 14246334 = 0xD961BE    
+    { 0xD9, 0x61, 0xBE }, // RX2 Receive channel 869.525 MHz / 61.035 Hz = 14246334 = 0xD961BE    
   };
 #endif
 
@@ -300,12 +300,10 @@ static void RFM_Change_Channel(unsigned char Channel)
     for(unsigned char i = 0 ; i < 3 ; ++i)
       RFM_Write(0x06 + i, pgm_read_byte(&(LoRa_Frequency[0][i])));
 #elif defined(EU_868)
-  if (Channel <= 0x08)
+  // in EU_868 v1.02 uses same freq for uplink and downlink
+  if (Channel <= 0x08) 
     for(unsigned char i = 0 ; i < 3 ; ++i)
-      RFM_Write(0x06 + i, pgm_read_byte(&(LoRa_Frequency[Channel][i])));
-  else if (Channel == 0x10)
-    for(unsigned char i = 0 ; i < 3 ; ++i)
-      RFM_Write(0x06 + i, pgm_read_byte(&(LoRa_Frequency[8][i])));
+      RFM_Write(0x06 + i, pgm_read_byte(&(LoRa_Frequency[Channel][i])));  
 #else   //US915
   if (Channel <= 0x07)
     for(unsigned char i = 0 ; i < 3 ; ++i)

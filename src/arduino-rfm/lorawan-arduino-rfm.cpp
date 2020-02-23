@@ -284,6 +284,7 @@ void LoRaWANClass::setDataRate(unsigned char data_rate)
   if(drate_common <= 0x06)
   {
     LoRa_Settings.Datarate_Tx = drate_common;
+    LoRa_Settings.Datarate_Rx = drate_common;
   }
 #else
   if(drate_common <= 0x04){
@@ -301,7 +302,9 @@ void LoRaWANClass::setChannel(unsigned char channel)
         currentChannel = channel;
         LoRa_Settings.Channel_Tx = channel;
 #ifdef US_915
-        LoRa_Settings.Channel_Rx = channel + 0x08;    
+        LoRa_Settings.Channel_Rx = channel + 0x08;  
+#elif defined(EU_868)  
+        LoRa_Settings.Channel_Rx = channel;
 #endif
     } else if (channel == MULTI) {
         currentChannel = MULTI;
@@ -395,6 +398,9 @@ void LoRaWANClass::randomChannel()
     freq_idx = random(0,9);
     // limit drate, ch 8 -> sf7bw250
     LoRa_Settings.Datarate_Tx = freq_idx == 0x08? 0x06 : drate_common;
+#elif defined(EU_868)    
+    freq_idx = random(0,7);
+    LoRa_Settings.Channel_Rx=freq_idx;      // same rx and tx channel 
 #else
     freq_idx = random(0,8);
     LoRa_Settings.Channel_Rx = freq_idx + 0x08;

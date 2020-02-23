@@ -73,7 +73,7 @@ void LORA_Cycle(sBuffer *Data_Tx, sBuffer *Data_Rx, RFM_command_t *RFM_Command, 
   {
     //Lora send data
     LORA_Send_Data(Data_Tx, Session_Data, LoRa_Settings);
-		prevTime = millis();
+	prevTime = millis();
     *RFM_Command = NO_RFM_COMMAND;
   }
 
@@ -82,15 +82,28 @@ void LORA_Cycle(sBuffer *Data_Tx, sBuffer *Data_Rx, RFM_command_t *RFM_Command, 
 
   //Get data
 	LORA_Receive_Data(Data_Rx, Session_Data, OTAA_Data, Message_Rx, LoRa_Settings);
-  *RFM_Command = NO_RFM_COMMAND;
-	
-	// wait rx2 window
-  while((digitalRead(RFM_pins.DIO0) != HIGH) && (millis() - prevTime < Receive_Delay_2));
+	*RFM_Command = NO_RFM_COMMAND;
 
-  //Get data
-	LORA_Receive_Data(Data_Rx, Session_Data, OTAA_Data, Message_Rx, LoRa_Settings);
-  *RFM_Command = NO_RFM_COMMAND;
+	if (Data_Rx->Counter==0)
+	{
+		// wait rx2 window
+		while((digitalRead(RFM_pins.DIO0) != HIGH) && (millis() - prevTime < Receive_Delay_2));
 
+		//Get data
+		// TODO
+		// The RX2 receive window uses a fixed frequency and data rate. The default parameters are 
+ 		// 869.525 MHz / DR0 (SF12, 125 kHz) 
+	#ifdef EU_868
+		unsigned char previousChannelRX=LoRa_Settings->Channel_Rx;
+		unsigned char previousDatarateRX=LoRa_Settings->Datarate_Rx;
+		LoRa_Settings->Channel_Rx=CHRX2;
+		LoRa_Settings->Datarate_Rx=SF9BW125;
+		LoRa_Settings->Channel_Rx=previousChannelRX;
+		LoRa_Settings->Datarate_Rx=previousDatarateRX;
+	#endif
+		LORA_Receive_Data(Data_Rx, Session_Data, OTAA_Data, Message_Rx, LoRa_Settings);
+		*RFM_Command = NO_RFM_COMMAND;
+	}
 }
 
 /*
