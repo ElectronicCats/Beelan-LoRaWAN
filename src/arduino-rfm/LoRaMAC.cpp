@@ -566,7 +566,7 @@ static void Generate_DevNonce(unsigned char *DevNonce)
 *				*LoRa_Settings pointer to sSetting struct
 *****************************************************************************************
 */
-void LoRa_Send_JoinReq(sLoRa_OTAA *OTAA_Data, sSettings *LoRa_Settings)
+void LORA_Send_JoinReq(sLoRa_OTAA *OTAA_Data, sSettings *LoRa_Settings)
 {
     unsigned char i;
 
@@ -730,15 +730,15 @@ bool LORA_join_Accept(sBuffer *Data_Rx,sLoRa_Session *Session_Data, sLoRa_OTAA *
 				//Clear Data counter
 				Data_Rx->Counter = 0x00;
 
-#ifdef DEBUG
-				Serial.print("NwkSKey: ");
-				for(byte i = 0; i < 16 ;++i)
-					Serial.print(Session_Data->NwkSKey[i],HEX);
-				Serial.print("\nAppSKey: ");
-				for(byte i = 0; i < 16 ;++i)
-					Serial.print(Session_Data->AppSKey[i],HEX);
-				Serial.println();
-#endif	
+	#ifdef DEBUG
+					Serial.print("NwkSKey: ");
+					for(byte i = 0; i < 16 ;++i)
+						Serial.print(Session_Data->NwkSKey[i],HEX);
+					Serial.print("\nAppSKey: ");
+					for(byte i = 0; i < 16 ;++i)
+						Serial.print(Session_Data->AppSKey[i],HEX);
+					Serial.println();
+	#endif	
 				joinStatus = true;
 			}
 		}
