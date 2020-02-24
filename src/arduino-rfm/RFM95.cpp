@@ -157,7 +157,7 @@
     { 0xD8, 0xE0, 0x24 }, //Channel [5], 867.5 MHz / 61.035 Hz = 14213156 = 0xD8E024
     { 0xD8, 0xEC, 0xF1 }, //Channel [6], 867.7 MHz / 61.035 Hz = 14216433 = 0xD8ECF1
     { 0xD8, 0xF9, 0xBE }, //Channel [7], 867.9 MHz / 61.035 Hz = 14219710 = 0xD8F9BE
-    { 0xD9, 0x61, 0xBE }, //Receive channel 869.525 MHz / 61.035 Hz = 14246334 = 0xD961BE    
+    { 0xD9, 0x61, 0xBE }, // RX2 Receive channel 869.525 MHz / 61.035 Hz = 14246334 = 0xD961BE    
   };
 #endif
 
@@ -199,15 +199,15 @@ static unsigned char RFM_Read(unsigned char RFM_Address)
 /********************************************************************************************
 * Description : Change Spread Factor and Band Width
 * 
-* Arguments:    _SF = {6,7,,8,9,10,11,12}
+* Arguments:    _SF = {6,7,8,9,10,11,12}
 *               _BW = {0x00 -> 7.8khz   , 0x01 -> 10.4khz, 0x02 -> 15.6khz, 0x03 -> 20.8khz,
 *                      0x04 -> 31.25khz , 0x05 -> 41.7khz, 0x06 -> 62.5khz, 0x07 -> 125khz, 
 *                      0x08 -> 250khz   , 0x09 -> 500khz}
 ********************************************************************************************/
 static void RFM_change_SF_BW(unsigned char _SF, unsigned char _BW)
 {
-	RFM_Write(0x1E,(_SF << 4) | 0x04); //SFx CRC On
-	RFM_Write(0x1D,(_BW << 4) | 0x02); //x kHz 4/5 coding rate explicit header mode
+	RFM_Write(RFM_REG_MODEM_CONFIG2,(_SF << 4) | 0x04); //SFx CRC On
+	RFM_Write(RFM_REG_MODEM_CONFIG1,(_BW << 4) | 0x02); //x kHz 4/5 coding rate explicit header mode
 	RFM_Write(0x26,0x04); //Mobile node, low datarate optimization on AGC acorging to register LnaGain
 }
 /*
@@ -300,12 +300,10 @@ static void RFM_Change_Channel(unsigned char Channel)
     for(unsigned char i = 0 ; i < 3 ; ++i)
       RFM_Write(0x06 + i, pgm_read_byte(&(LoRa_Frequency[0][i])));
 #elif defined(EU_868)
-  if (Channel <= 0x08)
+  // in EU_868 v1.02 uses same freq for uplink and downlink
+  if (Channel <= 0x08) 
     for(unsigned char i = 0 ; i < 3 ; ++i)
-      RFM_Write(0x06 + i, pgm_read_byte(&(LoRa_Frequency[Channel][i])));
-  else if (Channel == 0x10)
-    for(unsigned char i = 0 ; i < 3 ; ++i)
-      RFM_Write(0x06 + i, pgm_read_byte(&(LoRa_Frequency[8][i])));
+      RFM_Write(0x06 + i, pgm_read_byte(&(LoRa_Frequency[Channel][i])));  
 #else   //US915
   if (Channel <= 0x07)
     for(unsigned char i = 0 ; i < 3 ; ++i)
@@ -388,7 +386,7 @@ void RFM_Send_Package(sBuffer *RFM_Tx_Package, sSettings *LoRa_Settings)
   unsigned char RFM_Tx_Location = 0x00;
 
   //Set RFM in Standby mode
-  RFM_Switch_Mode(0x01);
+  RFM_Switch_Mode(RFM_MODE_STANDBY);
 
   //Switch Datarate
   RFM_Change_Datarate(LoRa_Settings->Datarate_Tx);
@@ -453,8 +451,8 @@ message_t RFM_Single_Receive(sSettings *LoRa_Settings)
   RFM_Write(0x40,0x00);
 
   //Invert IQ Back
-  RFM_Write(0x33,0x67);
-  RFM_Write(0x3B,0x19);
+  RFM_Write(RFM_REG_INVERT_IQ, 0x67);
+  RFM_Write(RFM_REG_INVERT_IQ2, 0x19);
 
   //Change Datarate
   RFM_Change_Datarate(LoRa_Settings->Datarate_Rx);
@@ -463,7 +461,7 @@ message_t RFM_Single_Receive(sSettings *LoRa_Settings)
   RFM_Change_Channel(LoRa_Settings->Channel_Rx);
 
   //Switch RFM to Single reception
-  RFM_Switch_Mode(0x06);
+  RFM_Switch_Mode(RFM_MODE_RXSINGLE);
 
   //Wait until RxDone or Timeout
   //Wait until timeout or RxDone interrupt
@@ -473,7 +471,7 @@ message_t RFM_Single_Receive(sSettings *LoRa_Settings)
   if(digitalRead(RFM_pins.DIO1) == HIGH)
   {
     //Clear interrupt register
-    RFM_Write(0x12,0xE0);
+    RFM_Write(RFM_REG_IRQ_FLAGS,0xE0);
     Message_Status = TIMEOUT;
   }
 
@@ -496,12 +494,12 @@ message_t RFM_Single_Receive(sSettings *LoRa_Settings)
 */
 void RFM_Continuous_Receive(sSettings *LoRa_Settings)
 {
-  //Change DIO 0 back to RxDone
-  RFM_Write(0x40,0x00);
+  //Change DIO 0 back to RxDone and DIO 1 to rx timeout
+  RFM_Write(RFM_REG_DIO_MAPPING1,0x00);
 
   //Invert IQ Back
-  RFM_Write(0x33,0x67);
-  RFM_Write(0x3B,0x19);
+  RFM_Write(RFM_REG_INVERT_IQ, 0x67);
+  RFM_Write(RFM_REG_INVERT_IQ2, 0x19);
   
 	//Change Datarate
 	RFM_Change_Datarate(LoRa_Settings->Datarate_Rx);
@@ -510,7 +508,7 @@ void RFM_Continuous_Receive(sSettings *LoRa_Settings)
 	RFM_Change_Channel(LoRa_Settings->Channel_Rx);
 
 	//Switch to continuous receive
-	RFM_Switch_Mode(0x05);
+	RFM_Switch_Mode(RFM_MODE_RXCONT);
 }
 
 /*
@@ -532,7 +530,7 @@ message_t RFM_Get_Package(sBuffer *RFM_Rx_Package)
   message_t Message_Status;
 
   //Get interrupt register
-  RFM_Interrupts = RFM_Read(0x12);
+  RFM_Interrupts = RFM_Read(RFM_REG_IRQ_FLAGS);
 
   //Check CRC
   if((RFM_Interrupts & 0x20) != 0x20)
@@ -551,11 +549,11 @@ message_t RFM_Get_Package(sBuffer *RFM_Rx_Package)
 
   for (i = 0x00; i < RFM_Rx_Package->Counter; i++)
   {
-    RFM_Rx_Package->Data[i] = RFM_Read(0x00);
+    RFM_Rx_Package->Data[i] = RFM_Read(RFM_REG_FIFO);
   }
 
   //Clear interrupt register
-  RFM_Write(0x12,0xE0);
+  RFM_Write(RFM_REG_IRQ_FLAGS,0xE0);
 
   return Message_Status;
 }
@@ -605,6 +603,6 @@ void RFM_Switch_Mode(unsigned char Mode)
     Mode = Mode | 0x80; //Set high bit for LoRa mode
 
     //Switch mode on RFM module
-    RFM_Write(0x01,Mode);
+    RFM_Write(RFM_REG_OP_MODE,Mode);
 }
 

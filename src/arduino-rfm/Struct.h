@@ -104,6 +104,11 @@ typedef enum {
   CH5 = 5,
   CH6 = 6,
   CH7 = 7,
+#ifdef EU_868
+  CHRX2 = 8,
+#else
+  CH8 = 8,
+#endif
   MULTI = 20
 } channel_t;
 

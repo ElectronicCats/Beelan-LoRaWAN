@@ -249,10 +249,10 @@ void LoRaWANClass::setDevAddr(const char *devAddr_in)
 
 void LoRaWANClass::setDeviceClass(devclass_t dev_class)
 {
-    LoRa_Settings.Mote_Class = (dev_class == CLASS_A)? 0x00 : 0x01;
+    LoRa_Settings.Mote_Class = (dev_class == CLASS_A)? CLASS_A : CLASS_C;
 
-    if (LoRa_Settings.Mote_Class == 0x00) {
-        RFM_Switch_Mode(0x01);
+    if (LoRa_Settings.Mote_Class == CLASS_A) {
+        RFM_Switch_Mode(RFM_MODE_STANDBY);
     } else {
         RFM_Continuous_Receive(&LoRa_Settings);
     }
@@ -284,6 +284,7 @@ void LoRaWANClass::setDataRate(unsigned char data_rate)
   if(drate_common <= 0x06)
   {
     LoRa_Settings.Datarate_Tx = drate_common;
+    LoRa_Settings.Datarate_Rx = drate_common;
   }
 #else
   if(drate_common <= 0x04){
@@ -301,7 +302,9 @@ void LoRaWANClass::setChannel(unsigned char channel)
         currentChannel = channel;
         LoRa_Settings.Channel_Tx = channel;
 #ifdef US_915
-        LoRa_Settings.Channel_Rx = channel + 0x08;    
+        LoRa_Settings.Channel_Rx = channel + 0x08;  
+#elif defined(EU_868)  
+        LoRa_Settings.Channel_Rx = channel;
 #endif
     } else if (channel == MULTI) {
         currentChannel = MULTI;
@@ -347,7 +350,7 @@ int LoRaWANClass::readData(char *outBuff)
 void LoRaWANClass::update(void)
 {
     //Type A mote transmit receive cycle
-    if((RFM_Command_Status == NEW_RFM_COMMAND || RFM_Command_Status == JOIN) && LoRa_Settings.Mote_Class == 0x00)
+    if((RFM_Command_Status == NEW_RFM_COMMAND || RFM_Command_Status == JOIN) && LoRa_Settings.Mote_Class == CLASS_A)
     {
       //LoRa cycle
       LORA_Cycle(&Buffer_Tx, &Buffer_Rx, &RFM_Command_Status, &Session_Data, &OTAA_Data, &Message_Rx, &LoRa_Settings);
@@ -361,7 +364,7 @@ void LoRaWANClass::update(void)
     }
 
     //Type C mote transmit and receive handling
-    if(LoRa_Settings.Mote_Class == 0x01)
+    if(LoRa_Settings.Mote_Class == CLASS_C)
     {
        //Transmit
       if(RFM_Command_Status == NEW_RFM_COMMAND)
@@ -395,6 +398,9 @@ void LoRaWANClass::randomChannel()
     freq_idx = random(0,9);
     // limit drate, ch 8 -> sf7bw250
     LoRa_Settings.Datarate_Tx = freq_idx == 0x08? 0x06 : drate_common;
+#elif defined(EU_868)    
+    freq_idx = random(0,7);
+    LoRa_Settings.Channel_Rx=freq_idx;      // same rx and tx channel 
 #else
     freq_idx = random(0,8);
     LoRa_Settings.Channel_Rx = freq_idx + 0x08;
