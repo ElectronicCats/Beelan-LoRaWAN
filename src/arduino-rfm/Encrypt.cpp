@@ -1,5 +1,4 @@
 /******************************************************************************************
-* Copyright 2017 Ideetron B.V.
 *
 * This program is free software: you can redistribute it and/or modify
 * it under the terms of the GNU Lesser General Public License as published by
@@ -16,14 +15,11 @@
 ******************************************************************************************/
 /****************************************************************************************
 * File:     Encrypt.cpp
-* Author:   Gerben den Hartog
-* Compagny: Ideetron B.V.
-* Website:  http://www.ideetron.nl/LoRa
-* E-mail:   info@ideetron.nl
+* Author:   Eduardo Contreras
+* Company:  Beelan
 ****************************************************************************************/
 /****************************************************************************************
-* Created on:         09-02-2017
-* Supported Hardware: ID150119-02 Nexus board with RFM95
+* Created on:		  23-02-2020
 ****************************************************************************************/
 
 /*
