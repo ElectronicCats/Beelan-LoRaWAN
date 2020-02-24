@@ -31,7 +31,10 @@
 #include "lorawan-arduino-rfm.h"
 #include "Conversions.h"
 
-LoRaWANClass::LoRaWANClass()
+#define ISR_PREFIX
+
+LoRaWANClass::LoRaWANClass():
+  _onReceive(NULL)
 {
 
 }
@@ -398,8 +401,31 @@ void LoRaWANClass::update(void)
             Rx_Status = NEW_RX;
         }
       }
-
 }
+
+void LoRaWANClass::onReceive(void(*callback)(int))
+{
+  _onReceive = callback;
+  LORA_Set_Interrupt();
+  if (callback) {
+    attachInterrupt(digitalPinToInterrupt(RFM_pins.DIO0), LoRaWANClass::onDio0Rise, RISING);
+  } else {
+    detachInterrupt(digitalPinToInterrupt(RFM_pins.DIO0));
+  }
+}
+
+
+void LoRaWANClass::ISR_handler(void)
+{
+    LORA_Get_Data(&Buffer_Rx, &Session_Data, &OTAA_Data, &Message_Rx, &LoRa_Settings);
+}
+
+
+ISR_PREFIX void LoRaWANClass::onDio0Rise()
+{
+  lora.ISR_handler();
+}
+
 
 void LoRaWANClass::randomChannel()
 {
@@ -425,8 +451,6 @@ unsigned int LoRaWANClass::getFrameCounter() {
 void LoRaWANClass::setFrameCounter(unsigned int FrameCounter) {
     Frame_Counter_Tx = FrameCounter;
 }
-
-
 
 // define lora objet 
 LoRaWANClass lora;
