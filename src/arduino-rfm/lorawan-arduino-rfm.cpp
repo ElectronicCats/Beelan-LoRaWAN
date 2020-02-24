@@ -247,8 +247,8 @@ void LoRaWANClass::setDeviceClass(devclass_t dev_class)
         RFM_Continuous_Receive(&LoRa_Settings);
     }
 
-    //Reset RFM command
-    //RFM_Command_Status = NO_RFM_COMMAND;
+
+    }
 }
 
 void LoRaWANClass::sendUplink(char *data, unsigned int len, unsigned char confirm, unsigned char mport)
