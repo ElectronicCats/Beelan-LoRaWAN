@@ -45,67 +45,6 @@
 *****************************************************************************************
 */
 
-
-/*
-*****************************************************************************************
-* Description : Function that handles a send and receive cycle with timing for receive slots.
-*				This function is only used for Class A motes. The wait times are tested with
-*				the iot.semtech.com site.
-*
-* Arguments   : *Data_Tx pointer to tranmit buffer
-*				*Data_Rx pointer to receive buffer
-*				*RFM_Command pointer to current RFM state
-*				*Session_Data pointer to sLoRa_Session sturct
-*				*OTAA_Data pointer to sLoRa_OTAA struct
-*				*Message_Rx pointer to sLoRa_Message struct used for the received message information
-*				*LoRa_Settings pointer to sSetting struct
-*****************************************************************************************
-*/
-void LORA_Cycle(sBuffer *Data_Tx, sBuffer *Data_Rx, RFM_command_t *RFM_Command, sLoRa_Session *Session_Data,
- 									sLoRa_OTAA *OTAA_Data, sLoRa_Message *Message_Rx, sSettings *LoRa_Settings)
-{
-	static const unsigned int Receive_Delay_1 = 1000;
-	static const unsigned int Receive_Delay_2 = 2000;
-	unsigned long prevTime = 0;
-
-  //Transmit
-  if(*RFM_Command == NEW_RFM_COMMAND)
-  {
-    //Lora send data
-    LORA_Send_Data(Data_Tx, Session_Data, LoRa_Settings);
-	prevTime = millis();
-    *RFM_Command = NO_RFM_COMMAND;
-  }
-
-	// wait rx1 window
-  while((digitalRead(RFM_pins.DIO0) != HIGH) && (millis() - prevTime < Receive_Delay_1));
-
-  //Get data
-	LORA_Receive_Data(Data_Rx, Session_Data, OTAA_Data, Message_Rx, LoRa_Settings);
-	*RFM_Command = NO_RFM_COMMAND;
-
-	if (Data_Rx->Counter==0)
-	{
-		// wait rx2 window
-		while((digitalRead(RFM_pins.DIO0) != HIGH) && (millis() - prevTime < Receive_Delay_2));
-
-		//Get data
-		// TODO
-		// The RX2 receive window uses a fixed frequency and data rate. The default parameters are 
- 		// 869.525 MHz / DR0 (SF12, 125 kHz) 
-	#ifdef EU_868
-		unsigned char previousChannelRX=LoRa_Settings->Channel_Rx;
-		unsigned char previousDatarateRX=LoRa_Settings->Datarate_Rx;
-		LoRa_Settings->Channel_Rx=CHRX2;
-		LoRa_Settings->Datarate_Rx=SF9BW125;
-		LoRa_Settings->Channel_Rx=previousChannelRX;
-		LoRa_Settings->Datarate_Rx=previousDatarateRX;
-	#endif
-		LORA_Receive_Data(Data_Rx, Session_Data, OTAA_Data, Message_Rx, LoRa_Settings);
-		*RFM_Command = NO_RFM_COMMAND;
-	}
-}
-
 /*
 *****************************************************************************************
 * Description : Function that is used to build a LoRaWAN data message and then tranmit it.
