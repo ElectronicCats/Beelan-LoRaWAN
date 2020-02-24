@@ -1,9 +1,8 @@
 /*
-    lorawan-arduino-rfm.h
-    Copyright © 2018 lora.id. All right reserved.
+    lorawan-arduino-rfm.cpp
 
-    Author: Andri Rahmadhani
-    Date: 2018-04-25
+    Author: Eduardo Contreras
+    Date: 2020-02-23
 
     Encapsulate Ideetron LoRaWAN simple node demonstrator
     *This fimrware supports
@@ -11,19 +10,19 @@
         *Activation By Personalization
         *Class switching between Class A and Class C motes
         *Channel hopping
-        *
-        *The following settings kan be done
-        *Channel Receive and Transmit
-        *Datarate Receive and Transmit
-        *Tranmit power
-        *Confirmed or unconfirmed messages
-        *Device Address
-        *Application Session Key
-        *Network Session Key
-        *Device EUI
-        *Application EUI
-        *Application key
-        *Mote Class
+        
+        *The following settings can be done
+            *Channel Receive and Transmit
+            *Datarate Receive and Transmit
+            *Transmit power
+            *Confirmed or unconfirmed messages
+            *Device Address
+            *Application Session Key
+            *Network Session Key
+            *Device EUI
+            *Application EUI
+            *Application key
+            *Mote Class
 
     Use of this source code is governed by the MIT license that can be found in the LICENSE file.
 */
