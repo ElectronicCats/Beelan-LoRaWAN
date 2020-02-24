@@ -33,8 +33,14 @@ const sRFM_pins RFM_pins = {
   .DIO5 = 15,
 };
 
+void ISRHandler_RX(void){
+  digitalWrite(4,HIGH);
+  
+  }
+
 void setup() {
   // Setup loraid access
+  pinMode(4,OUTPUT);
   Serial.begin(115200);
   delay(2000);
   if(!lora.init()){
@@ -57,7 +63,7 @@ void setup() {
   lora.setAppSKey(appSKey);
   lora.setDevAddr(devAddr);
 
-  lora.onReceive();
+  lora.onReceive(ISRHandler_RX);
 }
 
 void loop() {

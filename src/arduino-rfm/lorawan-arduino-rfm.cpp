@@ -419,7 +419,7 @@ void LoRaWANClass::update(void)
       }
 }
 
-void LoRaWANClass::onReceive(void(*callback)(int))
+void LoRaWANClass::onReceive(void(*callback)(void))
 {
   _onReceive = callback;
   LORA_Set_Interrupt();
