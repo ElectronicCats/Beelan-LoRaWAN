@@ -241,14 +241,14 @@ void LoRaWANClass::setDeviceClass(devclass_t dev_class)
 {
     LoRa_Settings.Mote_Class = (dev_class == CLASS_A)? CLASS_A : CLASS_C;
 
-    if (LoRa_Settings.Mote_Class == CLASS_A) {
-        RFM_Switch_Mode(RFM_MODE_STANDBY);
-    } else {
-        RFM_Continuous_Receive(&LoRa_Settings);
-    }
+    if (LoRa_Settings.Mote_Class == 0x00) {
+        RFM_Switch_Mode(0x01); //Class A 
+    } 
+    else {
+        RFM_Continuous_Receive(&LoRa_Settings); //Class C
 
-    //Reset RFM command
-    //RFM_Command_Status = NO_RFM_COMMAND;
+
+    }
 }
 
 void LoRaWANClass::sendUplink(char *data, unsigned int len, unsigned char confirm, unsigned char mport)
