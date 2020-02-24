@@ -364,6 +364,183 @@ void LORA_Receive_Data(sBuffer *Data_Rx, sLoRa_Session *Session_Data, sLoRa_OTAA
  		}
 	}
 }
+
+
+/*
+*****************************************************************************************
+* Description : Function that is used to retrieve the data from the RFM
+*               Also checks on CRC, MIC and Device Address
+*               This function is used for Class C motes.
+*
+* Arguments   : *Data_Rx pointer to receive buffer
+*				*Session_Data pointer to sLoRa_Session sturct
+*				*OTAA_Data pointer to sLoRa_OTAA struct
+*				*Message_Rx pointer to sLoRa_Message struct used for the received message information
+*				*LoRa_Settings pointer to sSetting struct
+*****************************************************************************************
+*/
+void LORA_Get_Data(sBuffer *Data_Rx, sLoRa_Session *Session_Data, sLoRa_OTAA *OTAA_Data, sLoRa_Message *Message, sSettings *LoRa_Settings)
+{
+	unsigned char i;
+
+    //Initialise RFM buffer
+	unsigned char RFM_Data[64];
+	sBuffer RFM_Package = {&RFM_Data[0], 0x00};
+
+	unsigned char MIC_Check;
+  	unsigned char Address_Check;
+
+	unsigned char Frame_Options_Length;
+
+	unsigned char Data_Location;
+
+	message_t Message_Status = NO_MESSAGE;
+
+	//If it is a type A device switch RFM to single receive
+
+	//Switch RFM to standby
+	RFM_Switch_Mode(0x01);
+
+	//If there is a message received get the data from the RFM
+	Message_Status = RFM_Get_Package(&RFM_Package);
+
+	//If mote class C switch RFM back to continuous receive
+	//Switch RFM to Continuous Receive
+	RFM_Continuous_Receive(LoRa_Settings);
+
+	//if CRC ok breakdown package
+	if(Message_Status == CRC_OK)
+	{
+		//Get MAC_Header
+    	Message->MAC_Header = RFM_Data[0];
+
+		//Data message
+		if(Message->MAC_Header == 0x40 || Message->MAC_Header == 0x60 || Message->MAC_Header == 0x80 || Message->MAC_Header == 0xA0)
+		{
+			//Get device address from received data
+			Message->DevAddr[0] = RFM_Data[4];
+			Message->DevAddr[1] = RFM_Data[3];
+			Message->DevAddr[2] = RFM_Data[2];
+			Message->DevAddr[3] = RFM_Data[1];
+
+			//Get frame control field
+			Message->Frame_Control = RFM_Data[5];
+
+			 //Get frame counter
+			Message->Frame_Counter = RFM_Data[7];
+			Message->Frame_Counter = (Message->Frame_Counter << 8) + RFM_Data[6];
+
+			//Lower Package length with 4 to remove MIC length
+			RFM_Package.Counter -= 4;
+
+			//Calculate MIC
+			Construct_Data_MIC(&RFM_Package, Session_Data, Message);
+
+			MIC_Check = 0x00;
+
+            //Compare MIC
+			for(i = 0x00; i < 4; i++)
+			{
+				if(RFM_Data[RFM_Package.Counter + i] == Message->MIC[i])
+				{
+					MIC_Check++;
+				}
+			}
+
+			//Check MIC
+      		if(MIC_Check == 0x04)
+      		{
+      		  Message_Status = MIC_OK;
+      		}
+      		else
+      		{
+      		  Message_Status = WRONG_MESSAGE;
+      		}
+
+      		Address_Check = 0;
+
+      		//Check address
+      		if(MIC_Check == 0x04)
+      		{
+			      for(i = 0x00; i < 4; i++)
+			      {
+			        if(Session_Data->DevAddr[i] == Message->DevAddr[i])
+			        {
+				        Address_Check++;
+			        }
+			      }
+      		}
+
+		  	if(Address_Check == 0x04)
+		  	{
+				Message_Status = ADDRESS_OK;
+		  	}
+		  	else
+		  	{
+				Message_Status = WRONG_MESSAGE;
+		  	}
+
+			//if the address is OK then decrypt the data
+			//Send the data to USB
+			if(Message_Status == ADDRESS_OK)
+			{
+
+				Data_Location = 8;
+
+				//Get length of frame options field
+				Frame_Options_Length = (Message->Frame_Control & 0x0F);
+
+				//Add length of frame options field to data location
+				Data_Location = Data_Location + Frame_Options_Length;
+
+				//Check if ther is data in the package
+				if(RFM_Package.Counter == Data_Location)
+				{
+					Data_Rx->Counter = 0x00;
+				}
+				else
+				{
+					//Get port field when ther is data
+					Message->Frame_Port = RFM_Data[8];
+
+					//Calculate the amount of data in the package
+					Data_Rx->Counter = (RFM_Package.Counter - Data_Location -1);
+
+					//Correct the data location by 1 for the Fport field
+					Data_Location = (Data_Location + 1);
+				}
+
+				//Copy and decrypt the data
+				if(Data_Rx->Counter != 0x00)
+				{
+					for(i = 0; i < Data_Rx->Counter; i++)
+					{
+						Data_Rx->Data[i] = RFM_Data[Data_Location + i];
+					}
+
+				//Check frame port fiels. When zero it is a mac command message encrypted with NwkSKey
+				if(Message->Frame_Port == 0x00)
+				{
+					Encrypt_Payload(Data_Rx, Session_Data->NwkSKey, Message);
+					//TODO process MAC command
+				}
+				else
+				{
+					Encrypt_Payload(Data_Rx, Session_Data->AppSKey, Message);
+				}
+				Message_Status = MESSAGE_DONE;
+				}
+			}
+		}
+
+		if(Message_Status == WRONG_MESSAGE)
+		{
+			Data_Rx->Counter = 0x00;
+ 		}
+	}
+}
+
+
 /*
 *****************************************************************************************
 * Description : Function that is used to generate device nonce used in the join request function
@@ -569,5 +746,9 @@ bool LORA_join_Accept(sBuffer *Data_Rx,sLoRa_Session *Session_Data, sLoRa_OTAA *
 	return joinStatus;
 }
 
+void LORA_Set_Interrupt(void){
+    pinMode(RFM_pins.DIO0, INPUT);
+    RFM_Write(0x12, 0x00); //REG_DIO_MAPPING_1 RX done
+}
 
 
