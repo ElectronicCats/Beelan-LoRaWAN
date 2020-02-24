@@ -247,8 +247,8 @@ void LoRaWANClass::setDeviceClass(devclass_t dev_class)
         RFM_Continuous_Receive(&LoRa_Settings);
     }
 
-
-    }
+    //Reset RFM command
+    //RFM_Command_Status = NO_RFM_COMMAND;
 }
 
 void LoRaWANClass::sendUplink(char *data, unsigned int len, unsigned char confirm, unsigned char mport)
@@ -266,6 +266,22 @@ void LoRaWANClass::sendUplink(char *data, unsigned int len, unsigned char confir
     LoRa_Settings.Mport = mport;
     //Set new command for RFM
     RFM_Command_Status = NEW_RFM_COMMAND;   
+    Buffer_Tx.Counter = len;
+    memcpy(Buffer_Tx.Data,data,len);
+    
+    //Send here uplink with the RX wait windows
+    //LORA_Cycle(&Buffer_Tx, &Buffer_Rx, &RFM_Command_Status, &Session_Data, &OTAA_Data, &Message_Rx, &LoRa_Settings);
+    LORA_Send_Data(&Buffer_Tx, &Session_Data, &LoRa_Settings);
+    //LORA_Send_Data(Buffer_Tx, Session_Data, LoRa_Settings);
+    prevTime = millis();
+
+    	// wait rx1 window
+    while((digitalRead(RFM_pins.DIO0) != HIGH) && (millis() - prevTime < Receive_Delay_1));
+    //Get data
+    LORA_Receive_Data(&Buffer_Rx, &Session_Data, &OTAA_Data, &Message_Rx, &LoRa_Settings);
+	//LORA_Receive_Data(Buffer_Rx, Session_Data, OTAA_Data, Message_Rx, LoRa_Settings);
+
+    
     Buffer_Tx.Counter = len;
     memcpy(Buffer_Tx.Data,data,len);
     
