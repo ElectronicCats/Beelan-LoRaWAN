@@ -505,13 +505,15 @@ void RFM_Continuous_Receive(sSettings *LoRa_Settings)
   RFM_Write(RFM_REG_INVERT_IQ, 0x67);
   RFM_Write(RFM_REG_INVERT_IQ2, 0x19);
   
-	//Change Datarate
-//	RFM_Change_Datarate(LoRa_Settings->Datarate_Rx);
+	//Change Datarate and channel.
+  // This depends on regional parameters
+#ifdef EU_868
   RFM_Change_Datarate(SF12BW125);
-
-	//Change Channel
-//	RFM_Change_Channel(LoRa_Settings->Channel_Rx);
-	RFM_Change_Channel(CHRX2);
+  RFM_Change_Channel(CHRX2);
+#else
+	RFM_Change_Datarate(LoRa_Settings->Datarate_Rx);
+	RFM_Change_Channel(LoRa_Settings->Channel_Rx);
+#endif
 
 	//Switch to continuous receive
 	RFM_Switch_Mode(RFM_MODE_RXCONT);
