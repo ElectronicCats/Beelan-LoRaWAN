@@ -3,8 +3,8 @@
 
 // LoRaWAN freq band
 // #define AS_923
-#define EU_868
-//#define US_915 1
+//#define EU_868
+#define US_915 1
 #ifdef US_915
     //Select the subband youre working on
     // make sure your gateway is working in one of these bands
