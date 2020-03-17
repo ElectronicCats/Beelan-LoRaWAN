@@ -18,7 +18,7 @@ What certainly works:
  - Custom frequencies and datarate settings.
  - Receiving downlink packets in the RX1 window (EU_868, AS923,US_915).
  - Over-the-air activation (OTAA / joining) (EU_868, AS923).
- - Class C operation (US_915).
+ - Class C operation.
  - Receiving downlink packets in the RX1 window (US_915).
  - Receiving downlink packets in the RX2 window.
  - Over-the-air activation (OTAA / joining) (US_915). 
