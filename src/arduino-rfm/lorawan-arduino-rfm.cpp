@@ -324,13 +324,12 @@ void LoRaWANClass::setTxPower(unsigned char power_idx)
     unsigned char RFM_Data;
     LoRa_Settings.Transmit_Power = (power_idx > 0x0F) ? 0x0F : power_idx; 
     RFM_Data = LoRa_Settings.Transmit_Power + 0xF0;
-    RFM_Write(0x09,RFM_Data);
+    RFM_Write(RFM_REG_PA_CONFIG, RFM_Data);
 }
 
 int LoRaWANClass::readData(char *outBuff)
 {
     int res = 0;
-
     //If there is new data
     if(Rx_Status == NEW_RX)
     {
@@ -368,7 +367,7 @@ void LoRaWANClass::update(void)
     {
        //Transmit
       if(RFM_Command_Status == NEW_RFM_COMMAND)
-      {
+      {     
         //Lora send data
         LORA_Send_Data(&Buffer_Tx, &Session_Data, &LoRa_Settings);
 
@@ -383,8 +382,8 @@ void LoRaWANClass::update(void)
 
         if(Buffer_Rx.Counter != 0x00)
         {
-          Rx_Status = NEW_RX;
-        }        
+            Rx_Status = NEW_RX;
+        }
       }
       RFM_Command_Status = NO_RFM_COMMAND;
     }

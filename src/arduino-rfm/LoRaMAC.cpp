@@ -64,8 +64,8 @@
 void LORA_Cycle(sBuffer *Data_Tx, sBuffer *Data_Rx, RFM_command_t *RFM_Command, sLoRa_Session *Session_Data,
  									sLoRa_OTAA *OTAA_Data, sLoRa_Message *Message_Rx, sSettings *LoRa_Settings)
 {
-	static const unsigned int Receive_Delay_1 = 500;
-	static const unsigned int Receive_Delay_2 = 1000;
+	static const unsigned int Receive_Delay_1 = 1000;
+	static const unsigned int Receive_Delay_2 = 2000;
 	unsigned long prevTime = 0;
 
   //Transmit
