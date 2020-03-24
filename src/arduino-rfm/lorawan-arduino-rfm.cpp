@@ -137,7 +137,10 @@ bool LoRaWANClass::init(void)
 
     //Initialise the SPI port
     SPI.begin();
-    SPI.beginTransaction(SPISettings(4000000,MSBFIRST,SPI_MODE0));
+    
+    /*** This prevents the use of other SPI devices with different settings ***/
+    //SPI.beginTransaction(SPISettings(4000000,MSBFIRST,SPI_MODE0)); 
+
 
     //Wait until RFM module is started
     delay(50);
