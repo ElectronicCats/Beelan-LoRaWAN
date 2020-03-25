@@ -1,4 +1,4 @@
-[![Build Status](https://travis-ci.org/BeelanMX/Beelan-LoRaWAN.svg?branch=master)](https://travis-ci.org/BeelanMX/Beelan-LoRaWAN)
+![LibraryBuild](https://github.com/BeelanMX/Beelan-LoRaWAN/workflows/LibraryBuild/badge.svg?branch=master)
 
 Arduino LoRaWAN library by Beelan
 ====================
