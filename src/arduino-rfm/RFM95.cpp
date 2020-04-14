@@ -175,6 +175,9 @@ static unsigned char RFM_Read(unsigned char RFM_Address)
 {
   unsigned char RFM_Data;
 
+  //Add transactions in Read and Write methods
+  SPI.beginTransaction(SPISettings(4000000,MSBFIRST,SPI_MODE0));
+  
   //Set NSS pin low to start SPI communication
   digitalWrite(RFM_pins.CS,LOW);
 
@@ -185,6 +188,9 @@ static unsigned char RFM_Read(unsigned char RFM_Address)
 
   //Set NSS high to end communication
   digitalWrite(RFM_pins.CS,HIGH);
+
+  //End the transaction so that other hardware can use the bus
+  SPI.endTransaction();
 
   #ifdef DEBUG
   Serial.print("SPI Read ADDR: ");
@@ -585,6 +591,9 @@ void RFM_Write(unsigned char RFM_Address, unsigned char RFM_Data)
     Serial.println(RFM_Data, HEX);
   #endif
 
+  //Add transactions in Read and Write methods
+  SPI.beginTransaction(SPISettings(4000000,MSBFIRST,SPI_MODE0));
+
   //Set NSS pin Low to start communication
   digitalWrite(RFM_pins.CS,LOW);
 
@@ -595,6 +604,9 @@ void RFM_Write(unsigned char RFM_Address, unsigned char RFM_Data)
 
   //Set NSS pin High to end communication
   digitalWrite(RFM_pins.CS,HIGH);
+
+  //End the transaction so that other hardware can use the bus
+  SPI.endTransaction();
 }
 
 /*
