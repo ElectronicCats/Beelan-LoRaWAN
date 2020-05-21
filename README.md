@@ -300,7 +300,7 @@ void setup() {
   ...
 
   // Set random Channel
-  lora.setDataRate(MULTI);
+  lora.setChannel(MULTI);
 }
 
 ```
