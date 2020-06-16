@@ -79,6 +79,7 @@ class LoRaWANClass
         unsigned char getDataRate();
         void setTxPower(unsigned char power_idx);
         int readData(char *outBuff);
+        bool readAck(void);
         void update(void);
 
         // frame counter
@@ -127,6 +128,9 @@ class LoRaWANClass
         // UART
         RFM_command_t RFM_Command_Status;
         rx_t Rx_Status;
+
+        // ACK reception
+        ack_t Ack_Status;
 };
 
 #endif
