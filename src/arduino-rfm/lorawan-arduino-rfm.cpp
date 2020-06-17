@@ -52,6 +52,7 @@ bool LoRaWANClass::init(void)
     // Status
     RFM_Command_Status = NO_RFM_COMMAND;
     Rx_Status = NO_RX;
+    Ack_Status = NO_ACK;
 
     // current channel
     currentChannel = MULTI;
@@ -349,6 +350,21 @@ int LoRaWANClass::readData(char *outBuff)
     return res;
 }
 
+/**
+ * Get ACK flag from downlink packet
+ * 
+ * @return true in case of ACK received
+ */
+bool LoRaWANClass::readAck(void)
+{
+    if (Ack_Status == NEW_ACK)
+    {
+      Ack_Status = NO_ACK;
+      return true;
+    }
+    return false;
+}
+
 void LoRaWANClass::update(void)
 {
     //Type A mote transmit receive cycle
@@ -356,6 +372,9 @@ void LoRaWANClass::update(void)
     {
       //LoRa cycle
       LORA_Cycle(&Buffer_Tx, &Buffer_Rx, &RFM_Command_Status, &Session_Data, &OTAA_Data, &Message_Rx, &LoRa_Settings);
+
+      if ((Message_Rx.Frame_Control & 0x20) > 0)
+        Ack_Status = NEW_ACK;
 
       if(Buffer_Rx.Counter != 0x00)
       {
