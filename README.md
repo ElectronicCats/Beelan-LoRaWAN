@@ -434,13 +434,6 @@ void loop() {
 }
 ```
 
-Examples
---------
-This library currently provides two examples:
-
- - `send-class-A_B-ABP.ino` shows basic usage of Class A_B ABP activation.
- - `send-class-A_B-OTAA.ino` shows basic usage of Class A_B OTAA activation.
-
 Tests
 -------
  - See [Test Folder](test/README.md) 
