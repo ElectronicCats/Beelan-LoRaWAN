@@ -4,14 +4,14 @@
 // LoRaWAN freq band
 // #define AS_923
 //#define EU_868
-//#define US_915 1
-#define AU_915 1
+#define US_915 1
+//#define AU_915 1
 
 #ifdef US_915
     //Select the subband youre working on
     // make sure your gateway is working in one of these bands
     //#define SUBND_0     // 902.3 - 903.7 Mhz
-    #define SUBND_1     // 903.9 - 905.3 Mhz
+    #define SUBND_1     // 903.9 - 905.3 Mhz TTN
     //#define SUBND_2     // 905.5 - 906.9 Mhz
     //#define SUBND_3     // 907.1 - 908.5 Mhz
     //#define SUBND_4     // 908.7 - 910.1 Mhz
