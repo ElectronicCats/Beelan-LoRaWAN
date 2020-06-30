@@ -519,7 +519,6 @@ bool LORA_join_Accept(sBuffer *Data_Rx,sLoRa_Session *Session_Data, sLoRa_OTAA *
 
 	//RFM to single receive
 	Message_Status = RFM_Single_Receive(LoRa_Settings);  
-
 	//If there is a message received get the data from the RFM
 	if(Message_Status == NEW_MESSAGE)
 		Message_Status = RFM_Get_Package(&RFM_Package);

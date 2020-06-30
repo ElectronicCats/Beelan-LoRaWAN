@@ -124,6 +124,17 @@ typedef enum {
     SF10BW500   = 0x0A,
     SF9BW500    = 0x0B,
     SF7BW500    = 0x0D
+#elif defined(AU_915)
+    SF10BW125   = 0x00,
+    SF9BW125    = 0x01,
+    SF8BW125    = 0x02,
+    SF7BW125    = 0x03,
+    SF8BW500    = 0x04,
+    SF12BW500   = 0x08,
+    SF11BW500   = 0x09,
+    SF10BW500   = 0x0A,
+    SF9BW500    = 0x0B,
+    SF7BW500    = 0x0D
 #elif defined(EU_868)
     SF12BW125   = 0x00,
     SF11BW125   = 0x01,

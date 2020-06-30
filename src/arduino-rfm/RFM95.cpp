@@ -135,6 +135,106 @@
     { 0xE7, 0xB9, 0xC0}, //Rcv Channel [6] 926.9 Mhz / 61.035 Hz = 15186368 = 0xE7B9C0
     { 0xE7, 0xE0, 0x27}, //Rcv Channel [7] 927.5 Mhz / 61.035 Hz = 15196199 = 0xE7E027
   };
+#elif defined(AU_915)
+  #if defined(SUBND_0)//[915.2 - 916.6] MHz
+    static const PROGMEM unsigned char LoRa_TX_Freq[8][3] = {
+      { 0xE4, 0xCC, 0xF3 }, //Channel [0], 915,2 MHz / 61.035 Hz = 14994675 = 0xE4CCF3
+      { 0xE4, 0xD9, 0xC0 }, //Channel [1], 915,4 MHz / 61.035 Hz = 14997952 = 0xE4D9C0
+      { 0xE4, 0xE6, 0x8D }, //Channel [2], 915,6 MHz / 61.035 Hz = 15001229 = 0xE4E68D
+      { 0xE4, 0xF3, 0x5A }, //Channel [3], 915,8 MHz / 61.035 Hz = 15004506 = 0xE4F35A
+      { 0xE5, 0x00, 0x26 }, //Channel [4], 916,0 MHz / 61.035 Hz = 15007782 = 0xE50026
+      { 0xE5, 0x0C, 0xF3 }, //Channel [5], 916,2 MHz / 61.035 Hz = 15011059 = 0xE50CF3
+      { 0xE5, 0x19, 0xC0 }, //Channel [6], 916,4 MHz / 61.035 Hz = 15014336 = 0xE519C0
+      { 0xE5, 0x26, 0x8D }, //Channel [7], 916,6 MHz / 61.035 Hz = 15017613 = 0xE5268D
+    };
+  #elif  defined(SUBND_1)//[916.8 - 918.2] MHz
+    static const PROGMEM unsigned char LoRa_TX_Freq[8][3] = {
+      { 0xE5, 0x33, 0x5A }, //Channel [0], 916,8 MHz / 61.035 Hz = 15020890 = 0xE5335A
+      { 0xE5, 0x40, 0x26 }, //Channel [1], 917,0 MHz / 61.035 Hz = 15024166 = 0xE54026
+      { 0xE5, 0x4C, 0xF3 }, //Channel [2], 917,2 MHz / 61.035 Hz = 15027443 = 0xE54CF3
+      { 0xE5, 0x59, 0xC0 }, //Channel [3], 917,4 MHz / 61.035 Hz = 15030720 = 0xE559C0
+      { 0xE5, 0x66, 0x8D }, //Channel [4], 917,6 MHz / 61.035 Hz = 15033997 = 0xE5668D
+      { 0xE5, 0x73, 0x5A }, //Channel [5], 917,8 MHz / 61.035 Hz = 15037274 = 0xE5735A
+      { 0xE5, 0x80, 0x27 }, //Channel [6], 918,0 MHz / 61.035 Hz = 15040551 = 0xE58027
+      { 0xE5, 0x8C, 0xF3 }, //Channel [7], 918,2 MHz / 61.035 Hz = 15043827 = 0xE58CF3
+    };
+  #elif  defined(SUBND_2)//[918.4 - 919.8] MHz
+    static const PROGMEM unsigned char LoRa_TX_Freq[8][3] = {
+      { 0xE5, 0x99, 0xC0 }, //Channel [0], 918,4 MHz / 61.035 Hz = 15047104 = 0xE599C0
+      { 0xE5, 0xA6, 0x8D }, //Channel [1], 918,6 MHz / 61.035 Hz = 15050381 = 0xE5A68D
+      { 0xE5, 0xB3, 0x5A }, //Channel [2], 918,8 MHz / 61.035 Hz = 15053658 = 0xE5B35A
+      { 0xE5, 0xC0, 0x27 }, //Channel [3], 919,0 MHz / 61.035 Hz = 15056935 = 0xE5C027
+      { 0xE5, 0xCC, 0xF3 }, //Channel [4], 919,2 MHz / 61.035 Hz = 15060211 = 0xE5CCF3
+      { 0xE5, 0xD9, 0xC0 }, //Channel [5], 919,4 MHz / 61.035 Hz = 15063488 = 0xE5D9C0
+      { 0xE5, 0xE6, 0x8D }, //Channel [6], 919,6 MHz / 61.035 Hz = 15066765 = 0xE5E68D
+      { 0xE5, 0xF3, 0x5A }, //Channel [7], 919,8 MHz / 61.035 Hz = 15070042 = 0xE5F35A
+    };
+  #elif  defined(SUBND_3)//[920.0 - 921.4] MHz
+    static const PROGMEM unsigned char LoRa_TX_Freq[8][3] = {
+      { 0xE6, 0x00, 0x27 }, //Channel [0], 920,0 MHz / 61.035 Hz = 15073319 = 0xE60027
+      { 0xE6, 0x0C, 0xF3 }, //Channel [1], 920,2 MHz / 61.035 Hz = 15076595 = 0xE60CF3
+      { 0xE6, 0x19, 0xC0 }, //Channel [2], 920,4 MHz / 61.035 Hz = 15079872 = 0xE619C0
+      { 0xE6, 0x26, 0x8D }, //Channel [3], 920,6 MHz / 61.035 Hz = 15083149 = 0xE6268D
+      { 0xE6, 0x33, 0x5A }, //Channel [4], 920,8 MHz / 61.035 Hz = 15086426 = 0xE6335A
+      { 0xE6, 0x40, 0x27 }, //Channel [5], 921,0 MHz / 61.035 Hz = 15089703 = 0xE64027
+      { 0xE6, 0x4C, 0xF3 }, //Channel [6], 921,2 MHz / 61.035 Hz = 15092979 = 0xE64CF3
+      { 0xE6, 0x59, 0xC0 }, //Channel [7], 921,4 MHz / 61.035 Hz = 15096256 = 0xE659C0
+    };
+  #elif  defined(SUBND_4)//[921.6 - 923.0] MHz
+    static const PROGMEM unsigned char LoRa_TX_Freq[8][3] = {
+      { 0xE6, 0x66, 0x8D }, //Channel [0], 921,6 MHz / 61.035 Hz = 15099533 = 0xE6668D
+      { 0xE6, 0x73, 0x5A }, //Channel [1], 921,8 MHz / 61.035 Hz = 15102810 = 0xE6735A
+      { 0xE6, 0x80, 0x27 }, //Channel [2], 922,0 MHz / 61.035 Hz = 15106087 = 0xE68027
+      { 0xE6, 0x8C, 0xF3 }, //Channel [3], 922,2 MHz / 61.035 Hz = 15109363 = 0xE68CF3
+      { 0xE6, 0x99, 0xC0 }, //Channel [4], 922,4 MHz / 61.035 Hz = 15112640 = 0xE699C0
+      { 0xE6, 0xA6, 0x8D }, //Channel [5], 922,6 MHz / 61.035 Hz = 15115917 = 0xE6A68D
+      { 0xE6, 0xB3, 0x5A }, //Channel [6], 922,8 MHz / 61.035 Hz = 15119194 = 0xE6B35A
+      { 0xE6, 0xC0, 0x27 }, //Channel [7], 923,0 MHz / 61.035 Hz = 15122471 = 0xE6C027
+    };
+  #elif  defined(SUBND_5)//[923.2 - 924.6] MHz
+    static const PROGMEM unsigned char LoRa_TX_Freq[8][3] = {
+      { 0xE6, 0xCC, 0xF4 }, //Channel [0], 923,2 MHz / 61.035 Hz = 15125748 = 0xE6CCF4
+      { 0xE6, 0xD9, 0xC0 }, //Channel [1], 923,4 MHz / 61.035 Hz = 15129024 = 0xE6D9C0
+      { 0xE6, 0xE6, 0x8D }, //Channel [2], 923,6 MHz / 61.035 Hz = 15132301 = 0xE6E68D
+      { 0xE6, 0xF3, 0x5A }, //Channel [3], 923,8 MHz / 61.035 Hz = 15135578 = 0xE6F35A
+      { 0xE7, 0x00, 0x27 }, //Channel [4], 924,0 MHz / 61.035 Hz = 15138855 = 0xE70027
+      { 0xE7, 0x0C, 0xF4 }, //Channel [5], 924,2 MHz / 61.035 Hz = 15142132 = 0xE70CF4
+      { 0xE7, 0x19, 0xC0 }, //Channel [6], 924,4 MHz / 61.035 Hz = 15145408 = 0xE719C0
+      { 0xE7, 0x26, 0x8D }, //Channel [7], 924,6 MHz / 61.035 Hz = 15148685 = 0xE7268D
+    };
+  #elif  defined(SUBND_6)//[924.8 - 926.2] MHz
+    static const PROGMEM unsigned char LoRa_TX_Freq[8][3] = {
+      { 0xE7, 0x33, 0x5A }, //Channel [0], 924,8 MHz / 61.035 Hz = 15151962 = 0xE7335A
+      { 0xE7, 0x40, 0x27 }, //Channel [1], 925,0 MHz / 61.035 Hz = 15155239 = 0xE74027
+      { 0xE7, 0x4C, 0xF4 }, //Channel [2], 925,2 MHz / 61.035 Hz = 15158516 = 0xE74CF4
+      { 0xE7, 0x59, 0xC0 }, //Channel [3], 925,4 MHz / 61.035 Hz = 15161792 = 0xE759C0
+      { 0xE7, 0x66, 0x8D }, //Channel [4], 925,6 MHz / 61.035 Hz = 15165069 = 0xE7668D
+      { 0xE7, 0x73, 0x5A }, //Channel [5], 925,8 MHz / 61.035 Hz = 15168346 = 0xE7735A
+      { 0xE7, 0x80, 0x27 }, //Channel [6], 926,0 MHz / 61.035 Hz = 15171623 = 0xE78027
+      { 0xE7, 0x8C, 0xF4 }, //Channel [7], 926,2 MHz / 61.035 Hz = 15174900 = 0xE78CF4
+    };
+  #elif  defined(SUBND_7)//[926.4 - 927.8] MHz
+    static const PROGMEM unsigned char LoRa_TX_Freq[8][3] = {
+      { 0xE7, 0x99, 0xC0 }, //Channel [0], 926,4 MHz / 61.035 Hz = 15178176 = 0xE799C0
+      { 0xE7, 0xA6, 0x8D }, //Channel [1], 926,6 MHz / 61.035 Hz = 15181453 = 0xE7A68D
+      { 0xE7, 0xB3, 0x5A }, //Channel [2], 926,8 MHz / 61.035 Hz = 15184730 = 0xE7B35A
+      { 0xE7, 0xC0, 0x27 }, //Channel [3], 927,0 MHz / 61.035 Hz = 15188007 = 0xE7C027
+      { 0xE7, 0xCC, 0xF4 }, //Channel [4], 927,2 MHz / 61.035 Hz = 15191284 = 0xE7CCF4
+      { 0xE7, 0xD9, 0xC0 }, //Channel [5], 927,4 MHz / 61.035 Hz = 15194560 = 0xE7D9C0
+      { 0xE7, 0xE6, 0x8D }, //Channel [6], 927,6 MHz / 61.035 Hz = 15197837 = 0xE7E68D
+      { 0xE7, 0xF3, 0x5A }, //Channel [7], 927,8 MHz / 61.035 Hz = 15201114 = 0xE7F35A
+    };
+  #endif
+  static const PROGMEM unsigned char LoRa_RX_Freq[8][3] = {
+    { 0xE6, 0xD3, 0x5A}, //Rcv Channel [0] 923.3 Mhz / 61.035 Hz = 15127386 = 0xE6D35A
+    { 0xE6, 0xF9, 0xC0}, //Rcv Channel [1] 923.9 Mhz / 61.035 Hz = 15137216 = 0xE6F9C0
+    { 0xE7, 0x20, 0x27}, //Rcv Channel [2] 924.5 Mhz / 61.035 Hz = 15147047 = 0xE72027
+    { 0xE7, 0x46, 0x8D}, //Rcv Channel [3] 925.1 Mhz / 61.035 Hz = 15156877 = 0xE7468D
+    { 0xE7, 0x6C, 0xF4}, //Rcv Channel [4] 925.7 Mhz / 61.035 Hz = 15166708 = 0xE76CF4
+    { 0xE7, 0x93, 0x5A}, //Rcv Channel [5] 926.3 Mhz / 61.035 Hz = 15176538 = 0xE7935A
+    { 0xE7, 0xB9, 0xC0}, //Rcv Channel [6] 926.9 Mhz / 61.035 Hz = 15186368 = 0xE7B9C0
+    { 0xE7, 0xE0, 0x27}, //Rcv Channel [7] 927.5 Mhz / 61.035 Hz = 15196199 = 0xE7E027
+  };
 #elif defined(AS_923)
   static const PROGMEM unsigned char  [9][3] = {//[923.2 - 924.8] MHz
     { 0xE6, 0xCC, 0xF4 }, //Channel [0], 923.2 MHz / 61.035 Hz = 15125748 = 0xE6CCF4
@@ -266,7 +366,43 @@ static void RFM_Change_Datarate(unsigned char Datarate)
     RFM_change_SF_BW(7,0x09);
     break;
   }
-#else
+#elif defined(AU_915)
+  switch (Datarate) {
+  case 0x00:  // SF10BW125
+    RFM_change_SF_BW(10,0x07);
+    break;
+  case 0x01:  // SF9BW125
+    RFM_change_SF_BW(9,0x07);
+    break;
+  case 0x02:  // SF8BW125
+    RFM_change_SF_BW(8,0x07);
+    break;
+  case 0x03:  // SF7BW125
+    RFM_change_SF_BW(7,0x07);
+    break;
+  case 0x04:  // SF8BW500
+    RFM_change_SF_BW(8,0x09);
+    break;
+  case 0x08:  // SF12BW500
+    RFM_change_SF_BW(12,0x09);
+    break;
+  case 0x09:  // SF11BW500
+    RFM_change_SF_BW(11,0x09);
+    break;
+  case 0x0A:  // SF10BW500
+    RFM_change_SF_BW(10,0x09);
+    break;
+  case 0x0B:  // SF9BW500
+    RFM_change_SF_BW(9,0x09);
+    break;
+  case 0x0C:  // SF8BW500
+    RFM_change_SF_BW(8,0x09);
+    break;
+  case 0x0D:  // SF7BW500
+    RFM_change_SF_BW(7,0x09);
+    break;
+  }
+#else //EU_868 or AS_923
   switch (Datarate) {
   case 0x00:  // SF12BW125
     RFM_change_SF_BW(12,0x07);
@@ -314,13 +450,14 @@ static void RFM_Change_Channel(unsigned char Channel)
   if (Channel <= 0x08) 
     for(unsigned char i = 0 ; i < 3 ; ++i)
       RFM_Write(RFM_REG_FR_MSB + i, pgm_read_byte(&(LoRa_Frequency[Channel][i])));  
-#else   //US915
+#else   //US915 or AU_915
   if (Channel <= 0x07)
     for(unsigned char i = 0 ; i < 3 ; ++i)
       RFM_Write(RFM_REG_FR_MSB + i, pgm_read_byte(&(LoRa_TX_Freq[Channel][i])));
   else if (Channel >= 0x08 && Channel <= 0x0F)
-    for(unsigned char i = 0 ; i < 3 ; ++i)
+    for(unsigned char i = 0 ; i < 3 ; ++i) { 
       RFM_Write(RFM_REG_FR_MSB + i, pgm_read_byte(&(LoRa_RX_Freq[Channel - 0x08][i])));
+    }
 #endif
 }
 
@@ -364,7 +501,8 @@ bool RFM_Init()
 
   //Rx Timeout set to 37 symbols
   RFM_Write(RFM_REG_SYM_TIMEOUT_LSB, 0x25);
-
+  //RFM_Write(RFM_REG_SYM_TIMEOUT_LSB, 0x05);
+  
   //Preamble length set to 8 symbols
   //0x0008 + 4 = 12
   RFM_Write(RFM_REG_PREAMBLE_MSB,0x00);
@@ -456,7 +594,7 @@ void RFM_Send_Package(sBuffer *RFM_Tx_Package, sSettings *LoRa_Settings)
 message_t RFM_Single_Receive(sSettings *LoRa_Settings)
 {
   message_t Message_Status = NO_MESSAGE;
-
+  
   //Change DIO 0 back to RxDone
   RFM_Write(RFM_REG_DIO_MAPPING1, 0x00);
 
