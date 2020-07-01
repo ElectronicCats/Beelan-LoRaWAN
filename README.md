@@ -11,17 +11,17 @@ To find out how to use the library itself, see the examples, or see the PDF file
 
 Features
 --------
-The arduino LoRaWAN library supports LoRaWAN Class A and Class C implementations operating in EU-868, AS-923 and US-915 bands. Note that this library is fairly simple with the aim of demonstrating the LoRaWAN capabilities.
+The arduino LoRaWAN library supports LoRaWAN Class A and Class C implementations operating in EU-868, AS-923, US-915 and AU-915 bands. Note that this library is fairly simple with the aim of demonstrating the LoRaWAN capabilities.
 
 What certainly works:
  - Sending packets uplink, taking into account duty cycling.
  - Custom frequencies and datarate settings.
- - Receiving downlink packets in the RX1 window (EU_868, AS923,US_915).
- - Over-the-air activation (OTAA / joining) (EU_868, AS923).
+ - Receiving downlink packets in the RX1 window (EU-868, AS-923,US-915,AU-915).
+ - Over-the-air activation (OTAA / joining) (EU-868, AS-923).
  - Class C operation.
- - Receiving downlink packets in the RX1 window (US_915).
+ - Receiving downlink packets in the RX1 window (US-915).
  - Receiving downlink packets in the RX2 window.
- - Over-the-air activation (OTAA / joining) (US_915). 
+ - Over-the-air activation (OTAA / joining) (US-915). 
 
 What has not been tested:
  - Receiving and processing MAC commands.
