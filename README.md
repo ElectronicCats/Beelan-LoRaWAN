@@ -308,6 +308,30 @@ void setup() {
 ### Set Data Rate
 You can set data rate allowed in your region (AS_923, EU_868 or US915).
 
+## For AU915
+| data_rate    | Name  | Config          | Direction   
+|--------------|-------|-----------------|----------
+| 0            | DR0   | SF12 BW 125 KHz | Uplink
+| 1            | DR1   | SF9 BW 125 KHz | Uplink
+| 2            | DR2   | SF8 BW 125 KHz | Uplink
+| 3            | DR3   | SF7 BW 125 KHz  | Uplink
+| 4            | DR4   | SF8 BW 500 KHz  | Uplink
+| 5            | DR5   | SF8 BW 500 KHz  | Uplink
+| 6            | DR6   | SF8 BW 500 KHz  | Uplink
+| 7  	       | RFU   | N/A		  | N/A
+| 8            | DR8   | SF12 BW 500 KHz  | Downlink
+| 9            | DR9   | SF11 BW 500 KHz  | Downlink
+| 10           | DR10  | SF10 BW 500 KHz  | Downlink
+| 11           | DR11  | SF9 BW 500 KHz  | Downlink
+| 12           | DR12  | SF8 BW 500 KHz  | Downlink
+| 13           | DR13  | SF7 BW 500 KHz  | Downlink
+| 14           | RFU  | N/A  | N/A
+| 15           | Defined in LoRaWAN  | N/A  | 
+
+For AU915 is important to remark that DR0-DR5 are only for UPLINKS
+and DR8-DR13 are only for DOWNLINKS
+
+
 ##	For AS923 or EU868
 | data_rate | Name | Config          |Direction
 |-----------|------|-----------------|----------------
