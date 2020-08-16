@@ -85,7 +85,8 @@ typedef struct{
 
 //Struct used for storing settings of the mote
 typedef struct {
-    unsigned char Confirm;			//0x00 Unconfirmed, 0x01 Confirmed
+    unsigned char Confirm;		//0x00 Unconfirmed, 0x01 Confirmed
+    unsigned char Mport;                //Port 1-223
     unsigned char Mote_Class;		//0x00 Class A, 0x01 Class C
     unsigned char Datarate_Tx;		//See RFM file
     unsigned char Datarate_Rx;		//See RFM file
