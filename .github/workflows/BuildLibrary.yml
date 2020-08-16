@@ -33,7 +33,6 @@ jobs:
           - arduino:samd:nano_33_iot
           - arduino:mbed:nano33ble
           - esp8266:esp8266:huzzah:eesz=4M3M,xtal=80
-          - STM32:stm32:GenF1:pnum=BLUEPILL_F103C8
 
         # Specify parameters for each board.
         # Parameters can be: platform-url, examples-exclude and examples-build-properties
@@ -50,9 +49,6 @@ jobs:
 
           - arduino-boards-fqbn: esp8266:esp8266:huzzah:eesz=4M3M,xtal=80
             platform-url: https://arduino.esp8266.com/stable/package_esp8266com_index.json
-
-          - arduino-boards-fqbn: STM32:stm32:GenF1:pnum=BLUEPILL_F103C8
-            platform-url: https://github.com/stm32duino/BoardManagerFiles/raw/dev/STM32/package_stm_index.json
 
       # Do not cancel all jobs / architectures if one job fails
       fail-fast: false
