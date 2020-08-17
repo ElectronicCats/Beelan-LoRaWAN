@@ -110,7 +110,7 @@ void loop() {
     payload[4] = counter._cb[1];
     payload[5] = counter._cb[0];
 
-    lora.sendUplink(payload, 6, 0);
+    lora.sendUplink(payload, 6, 1);
     counter.val++;
     _times++;
   }

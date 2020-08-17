@@ -69,7 +69,7 @@ void loop() {
     Serial.print("Sending: ");
     Serial.println(myStr);
     
-    lora.sendUplink(myStr, strlen(myStr), 0);
+    lora.sendUplink(myStr, strlen(myStr), 1);
     counter++;
   }
 
