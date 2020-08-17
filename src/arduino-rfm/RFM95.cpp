@@ -492,7 +492,6 @@ bool RFM_Init()
   //set to 17dbm
   RFM_Write(RFM_REG_PA_CONFIG,0xF0);
 
-
   //Switch LNA boost on
   RFM_Write(RFM_REG_LNA,0x23);
 
@@ -518,6 +517,59 @@ bool RFM_Init()
   RFM_Write(0x0F,0x00);
   return 1;
 }
+
+
+void RFM_Set_Tx_Power(int level, int outputPin)
+{
+  if (PA_OUTPUT_RFO_PIN == outputPin) {
+    // RFO
+    if (level < 0) {
+      level = 0;
+    } else if (level > 14) {
+      level = 14;
+    }
+
+    RFM_Write(RFM_REG_PA_CONFIG, 0x70 | level);
+  } else {
+    // PA BOOST
+    if (level > 17) {
+      if (level > 20) {
+        level = 20;
+      }
+
+      // subtract 3 from level, so 18 - 20 maps to 15 - 17
+      level -= 3;
+
+      // High Power +20 dBm Operation (Semtech SX1276/77/78/79 5.4.3.)
+      RFM_Write(RFM_REG_PA_DAC, 0x87);
+      setOCP(140);
+    } else {
+      if (level < 2) {
+        level = 2;
+      }
+      //Default value PA_HF/LF or +17dBm
+      RFM_Write(RFM_REG_PA_DAC, 0x84);
+      setOCP(100);
+    }
+
+    RFM_Write(RFM_REG_PA_CONFIG, PA_BOOST | (level - 2));
+  }
+}
+
+
+void RFM_set_OCP(uint8_t mA)
+{
+  uint8_t ocpTrim = 27;
+
+  if (mA <= 120) {
+    ocpTrim = (mA - 45) / 5;
+  } else if (mA <=240) {
+    ocpTrim = (mA + 30) / 10;
+  }
+
+  RFM_Write(REG_OCP, 0x20 | (0x1F & ocpTrim));
+}
+
 
 /*
 *****************************************************************************************

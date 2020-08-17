@@ -253,6 +253,11 @@ void LoRaWANClass::setDevAddr(const char *devAddr_in)
     RFM_Command_Status = NO_RFM_COMMAND;
 }
 
+void LoRaWANClass::setTxPower(int level,txPin_t pinTx)
+{
+    RFM_Set_Tx_Power(level, pinTx);
+} 
+
 void LoRaWANClass::setDeviceClass(devclass_t dev_class)
 {
     LoRa_Settings.Mote_Class = (dev_class == CLASS_A)? CLASS_A : CLASS_C;

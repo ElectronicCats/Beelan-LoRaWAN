@@ -45,6 +45,9 @@
 
 typedef enum {NO_MESSAGE,NEW_MESSAGE,CRC_OK,MIC_OK,ADDRESS_OK,MESSAGE_DONE,TIMEOUT,WRONG_MESSAGE} message_t;
 
+#define PA_OUTPUT_RFO_PIN          0
+#define PA_OUTPUT_PA_BOOST_PIN     1
+
 /*
 *****************************************************************************************
 * REGISTER DEFINITIONS
@@ -72,7 +75,8 @@ typedef enum {
     RFM_REG_INVERT_IQ2      = 0x3b,
     RFM_REG_SYNC_WORD       = 0x39,
     RFM_REG_DIO_MAPPING1    = 0x40,
-    RFM_REG_DIO_MAPPING2    = 0x41
+    RFM_REG_DIO_MAPPING2    = 0x41,
+    RFM_REG_PA_DAC          = 0x4d
     
     } rfm_register_t;
 
@@ -102,6 +106,8 @@ void RFM_Continuous_Receive(sSettings *LoRa_Settings);
 message_t RFM_Get_Package(sBuffer *RFM_Rx_Package);
 void RFM_Write(unsigned char RFM_Address, unsigned char RFM_Data);
 void RFM_Switch_Mode(unsigned char Mode);
+void RFM_Set_Tx_Power(int level, int outputPin);
+void RFM_Set_OCP(uint8_t mA);
 
 #endif
 
