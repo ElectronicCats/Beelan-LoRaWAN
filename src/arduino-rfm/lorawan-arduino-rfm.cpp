@@ -337,7 +337,7 @@ unsigned char LoRaWANClass::getChannel()
 unsigned char LoRaWANClass::getDataRate() {
     return LoRa_Settings.Datarate_Tx;
 }
-void LoRaWANClass::setTxPower(unsigned char power_idx)
+void LoRaWANClass::setTxPower1(unsigned char power_idx)
 {
     unsigned char RFM_Data;
     LoRa_Settings.Transmit_Power = (power_idx > 0x0F) ? 0x0F : power_idx; 

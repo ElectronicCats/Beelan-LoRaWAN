@@ -542,22 +542,22 @@ void RFM_Set_Tx_Power(int level, int outputPin)
 
       // High Power +20 dBm Operation (Semtech SX1276/77/78/79 5.4.3.)
       RFM_Write(RFM_REG_PA_DAC, 0x87);
-      setOCP(140);
+      RFM_Set_OCP(140);
     } else {
       if (level < 2) {
         level = 2;
       }
       //Default value PA_HF/LF or +17dBm
       RFM_Write(RFM_REG_PA_DAC, 0x84);
-      setOCP(100);
+      RFM_Set_OCP(100);
     }
 
-    RFM_Write(RFM_REG_PA_CONFIG, PA_BOOST | (level - 2));
+    RFM_Write(RFM_REG_PA_CONFIG, 0x80 | (level - 2));  //PA Boost mask
   }
 }
 
 
-void RFM_set_OCP(uint8_t mA)
+void RFM_Set_OCP(uint8_t mA)
 {
   uint8_t ocpTrim = 27;
 
@@ -567,7 +567,7 @@ void RFM_set_OCP(uint8_t mA)
     ocpTrim = (mA + 30) / 10;
   }
 
-  RFM_Write(REG_OCP, 0x20 | (0x1F & ocpTrim));
+  RFM_Write(RFM_REG_OCP, 0x20 | (0x1F & ocpTrim));
 }
 
 
