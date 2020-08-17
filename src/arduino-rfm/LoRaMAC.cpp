@@ -180,7 +180,8 @@ void LORA_Send_Data(sBuffer *Data_Tx, sLoRa_Session *Session_Data, sSettings *Lo
   if(Data_Tx->Counter > 0x00)
   {
 	//Load Frame port field
-    RFM_Data[8] = Message.Frame_Port;
+    //RFM_Data[8] = Message.Frame_Port;
+	RFM_Data[8] = LoRa_Settings->Mport;
 
     //Raise package counter
     RFM_Package.Counter++;

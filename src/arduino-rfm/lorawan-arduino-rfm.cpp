@@ -267,17 +267,17 @@ void LoRaWANClass::setDeviceClass(devclass_t dev_class)
     RFM_Command_Status = NO_RFM_COMMAND;
 }
 
-void LoRaWANClass::sendUplink(char *data, unsigned int len, unsigned char confirm)
+void LoRaWANClass::sendUplink(char *data, unsigned int len, unsigned char confirm, unsigned char mport)
 {
     if (currentChannel == MULTI) {
         randomChannel();
     }
-
-    LoRa_Settings.Confirm = (confirm == 0) ? 0 : 1;
-
+    LoRa_Settings.Confirm = (confirm == 0) ? 0 : 1;	
+    if (mport == 0) mport = 1;
+    if (mport > 223) mport = 1;	
+    LoRa_Settings.Mport = mport;
     //Set new command for RFM
-    RFM_Command_Status = NEW_RFM_COMMAND;
-    
+    RFM_Command_Status = NEW_RFM_COMMAND;   
     Buffer_Tx.Counter = len;
     memcpy(Buffer_Tx.Data,data,len);
 }
