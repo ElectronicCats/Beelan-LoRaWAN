@@ -487,10 +487,9 @@ bool RFM_Init()
   RFM_Switch_Mode(RFM_MODE_STANDBY);
   //Set channel to channel 0
   RFM_Change_Channel(CH0);
-  //PA pin (minimal power)
-  //RFM_Write(0x09,0xF0);
-  //set to 17dbm
-  RFM_Write(RFM_REG_PA_CONFIG,0xF0);
+  //Set default power to maximun on US915 TODO AS/AU/EU config
+  //Set the default output pin as PA_BOOST
+  RFM_Set_Tx_Power(20, PA_BOOST_PIN);
 
   //Switch LNA boost on
   RFM_Write(RFM_REG_LNA,0x23);
@@ -521,7 +520,7 @@ bool RFM_Init()
 
 void RFM_Set_Tx_Power(int level, int outputPin)
 {
-  if (PA_OUTPUT_RFO_PIN == outputPin) {
+  if (RFO_PIN == outputPin) {
     // RFO
     if (level < 0) {
       level = 0;
