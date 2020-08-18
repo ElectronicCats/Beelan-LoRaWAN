@@ -60,7 +60,7 @@ void setup() {
   // Set LoRaWAN Class
   lora.setDeviceClass(CLASS_A);
 
-  lora.setTxPower(15);
+  lora.setTxPower(15,PA_BOOST_PIN);
 
   counter.val = 0;
   _channel = 0; // 0 - 7

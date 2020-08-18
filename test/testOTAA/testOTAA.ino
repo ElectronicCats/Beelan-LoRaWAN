@@ -57,7 +57,7 @@ void setup() {
     return;
   }
   lora.setDeviceClass(CLASS_A);
-  lora.setTxPower(15);
+  lora.setTxPower(15,PA_BOOST_PIN);
   lora.setChannel(CH0);
   lora.setDataRate(SF9BW125);
 
