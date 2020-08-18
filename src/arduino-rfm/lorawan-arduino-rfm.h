@@ -77,7 +77,8 @@ class LoRaWANClass
         void setChannel(unsigned char channel);
         unsigned char getChannel();
         unsigned char getDataRate();
-        void setTxPower(unsigned char power_idx);
+        void setTxPower1(unsigned char power_idx);
+        void setTxPower(int level,txPin_t pinTx);
         int readData(char *outBuff);
         bool readAck(void);
         void update(void);

@@ -487,11 +487,9 @@ bool RFM_Init()
   RFM_Switch_Mode(RFM_MODE_STANDBY);
   //Set channel to channel 0
   RFM_Change_Channel(CH0);
-  //PA pin (minimal power)
-  //RFM_Write(0x09,0xF0);
-  //set to 17dbm
-  RFM_Write(RFM_REG_PA_CONFIG,0xF0);
-
+  //Set default power to maximun on US915 TODO AS/AU/EU config
+  //Set the default output pin as PA_BOOST
+  RFM_Set_Tx_Power(20, PA_BOOST_PIN);
 
   //Switch LNA boost on
   RFM_Write(RFM_REG_LNA,0x23);
@@ -518,6 +516,59 @@ bool RFM_Init()
   RFM_Write(0x0F,0x00);
   return 1;
 }
+
+
+void RFM_Set_Tx_Power(int level, int outputPin)
+{
+  if (RFO_PIN == outputPin) {
+    // RFO
+    if (level < 0) {
+      level = 0;
+    } else if (level > 14) {
+      level = 14;
+    }
+
+    RFM_Write(RFM_REG_PA_CONFIG, 0x70 | level);
+  } else {
+    // PA BOOST
+    if (level > 17) {
+      if (level > 20) {
+        level = 20;
+      }
+
+      // subtract 3 from level, so 18 - 20 maps to 15 - 17
+      level -= 3;
+
+      // High Power +20 dBm Operation (Semtech SX1276/77/78/79 5.4.3.)
+      RFM_Write(RFM_REG_PA_DAC, 0x87);
+      RFM_Set_OCP(140);
+    } else {
+      if (level < 2) {
+        level = 2;
+      }
+      //Default value PA_HF/LF or +17dBm
+      RFM_Write(RFM_REG_PA_DAC, 0x84);
+      RFM_Set_OCP(100);
+    }
+
+    RFM_Write(RFM_REG_PA_CONFIG, 0x80 | (level - 2));  //PA Boost mask
+  }
+}
+
+
+void RFM_Set_OCP(uint8_t mA)
+{
+  uint8_t ocpTrim = 27;
+
+  if (mA <= 120) {
+    ocpTrim = (mA - 45) / 5;
+  } else if (mA <=240) {
+    ocpTrim = (mA + 30) / 10;
+  }
+
+  RFM_Write(RFM_REG_OCP, 0x20 | (0x1F & ocpTrim));
+}
+
 
 /*
 *****************************************************************************************

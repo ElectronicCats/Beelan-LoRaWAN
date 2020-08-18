@@ -113,6 +113,12 @@ typedef enum {
   MULTI = 20
 } channel_t;
 
+
+typedef enum {
+    RFO_PIN  = 0,
+    PA_BOOST_PIN = 1
+} txPin_t;
+
 typedef enum {
 #if defined(US_915)
     SF10BW125   = 0x00,

@@ -253,6 +253,11 @@ void LoRaWANClass::setDevAddr(const char *devAddr_in)
     RFM_Command_Status = NO_RFM_COMMAND;
 }
 
+void LoRaWANClass::setTxPower(int level,txPin_t pinTx)
+{
+    RFM_Set_Tx_Power(level, pinTx);
+} 
+
 void LoRaWANClass::setDeviceClass(devclass_t dev_class)
 {
     LoRa_Settings.Mote_Class = (dev_class == CLASS_A)? CLASS_A : CLASS_C;
@@ -332,7 +337,7 @@ unsigned char LoRaWANClass::getChannel()
 unsigned char LoRaWANClass::getDataRate() {
     return LoRa_Settings.Datarate_Tx;
 }
-void LoRaWANClass::setTxPower(unsigned char power_idx)
+void LoRaWANClass::setTxPower1(unsigned char power_idx)
 {
     unsigned char RFM_Data;
     LoRa_Settings.Transmit_Power = (power_idx > 0x0F) ? 0x0F : power_idx; 
