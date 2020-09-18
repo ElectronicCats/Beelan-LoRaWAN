@@ -85,6 +85,8 @@ This library has been tested using:
 - ESP32
 - Electronic Cats CatWAN USB-Stick
 - Electronic Cats Bast-WAN (Based on SAMR34)
+- NINA B302 is NRF52840 core
+- STMDuino
 
 Connections
 -----------
