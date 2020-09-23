@@ -92,9 +92,9 @@ class LoRaWANClass
 
     private:        
         // Messages
-        unsigned char Data_Tx[64];
+        unsigned char Data_Tx[230];
         sBuffer Buffer_Tx;
-        unsigned char Data_Rx[64];
+        unsigned char Data_Rx[220];
         sBuffer Buffer_Rx;
         sLoRa_Message Message_Rx;
 

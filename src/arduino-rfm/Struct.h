@@ -56,10 +56,10 @@ typedef struct {
 
 //Struct used to store session data of a LoRaWAN session
 typedef struct {
-    unsigned char *NwkSKey;
-    unsigned char *AppSKey;
-    unsigned char *DevAddr;
-    unsigned int  *Frame_Counter;
+    unsigned char *NwkSKey; // 16
+    unsigned char *AppSKey; // 16
+    unsigned char *DevAddr; // 4
+    unsigned int  *Frame_Counter; // 1
 } sLoRa_Session;
 
 typedef struct {

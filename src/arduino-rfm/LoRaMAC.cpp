@@ -121,7 +121,7 @@ void LORA_Send_Data(sBuffer *Data_Tx, sLoRa_Session *Session_Data, sSettings *Lo
   unsigned char i;
 
   //Initialise RFM buffer
-  unsigned char RFM_Data[64];
+  unsigned char RFM_Data[230];
   sBuffer RFM_Package = {&RFM_Data[0], 0x00};
 
   //Initialise Message struct for a transmit message
@@ -258,7 +258,7 @@ void LORA_Receive_Data(sBuffer *Data_Rx, sLoRa_Session *Session_Data, sLoRa_OTAA
 	unsigned char i;
 
     //Initialise RFM buffer
-	unsigned char RFM_Data[64];
+	unsigned char RFM_Data[230];
 	sBuffer RFM_Package = {&RFM_Data[0], 0x00};
 
 	unsigned char MIC_Check;

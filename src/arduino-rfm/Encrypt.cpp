@@ -170,7 +170,7 @@ void Encrypt_Payload(sBuffer *Buffer, unsigned char *Key, sLoRa_Message *Message
 void Construct_Data_MIC(sBuffer *Buffer, sLoRa_Session *Session_Data, sLoRa_Message *Message)
 {
     unsigned char i;
-    unsigned char MIC_Data[80];
+    unsigned char MIC_Data[268];
     sBuffer MIC_Buffer = { &MIC_Data[0], 0x00 };
 
     unsigned char Block_B[16];
