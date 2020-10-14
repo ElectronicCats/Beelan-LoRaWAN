@@ -115,7 +115,7 @@ For example, this could look like this:
   	
 API
 --------
-This library provides a high-level API for connecting the device to Antares server.
+This library provides a high-level API for connecting the device to Beelan server.
 
 ### LoRa module initialization
 Initialize LoRa/LoRaWAN module. Must be called once in the Arduino setup block.
