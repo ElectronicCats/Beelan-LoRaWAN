@@ -523,6 +523,10 @@ bool LORA_join_Accept(sBuffer *Data_Rx,sLoRa_Session *Session_Data, sLoRa_OTAA *
 	//If there is a message received get the data from the RFM
 	if(Message_Status == NEW_MESSAGE)
 		Message_Status = RFM_Get_Package(&RFM_Package);
+	
+	#if defined(ESP8266) || defined(ESP32) 
+	yield();
+	#endif
 
 	//if CRC ok breakdown package
 	if(Message_Status == CRC_OK)
