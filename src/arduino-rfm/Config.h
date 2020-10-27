@@ -1,6 +1,10 @@
 //Uncomment for debug 
 //#define DEBUG
 
+// Define max payload size used for this node
+#define MAX_UPLINK_PAYLOAD_SIZE    220  
+#define MAX_DOWNLINK_PAYLOAD_SIZE   220
+
 // LoRaWAN freq band
 // #define AS_923
 //#define EU_868
