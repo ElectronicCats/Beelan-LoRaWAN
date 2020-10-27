@@ -170,7 +170,7 @@ void Encrypt_Payload(sBuffer *Buffer, unsigned char *Key, sLoRa_Message *Message
 void Construct_Data_MIC(sBuffer *Buffer, sLoRa_Session *Session_Data, sLoRa_Message *Message)
 {
     unsigned char i;
-    unsigned char MIC_Data[80];
+    unsigned char MIC_Data[MAX_UPLINK_PAYLOAD_SIZE+65];
     sBuffer MIC_Buffer = { &MIC_Data[0], 0x00 };
 
     unsigned char Block_B[16];
@@ -253,7 +253,7 @@ void Calculate_MIC(sBuffer *Buffer, unsigned char *Key, sLoRa_Message *Message)
 	//Calculate number of Blocks and blocksize of last block
 	Number_of_Blocks = Buffer->Counter / 16;
 	Incomplete_Block_Size = Buffer->Counter % 16;
-
+	
     //if there is an incomplete block at the end add 1 to the number of blocks
 	if(Incomplete_Block_Size != 0)
 	{

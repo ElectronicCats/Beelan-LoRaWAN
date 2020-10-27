@@ -159,8 +159,7 @@ bool LoRaWANClass::join(void)
 {    
     bool join_status;
     const unsigned long timeout = 6000;
-    unsigned long prev_millis;
-    unsigned char i = 0; 
+    unsigned long prev_millis;    
 
     if (currentChannel == MULTI) {
         randomChannel();

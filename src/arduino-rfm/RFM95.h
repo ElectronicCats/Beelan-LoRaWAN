@@ -108,7 +108,7 @@ message_t RFM_Get_Package(sBuffer *RFM_Rx_Package);
 void RFM_Write(unsigned char RFM_Address, unsigned char RFM_Data);
 void RFM_Switch_Mode(unsigned char Mode);
 void RFM_Set_Tx_Power(int level, int outputPin);
-void RFM_Set_OCP(uint8_t mA);
+void RFM_Set_OCP(unsigned char mA);
 
 
 #endif

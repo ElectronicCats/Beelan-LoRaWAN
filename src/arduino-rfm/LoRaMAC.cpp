@@ -81,9 +81,9 @@ void LORA_Cycle(sBuffer *Data_Tx, sBuffer *Data_Rx, RFM_command_t *RFM_Command, 
   while((digitalRead(RFM_pins.DIO0) != HIGH) && (millis() - prevTime < Receive_Delay_1));
 
   //Get data
-	LORA_Receive_Data(Data_Rx, Session_Data, OTAA_Data, Message_Rx, LoRa_Settings);
-	*RFM_Command = NO_RFM_COMMAND;
-
+  LORA_Receive_Data(Data_Rx, Session_Data, OTAA_Data, Message_Rx, LoRa_Settings);
+  *RFM_Command = NO_RFM_COMMAND;
+	
 	if (Data_Rx->Counter==0)
 	{
 		// wait rx2 window
@@ -121,7 +121,7 @@ void LORA_Send_Data(sBuffer *Data_Tx, sLoRa_Session *Session_Data, sSettings *Lo
   unsigned char i;
 
   //Initialise RFM buffer
-  unsigned char RFM_Data[64];
+  unsigned char RFM_Data[MAX_UPLINK_PAYLOAD_SIZE+65];
   sBuffer RFM_Package = {&RFM_Data[0], 0x00};
 
   //Initialise Message struct for a transmit message
@@ -157,20 +157,20 @@ void LORA_Send_Data(sBuffer *Data_Tx, sLoRa_Session *Session_Data, sSettings *Lo
 
   //Build the Radio Package
   //Load mac header
-  RFM_Data[0] = Message.MAC_Header;
+  RFM_Package.Data[0] = Message.MAC_Header;
 
   //Load device address
-  RFM_Data[1] = Message.DevAddr[3];
-  RFM_Data[2] = Message.DevAddr[2];
-  RFM_Data[3] = Message.DevAddr[1];
-  RFM_Data[4] = Message.DevAddr[0];
+  RFM_Package.Data[1] = Message.DevAddr[3];
+  RFM_Package.Data[2] = Message.DevAddr[2];
+  RFM_Package.Data[3] = Message.DevAddr[1];
+  RFM_Package.Data[4] = Message.DevAddr[0];
 
   //Load frame control
-  RFM_Data[5] = Message.Frame_Control;
+  RFM_Package.Data[5] = Message.Frame_Control;
 
   //Load frame counter
-  RFM_Data[6] = (*Session_Data->Frame_Counter & 0x00FF);
-  RFM_Data[7] = ((*Session_Data->Frame_Counter >> 8) & 0x00FF);
+  RFM_Package.Data[6] = (*Session_Data->Frame_Counter & 0x00FF);
+  RFM_Package.Data[7] = ((*Session_Data->Frame_Counter >> 8) & 0x00FF);
 
   //Set data counter to 8
   RFM_Package.Counter = 8;
@@ -181,7 +181,7 @@ void LORA_Send_Data(sBuffer *Data_Tx, sLoRa_Session *Session_Data, sSettings *Lo
   {
 	//Load Frame port field
     //RFM_Data[8] = Message.Frame_Port;
-	RFM_Data[8] = LoRa_Settings->Mport;
+	RFM_Package.Data[8] = LoRa_Settings->Mport;
 
     //Raise package counter
     RFM_Package.Counter++;
@@ -192,11 +192,10 @@ void LORA_Send_Data(sBuffer *Data_Tx, sLoRa_Session *Session_Data, sSettings *Lo
     //Load Data
     for(i = 0; i < Data_Tx->Counter; i++)
     {
-      RFM_Data[RFM_Package.Counter + i] = Data_Tx->Data[i];
+      RFM_Package.Data[RFM_Package.Counter++] = Data_Tx->Data[i];
     }
 
-    //Add data Length to package counter
-    RFM_Package.Counter = RFM_Package.Counter + Data_Tx->Counter;
+
   }
 
   //Calculate MIC
@@ -205,11 +204,8 @@ void LORA_Send_Data(sBuffer *Data_Tx, sLoRa_Session *Session_Data, sSettings *Lo
   //Load MIC in package
   for(i = 0; i < 4; i++)
   {
-    RFM_Data[i + RFM_Package.Counter] = Message.MIC[i];
+    RFM_Package.Data[RFM_Package.Counter++] = Message.MIC[i];
   }
-
-  //Add MIC length to RFM package length
-  RFM_Package.Counter = RFM_Package.Counter + 4;
 
   //Send Package
   RFM_Send_Package(&RFM_Package, LoRa_Settings);
@@ -258,7 +254,7 @@ void LORA_Receive_Data(sBuffer *Data_Rx, sLoRa_Session *Session_Data, sLoRa_OTAA
 	unsigned char i;
 
     //Initialise RFM buffer
-	unsigned char RFM_Data[64];
+	unsigned char RFM_Data[MAX_DOWNLINK_PAYLOAD_SIZE+65];
 	sBuffer RFM_Package = {&RFM_Data[0], 0x00};
 
 	unsigned char MIC_Check;
@@ -492,7 +488,7 @@ void LoRa_Send_JoinReq(sLoRa_OTAA *OTAA_Data, sSettings *LoRa_Settings)
     //Set length of package
     RFM_Package.Counter = 19;
 
-    //Get MIC
+    //Get MIC	
     Calculate_MIC(&RFM_Package, OTAA_Data->AppKey, &Message);
 
     //Load MIC in package
@@ -617,10 +613,10 @@ bool LORA_join_Accept(sBuffer *Data_Rx,sLoRa_Session *Session_Data, sLoRa_OTAA *
 				Data_Rx->Counter = 0x00;
 
 #ifdef DEBUG
-				Serial.print("NwkSKey: ");
+				Serial.print(F("NwkSKey: "));
 				for(byte i = 0; i < 16 ;++i)
 					Serial.print(Session_Data->NwkSKey[i],HEX);
-				Serial.print("\nAppSKey: ");
+				Serial.print(F("\nAppSKey: "));
 				for(byte i = 0; i < 16 ;++i)
 					Serial.print(Session_Data->AppSKey[i],HEX);
 				Serial.println();
