@@ -65,7 +65,7 @@ void LORA_Cycle(sBuffer *Data_Tx, sBuffer *Data_Rx, RFM_command_t *RFM_Command, 
  									sLoRa_OTAA *OTAA_Data, sLoRa_Message *Message_Rx, sSettings *LoRa_Settings)
 {
 	static const unsigned int Receive_Delay_1 = 1000;
-	static const unsigned int Receive_Delay_2 = 2000;
+	static const unsigned int Receive_Delay_2 = 1000;
 	unsigned long prevTime = 0;
 
   //Transmit
@@ -74,6 +74,20 @@ void LORA_Cycle(sBuffer *Data_Tx, sBuffer *Data_Rx, RFM_command_t *RFM_Command, 
     //Lora send data
     LORA_Send_Data(Data_Tx, Session_Data, LoRa_Settings);
 	prevTime = millis();
+		// Class C open RX2 immediately after sending data
+	if(LoRa_Settings->Mote_Class == 0x01)
+	{
+	// RX2 window
+	LoRa_Settings->Channel_Rx = Channel_Rx_2;    // set Rx2 channel
+	LoRa_Settings->Datarate_Rx = Datarate_Rx_2;   //set data rate Rx2
+	LORA_Receive_Data(Data_Rx, Session_Data, OTAA_Data, Message_Rx, LoRa_Settings);
+	if(Data_Rx->Counter > 0) {
+		Serial.print((char *)Data_Rx->Data);
+	} else {
+		Serial.println("No Data RX2 Class C");
+	}
+	}
+
     *RFM_Command = NO_RFM_COMMAND;
   }
 
@@ -92,7 +106,8 @@ void LORA_Cycle(sBuffer *Data_Tx, sBuffer *Data_Rx, RFM_command_t *RFM_Command, 
 		//Get data
 		// TODO
 		// The RX2 receive window uses a fixed frequency and data rate. The default parameters are 
- 		// 869.525 MHz / DR0 (SF12, 125 kHz) 
+		// 869.525 MHz / DR0 (SF12, 125 kHz) 
+
 	#ifdef EU_868
 		unsigned char previousChannelRX=LoRa_Settings->Channel_Rx;
 		unsigned char previousDatarateRX=LoRa_Settings->Datarate_Rx;
