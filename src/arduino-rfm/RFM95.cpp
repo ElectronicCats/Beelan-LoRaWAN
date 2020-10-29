@@ -703,6 +703,9 @@ void RFM_Continuous_Receive(sSettings *LoRa_Settings)
   //Datarate for downlink should be 8 but testing on 10
   //LoRa_Settings->Datarate_Rx=10;
   //LoRa_Settings->Channel_Rx=0;
+  Serial.println("DataRate Rx "+String(LoRa_Settings->Datarate_Rx));
+  Serial.println("Cannel Rx "+String(LoRa_Settings->Channel_Rx));
+  
 	RFM_Change_Datarate(LoRa_Settings->Datarate_Rx);
 	RFM_Change_Channel(LoRa_Settings->Channel_Rx);
 #endif
