@@ -331,6 +331,7 @@ static void RFM_change_SF_BW(unsigned char _SF, unsigned char _BW)
 static void RFM_Change_Datarate(unsigned char Datarate)
 {
 #if defined(US_915)
+  Serial.println("Change to Datarate "+String(Datarate));
   switch (Datarate) {
   case 0x00:  // SF10BW125
     RFM_change_SF_BW(10,0x07);
@@ -623,13 +624,6 @@ void RFM_Send_Package(sBuffer *RFM_Tx_Package, sSettings *LoRa_Settings)
 
   //Clear interrupt
   RFM_Write(RFM_REG_IRQ_FLAGS,0x08);
-
-  //Switch RFM back to receive if it is a type C mote
-  if(LoRa_Settings->Mote_Class == CLASS_C)
-  {
-    //Switch Back to Continuous receive
-    RFM_Continuous_Receive(LoRa_Settings);
-  }
 }
 
 /*
@@ -706,6 +700,9 @@ void RFM_Continuous_Receive(sSettings *LoRa_Settings)
   RFM_Change_Datarate(SF12BW125);
   RFM_Change_Channel(CHRX2);
 #else
+  //Datarate for downlink should be 8 but testing on 10
+  //LoRa_Settings->Datarate_Rx=10;
+  //LoRa_Settings->Channel_Rx=0;
 	RFM_Change_Datarate(LoRa_Settings->Datarate_Rx);
 	RFM_Change_Channel(LoRa_Settings->Channel_Rx);
 #endif

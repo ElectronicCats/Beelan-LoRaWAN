@@ -383,7 +383,7 @@ void LoRaWANClass::update(void)
     //Type A mote transmit receive cycle
     if((RFM_Command_Status == NEW_RFM_COMMAND || RFM_Command_Status == JOIN) && LoRa_Settings.Mote_Class == CLASS_A)
     {
-      //LoRa cycle
+      //LoRaWAN TX/RX cycle
       LORA_Cycle(&Buffer_Tx, &Buffer_Rx, &RFM_Command_Status, &Session_Data, &OTAA_Data, &Message_Rx, &LoRa_Settings);
 
       if ((Message_Rx.Frame_Control & 0x20) > 0)
@@ -403,18 +403,19 @@ void LoRaWANClass::update(void)
        //Transmit
       if(RFM_Command_Status == NEW_RFM_COMMAND)
       {     
-        //Lora send data
-        LORA_Send_Data(&Buffer_Tx, &Session_Data, &LoRa_Settings);
-
+        //LoRaWAN TX/RX cycle
+        LORA_Cycle(&Buffer_Tx, &Buffer_Rx, &RFM_Command_Status, &Session_Data, &OTAA_Data, &Message_Rx, &LoRa_Settings);
+        if(Buffer_Rx.Counter != 0x00){
+            Rx_Status = NEW_RX;
+        }
         RFM_Command_Status = NO_RFM_COMMAND;
       }
 
       //Receive
       if(digitalRead(RFM_pins.DIO0) == HIGH)
       {
-        //Get data
+        Serial.println("Get data");
         LORA_Receive_Data(&Buffer_Rx, &Session_Data, &OTAA_Data, &Message_Rx, &LoRa_Settings);
-
         if(Buffer_Rx.Counter != 0x00)
         {
             Rx_Status = NEW_RX;
