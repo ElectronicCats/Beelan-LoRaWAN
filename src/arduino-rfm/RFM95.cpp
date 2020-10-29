@@ -331,7 +331,6 @@ static void RFM_change_SF_BW(unsigned char _SF, unsigned char _BW)
 static void RFM_Change_Datarate(unsigned char Datarate)
 {
 #if defined(US_915)
-  Serial.println("Change to Datarate "+String(Datarate));
   switch (Datarate) {
   case 0x00:  // SF10BW125
     RFM_change_SF_BW(10,0x07);
@@ -703,8 +702,8 @@ void RFM_Continuous_Receive(sSettings *LoRa_Settings)
   //Datarate for downlink should be 8 but testing on 10
   //LoRa_Settings->Datarate_Rx=10;
   //LoRa_Settings->Channel_Rx=0;
-  Serial.println("DataRate Rx "+String(LoRa_Settings->Datarate_Rx));
-  Serial.println("Cannel Rx "+String(LoRa_Settings->Channel_Rx));
+  //Serial.println("DataRate Rx "+String(LoRa_Settings->Datarate_Rx));
+  //Serial.println("Cannel Rx "+String(LoRa_Settings->Channel_Rx));
   
 	RFM_Change_Datarate(LoRa_Settings->Datarate_Rx);
 	RFM_Change_Channel(LoRa_Settings->Channel_Rx);
