@@ -68,7 +68,7 @@ void LORA_Cycle(sBuffer *Data_Tx, sBuffer *Data_Rx, RFM_command_t *RFM_Command, 
 	static const unsigned int Receive_Delay_2 = 1000;
 	unsigned long prevTime = 0;
 	unsigned char rx1_ch = LoRa_Settings->Channel_Rx;
-	unsigned char rx1_dr = LoRa_Settings->Datarate_Tx;
+	unsigned char rx1_dr = LoRa_Settings->Datarate_Tx+10;
   	//Transmit
 	if(*RFM_Command == NEW_RFM_COMMAND){
     	//Lora send data
@@ -79,10 +79,9 @@ void LORA_Cycle(sBuffer *Data_Tx, sBuffer *Data_Rx, RFM_command_t *RFM_Command, 
 		if(LoRa_Settings->Mote_Class == CLASS_C){	
 			// RX2 window
 			LoRa_Settings->Channel_Rx = 0x08;    // set Rx2 channel 923.3 MHZ 
-			LoRa_Settings->Datarate_Rx = 12;   //set RX2 datarate 10
+			LoRa_Settings->Datarate_Rx = 0x0C;   //set RX2 datarate 10
 			LORA_Receive_Data(Data_Rx, Session_Data, OTAA_Data, Message_Rx, LoRa_Settings);
 		}
-		Serial.println("RX2");
 		//Wait rx1 window delay 
 		//Receive on RX2 if countinous mode is available
 		//check if anything if coming on class C RX2 window in class A no DIO0 flag will be activated
@@ -90,7 +89,6 @@ void LORA_Cycle(sBuffer *Data_Tx, sBuffer *Data_Rx, RFM_command_t *RFM_Command, 
 			if(digitalRead(RFM_pins.DIO0))		//Poll Rx done for getting message
 				LORA_Receive_Data(Data_Rx, Session_Data, OTAA_Data, Message_Rx, LoRa_Settings);
 		}while(millis() - prevTime < Receive_Delay_1);
-		Serial.println();
 		//Return if message on RX2 
 		if (Data_Rx->Counter>0)return;
 		
@@ -102,7 +100,6 @@ void LORA_Cycle(sBuffer *Data_Tx, sBuffer *Data_Rx, RFM_command_t *RFM_Command, 
 		
 		//Receive Data RX1
 		LORA_Receive_Data(Data_Rx, Session_Data, OTAA_Data, Message_Rx, LoRa_Settings);
-		Serial.println("RX1");
 		//Wait rx2 window delay 
 		do{
 			//Poll Rx done for getting message
@@ -110,19 +107,17 @@ void LORA_Cycle(sBuffer *Data_Tx, sBuffer *Data_Rx, RFM_command_t *RFM_Command, 
 			if(digitalRead(RFM_pins.DIO0))
 				LORA_Receive_Data(Data_Rx, Session_Data, OTAA_Data, Message_Rx, LoRa_Settings); 
 		}while(millis() - prevTime < Receive_Delay_2);
-		Serial.println();
 		//Return if message on RX1
 		if (Data_Rx->Counter>0)return;
 
 		//Configure datarate and channel for RX2
 		LoRa_Settings->Channel_Rx = 0x08;    // set RX2 channel 
-		LoRa_Settings->Datarate_Rx = 12;   //set RX2 datarate
+		LoRa_Settings->Datarate_Rx = 0x0C;   //set RX2 datarate
 		
 		//Receive Data RX2 
 		//If class A timeout will apply
 		//If class C continous Rx will happen
 		LORA_Receive_Data(Data_Rx, Session_Data, OTAA_Data, Message_Rx, LoRa_Settings);
-		Serial.println("RX2");
 		*RFM_Command = NO_RFM_COMMAND;
 	}
 }
@@ -311,10 +306,9 @@ void LORA_Receive_Data(sBuffer *Data_Rx, sLoRa_Session *Session_Data, sLoRa_OTAA
 			RFM_Continuous_Receive(LoRa_Settings);
 		}
 	}
-
 	//if CRC ok breakdown package
 	if(Message_Status == CRC_OK)
-	{
+	{	
 		//Get MAC_Header
     	Message->MAC_Header = RFM_Data[0];
 
@@ -358,25 +352,22 @@ void LORA_Receive_Data(sBuffer *Data_Rx, sLoRa_Session *Session_Data, sLoRa_OTAA
       		}
       		else
       		{
-      		  Message_Status = WRONG_MESSAGE;
+      			Message_Status = WRONG_MESSAGE;
       		}
 
       		Address_Check = 0;
 
       		//Check address
-			  Serial.println("Check DevAddr");
       		if(MIC_Check == 0x04)
       		{
 			      for(i = 0x00; i < 4; i++)
 			      {
-					Serial.print(Message->DevAddr[i]);
 			        if(Session_Data->DevAddr[i] == Message->DevAddr[i])
 			        {
 						Address_Check++;
 			        }
 			      }
       		}
-			Serial.println();
 
 		  	if(Address_Check == 0x04)
 		  	{
