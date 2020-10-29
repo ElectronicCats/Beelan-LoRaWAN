@@ -67,56 +67,64 @@ void LORA_Cycle(sBuffer *Data_Tx, sBuffer *Data_Rx, RFM_command_t *RFM_Command, 
 	static const unsigned int Receive_Delay_1 = 1000;
 	static const unsigned int Receive_Delay_2 = 1000;
 	unsigned long prevTime = 0;
-
-  //Transmit
-  if(*RFM_Command == NEW_RFM_COMMAND)
-  {
-    //Lora send data
-    LORA_Send_Data(Data_Tx, Session_Data, LoRa_Settings);
-	prevTime = millis();
+	unsigned char rx1_ch = LoRa_Settings->Channel_Rx;
+	unsigned char rx1_dr = LoRa_Settings->Datarate_Rx;
+  	//Transmit
+	if(*RFM_Command == NEW_RFM_COMMAND){
+    	//Lora send data
+    	LORA_Send_Data(Data_Tx, Session_Data, LoRa_Settings);
+		prevTime = millis();
+		
 		// Class C open RX2 immediately after sending data
-	if(LoRa_Settings->Mote_Class == 0x01)
-	{
-	// RX2 window
-	//LoRa_Settings->Channel_Rx = Channel_Rx_2;    // set Rx2 channel
-	//LoRa_Settings->Datarate_Rx = Datarate_Rx_2;   //set data rate Rx2
-	LORA_Receive_Data(Data_Rx, Session_Data, OTAA_Data, Message_Rx, LoRa_Settings);
-	if(Data_Rx->Counter > 0) {
-		Serial.print((char *)Data_Rx->Data);
-	} else {
-		Serial.println("No Data RX2 Class C");
-	}
-	}
-
-    *RFM_Command = NO_RFM_COMMAND;
-  }
-
-	// wait rx1 window
-  while((digitalRead(RFM_pins.DIO0) != HIGH) && (millis() - prevTime < Receive_Delay_1));
-
-  //Get data
-  LORA_Receive_Data(Data_Rx, Session_Data, OTAA_Data, Message_Rx, LoRa_Settings);
-  *RFM_Command = NO_RFM_COMMAND;
-	
-	if (Data_Rx->Counter==0)
-	{
-		// wait rx2 window
-		while((digitalRead(RFM_pins.DIO0) != HIGH) && (millis() - prevTime < Receive_Delay_2));
-
-		//Get data
-		// TODO
-		// The RX2 receive window uses a fixed frequency and data rate. The default parameters are 
-		// 869.525 MHz / DR0 (SF12, 125 kHz) 
-
-	#ifdef EU_868
-		unsigned char previousChannelRX=LoRa_Settings->Channel_Rx;
-		unsigned char previousDatarateRX=LoRa_Settings->Datarate_Rx;
-		LoRa_Settings->Channel_Rx=CHRX2;
-		LoRa_Settings->Datarate_Rx=SF9BW125;
-		LoRa_Settings->Channel_Rx=previousChannelRX;
-		LoRa_Settings->Datarate_Rx=previousDatarateRX;
-	#endif
+		if(LoRa_Settings->Mote_Class == CLASS_C){	
+			// RX2 window
+			LoRa_Settings->Channel_Rx = 0;    // set Rx2 channel 923.3 MHZ 
+			LoRa_Settings->Datarate_Rx = 10;   //set RX2 datarate 10
+			LORA_Receive_Data(Data_Rx, Session_Data, OTAA_Data, Message_Rx, LoRa_Settings);
+		}
+		Serial.println("RX2");
+		//Wait rx1 window delay 
+		//Receive on RX2 if countinous mode is available
+		//check if anything if coming on class C RX2 window in class A no DIO0 flag will be activated
+		do{
+			Serial.print(".");
+			if(digitalRead(RFM_pins.DIO0))		//Poll Rx done for getting message
+				LORA_Receive_Data(Data_Rx, Session_Data, OTAA_Data, Message_Rx, LoRa_Settings);
+		}while(millis() - prevTime < Receive_Delay_1);
+		Serial.println();
+		//Return if message on RX2 
+		if (Data_Rx->Counter>0)return;
+		
+		//Update time for counting 1 sec more
+		prevTime = millis(); 
+		//Return to datarate and channel for RX1
+		LoRa_Settings->Channel_Rx = rx1_ch;    // set RX1 channel 
+		LoRa_Settings->Datarate_Rx = rx1_dr;   //set RX1 datarate
+		
+		//Receive Data RX1
 		LORA_Receive_Data(Data_Rx, Session_Data, OTAA_Data, Message_Rx, LoRa_Settings);
+		Serial.println("RX1");
+		//Wait rx2 window delay 
+		do{
+			//Poll Rx done for getting message
+			//DIO0 flag will only be active while class C
+			Serial.print(".");
+			if(digitalRead(RFM_pins.DIO0))
+				LORA_Receive_Data(Data_Rx, Session_Data, OTAA_Data, Message_Rx, LoRa_Settings); 
+		}while(millis() - prevTime < Receive_Delay_2);
+		Serial.println();
+		//Return if message on RX1
+		if (Data_Rx->Counter>0)return;
+
+		//Configure datarate and channel for RX2
+		LoRa_Settings->Channel_Rx = 0;    // set RX2 channel 
+		LoRa_Settings->Datarate_Rx = 10;   //set RX2 datarate
+		
+		//Receive Data RX2 
+		//If class A timeout will apply
+		//If class C continous Rx will happen
+		LORA_Receive_Data(Data_Rx, Session_Data, OTAA_Data, Message_Rx, LoRa_Settings);
+		Serial.println("RX2");
 		*RFM_Command = NO_RFM_COMMAND;
 	}
 }
@@ -290,7 +298,6 @@ void LORA_Receive_Data(sBuffer *Data_Rx, sLoRa_Session *Session_Data, sLoRa_OTAA
 	{
 		//Switch RFM to standby
 		RFM_Switch_Mode(RFM_MODE_STANDBY);
-
 		Message_Status = NEW_MESSAGE;
 	}
 
@@ -417,16 +424,15 @@ void LORA_Receive_Data(sBuffer *Data_Rx, sLoRa_Session *Session_Data, sLoRa_OTAA
 						Data_Rx->Data[i] = RFM_Data[Data_Location + i];
 					}
 
-         //Check frame port fiels. When zero it is a mac command message encrypted with NwkSKey
-         if(Message->Frame_Port == 0x00)
-         {
-          Encrypt_Payload(Data_Rx, Session_Data->NwkSKey, Message);
-         }
-         else
-         {
-          Encrypt_Payload(Data_Rx, Session_Data->AppSKey, Message);
-         }
-
+				//Check frame port fiels. When zero it is a mac command message encrypted with NwkSKey
+				if(Message->Frame_Port == 0x00)
+				{
+				Encrypt_Payload(Data_Rx, Session_Data->NwkSKey, Message);
+				}
+				else
+				{
+				Encrypt_Payload(Data_Rx, Session_Data->AppSKey, Message);
+				}
 					Message_Status = MESSAGE_DONE;
 				}
 			}
