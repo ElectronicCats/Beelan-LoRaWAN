@@ -79,7 +79,7 @@ void LORA_Cycle(sBuffer *Data_Tx, sBuffer *Data_Rx, RFM_command_t *RFM_Command, 
 		if(LoRa_Settings->Mote_Class == CLASS_C){	
 			// RX2 window
 			LoRa_Settings->Channel_Rx = 0x08;    // set Rx2 channel 923.3 MHZ 
-			LoRa_Settings->Datarate_Rx = 0x0C;   //set RX2 datarate 10
+			LoRa_Settings->Datarate_Rx = 0x08;   //set RX2 datarate 12
 			LORA_Receive_Data(Data_Rx, Session_Data, OTAA_Data, Message_Rx, LoRa_Settings);
 		}
 		//Wait rx1 window delay 
@@ -112,7 +112,7 @@ void LORA_Cycle(sBuffer *Data_Tx, sBuffer *Data_Rx, RFM_command_t *RFM_Command, 
 
 		//Configure datarate and channel for RX2
 		LoRa_Settings->Channel_Rx = 0x08;    // set RX2 channel 
-		LoRa_Settings->Datarate_Rx = 0x0C;   //set RX2 datarate
+		LoRa_Settings->Datarate_Rx = 0x08;   //set RX2 datarate
 		
 		//Receive Data RX2 
 		//If class A timeout will apply
