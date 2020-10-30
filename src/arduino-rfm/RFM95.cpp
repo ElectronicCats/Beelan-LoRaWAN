@@ -315,10 +315,12 @@ static void RFM_change_SF_BW(unsigned char _SF, unsigned char _BW)
 	RFM_Write(RFM_REG_MODEM_CONFIG2, (_SF << 4) | 0b0100); //SFx CRC On
 	RFM_Write(RFM_REG_MODEM_CONFIG1,(_BW << 4) | 0x02); //x kHz 4/5 coding rate explicit header mode
 
-  if(_SF==12 || _SF==11)
-    RFM_Write(RFM_REG_MODEM_CONFIG3, 0x0C); //Low datarate optimization on AGC auto on
-  else
+  if(_SF==12 || _SF==11){
+    RFM_Write(RFM_REG_MODEM_CONFIG3, 0x04); //Low datarate optimization on AGC auto on (disable not working on US915)
+  }else{
     RFM_Write(RFM_REG_MODEM_CONFIG3, 0x04); //Mobile node, low datarate optimization on AGC acorging to register LnaGain
+  }
+    
 }
 /*
 *****************************************************************************************
