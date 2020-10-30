@@ -412,7 +412,7 @@ void LoRaWANClass::update(void)
 
       //Receive
       if(digitalRead(RFM_pins.DIO0) == HIGH){
-        Serial.println("Get data");
+        //Serial.println("Get data");
         LORA_Receive_Data(&Buffer_Rx, &Session_Data, &OTAA_Data, &Message_Rx, &LoRa_Settings);
         if(Buffer_Rx.Counter != 0x00){
             Rx_Status = NEW_RX;
