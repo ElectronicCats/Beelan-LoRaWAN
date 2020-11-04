@@ -1,21 +1,21 @@
 #include <lorawan.h>
 
 //ABP Credentials 
-const char *devAddr = "01addd38";
-const char *nwkSKey = "b2ef58d25e9523ab8618c5e6ce1d1b66";
-const char *appSKey = "02e06f9ccccd4f0a4376a89954be606c";
+const char *devAddr = "00000000";
+const char *nwkSKey = "00000000000000000000000000000000";
+const char *appSKey = "00000000000000000000000000000000";
 
 char myStr[240];
 char outStr[255];
 byte recvStatus = 0;
 
 const sRFM_pins RFM_pins = {
-  .CS = SS,
-  .RST = RFM_RST,
-  .DIO0 = RFM_DIO0,
-  .DIO1 = RFM_DIO1,
-  .DIO2 = RFM_DIO2,
-  .DIO5 = RFM_DIO5,
+  .CS = 6,
+  .RST = 7,
+  .DIO0 = 8,
+  .DIO1 = 9,
+  .DIO2 = -1,
+  .DIO5 = -1,
 };
 
 
