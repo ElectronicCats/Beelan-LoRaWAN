@@ -81,7 +81,6 @@ void LORA_Cycle(sBuffer *Data_Tx, sBuffer *Data_Rx, RFM_command_t *RFM_Command, 
 			LoRa_Settings->Channel_Rx = 0x08;    // set Rx2 channel 923.3 MHZ 
 			LoRa_Settings->Datarate_Rx = 0x08;   //set RX2 datarate 12
 			LORA_Receive_Data(Data_Rx, Session_Data, OTAA_Data, Message_Rx, LoRa_Settings);  //BUG DETECT SENDED PACKET ALWAYS (IT DOES UPDATE)
-			Serial.println("Data RX counter "+String(Data_Rx->Counter));
 		}
 		//Wait rx1 window delay 
 		//Receive on RX2 if countinous mode is available
@@ -360,21 +359,17 @@ void LORA_Receive_Data(sBuffer *Data_Rx, sLoRa_Session *Session_Data, sLoRa_OTAA
 
       		Address_Check = 0;
 
-			Serial.print("DevAddr ");
       		//Check address
       		if(MIC_Check == 0x04)
       		{
 			      for(i = 0x00; i < 4; i++)
 			      {
-			        Serial.print(Message->DevAddr[i]);
 					if(Session_Data->DevAddr[i] == Message->DevAddr[i])
 			        {
 						Address_Check++;
 			        }
 			      }
       		}
-
-			Serial.println();
 		  	if(Address_Check == 0x04)
 		  	{
 				Message_Status = ADDRESS_OK;
