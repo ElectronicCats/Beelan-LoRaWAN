@@ -92,7 +92,12 @@ void LORA_Cycle(sBuffer *Data_Tx, sBuffer *Data_Rx, RFM_command_t *RFM_Command, 
   }
 
 	// wait rx1 window
-  while((digitalRead(RFM_pins.DIO0) != HIGH) && (millis() - prevTime < Receive_Delay_1));
+  while((digitalRead(RFM_pins.DIO0) != HIGH) && (millis() - prevTime < Receive_Delay_1))
+    {
+	#if defined(ESP8266) || defined(ESP32) 
+	yield();
+	#endif
+    };
 
   //Get data
   LORA_Receive_Data(Data_Rx, Session_Data, OTAA_Data, Message_Rx, LoRa_Settings);
