@@ -71,7 +71,7 @@ void LORA_Cycle(sBuffer *Data_Tx, sBuffer *Data_Rx, RFM_command_t *RFM_Command, 
 	unsigned char rx1_dr = LoRa_Settings->Datarate_Tx+10;
   	//Transmit
 	if(*RFM_Command == NEW_RFM_COMMAND){
-		#if defined(SAMR34)
+		#if (SAMR34)
 		pinMode(RFM_SWITCH,OUTPUT);
 		digitalWrite(RFM_SWITCH,0); //Rf switch inside RAK module change to Tx
 		#endif	
@@ -81,7 +81,7 @@ void LORA_Cycle(sBuffer *Data_Tx, sBuffer *Data_Rx, RFM_command_t *RFM_Command, 
 		
 		// Class C open RX2 immediately after sending data
 		if(LoRa_Settings->Mote_Class == CLASS_C){
-			#ifdef SAMR34
+			#if (SAMR34)
 			pinMode(RFM_SWITCH,OUTPUT);
 			digitalWrite(RFM_SWITCH,1); //Rf switch inside RAK module change to Rx
 			#endif	
@@ -105,7 +105,7 @@ void LORA_Cycle(sBuffer *Data_Tx, sBuffer *Data_Rx, RFM_command_t *RFM_Command, 
 		//Return to datarate and channel for RX1
 		LoRa_Settings->Channel_Rx = rx1_ch;    // set RX1 channel 
 		LoRa_Settings->Datarate_Rx = rx1_dr;   //set RX1 datarate
-		#if defined(SAMR34)
+		#if (SAMR34)
 		pinMode(RFM_SWITCH,OUTPUT);
 		digitalWrite(RFM_SWITCH,1); //Rf switch inside RAK module change to Rx
 		#endif	
@@ -124,7 +124,7 @@ void LORA_Cycle(sBuffer *Data_Tx, sBuffer *Data_Rx, RFM_command_t *RFM_Command, 
 		//Configure datarate and channel for RX2
 		LoRa_Settings->Channel_Rx = 0x08;    // set RX2 channel 
 		LoRa_Settings->Datarate_Rx = 0x08;   //set RX2 datarate
-		#if defined(SAMR34)
+		#if (SAMR34)
 		digitalWrite(RFM_SWITCH,1); //Rf switch inside RAK module change to Rx
 		#endif	
 		//Receive Data RX2 
