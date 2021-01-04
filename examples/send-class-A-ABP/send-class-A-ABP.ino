@@ -36,8 +36,8 @@ const sRFM_pins RFM_pins = {
 
 void setup() {
   // Setup loraid access
-  Serial.begin(115200);
-  delay(2000);
+  Serial.begin(9600);
+  while(!Serial);
   if(!lora.init()){
     Serial.println("RFM95 not detected");
     delay(5000);
