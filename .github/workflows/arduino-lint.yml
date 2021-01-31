@@ -14,4 +14,4 @@ jobs:
           project-type: library
           recursive: true
           # report-file:
-          verbose: false
+          verbose: true
