@@ -68,7 +68,12 @@ void LORA_Cycle(sBuffer *Data_Tx, sBuffer *Data_Rx, RFM_command_t *RFM_Command, 
 	static const unsigned int Receive_Delay_2 = 1000;
 	unsigned long prevTime = 0;
 	unsigned char rx1_ch = LoRa_Settings->Channel_Rx;
-	unsigned char rx1_dr = LoRa_Settings->Datarate_Tx+10;
+	#ifdef US_915   
+    unsigned char rx1_dr = LoRa_Settings->Datarate_Tx+10;
+	#elif defined(EU_868)   
+    unsigned char rx1_dr = LoRa_Settings->Datarate_Tx;
+	#endif
+
   	//Transmit
 	if(*RFM_Command == NEW_RFM_COMMAND){
 		#if (SAMR34)
@@ -86,8 +91,13 @@ void LORA_Cycle(sBuffer *Data_Tx, sBuffer *Data_Rx, RFM_command_t *RFM_Command, 
 			digitalWrite(RFM_SWITCH,1); //Rf switch inside RAK module change to Rx
 			#endif	
 			// RX2 window
-			LoRa_Settings->Channel_Rx = 0x08;    // set Rx2 channel 923.3 MHZ 
+			#ifdef US_915
+			LoRa_Settings->Channel_Rx = 0x08;    // set Rx2 channel 923.3 MHZ
 			LoRa_Settings->Datarate_Rx = 0x08;   //set RX2 datarate 12
+			#elif defined(EU_868)
+			LoRa_Settings->Channel_Rx = CHRX2;    // set Rx2 channel 923.3 MHZ 
+			LoRa_Settings->Datarate_Rx = SF12BW125;   //set RX2 datarate 12
+			#endif
 			LORA_Receive_Data(Data_Rx, Session_Data, OTAA_Data, Message_Rx, LoRa_Settings);  //BUG DETECT SENDED PACKET ALWAYS (IT DOES UPDATE)
 		}
 		//Wait rx1 window delay 
@@ -433,11 +443,11 @@ void LORA_Receive_Data(sBuffer *Data_Rx, sLoRa_Session *Session_Data, sLoRa_OTAA
 				//Check frame port fiels. When zero it is a mac command message encrypted with NwkSKey
 				if(Message->Frame_Port == 0x00)
 				{
-				Encrypt_Payload(Data_Rx, Session_Data->NwkSKey, Message);
+					Encrypt_Payload(Data_Rx, Session_Data->NwkSKey, Message);
 				}
 				else
 				{
-				Encrypt_Payload(Data_Rx, Session_Data->AppSKey, Message);
+					Encrypt_Payload(Data_Rx, Session_Data->AppSKey, Message);
 				}
 					Message_Status = MESSAGE_DONE;
 				}
