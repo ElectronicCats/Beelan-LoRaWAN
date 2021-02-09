@@ -93,7 +93,7 @@ void LORA_Cycle(sBuffer *Data_Tx, sBuffer *Data_Rx, RFM_command_t *RFM_Command, 
 			// RX2 window
 			#ifdef US_915
 			LoRa_Settings->Channel_Rx = 0x08;    // set Rx2 channel 923.3 MHZ
-			LoRa_Settings->Datarate_Rx = 0x08;   //set RX2 datarate 12
+			LoRa_Settings->Datarate_Rx = SF12BW500;   //set RX2 datarate 12
 			#elif defined(EU_868)
 			LoRa_Settings->Channel_Rx = CHRX2;    // set Rx2 channel 923.3 MHZ 
 			LoRa_Settings->Datarate_Rx = SF12BW125;   //set RX2 datarate 12
