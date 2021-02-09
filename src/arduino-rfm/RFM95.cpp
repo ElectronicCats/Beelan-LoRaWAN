@@ -321,7 +321,7 @@ static void RFM_change_SF_BW(unsigned char _SF, unsigned char _BW)
   else
     RFM_Write(RFM_REG_MODEM_CONFIG3, 0b0100); //Mobile node, low datarate optimization on AGC acorging to register LnaGain  
   #else
-  RFM_Write(RFM_REG_MODEM_CONFIG3, 0xb0100); //Mobile node, low datarate optimization on AGC acorging to register LnaGain
+  RFM_Write(RFM_REG_MODEM_CONFIG3, 0b0100); //Mobile node, low datarate optimization on AGC acorging to register LnaGain
   #endif
     
 }
