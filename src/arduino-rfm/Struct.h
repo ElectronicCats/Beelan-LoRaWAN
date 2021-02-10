@@ -64,6 +64,8 @@ typedef struct {
     unsigned char Margin;           // Margin sent in last LinkCheckAns
     unsigned char RX1Delay;
     unsigned char RX1DelayPending;  // If the node must send RXTimingSetupAns
+    unsigned char RX1DRoffset;
+    unsigned char RX2Datarate;
 } sLoRa_Session;
 
 typedef struct {

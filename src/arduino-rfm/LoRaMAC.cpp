@@ -69,8 +69,10 @@ void LORA_Cycle(sBuffer *Data_Tx, sBuffer *Data_Rx, RFM_command_t *RFM_Command, 
 	unsigned char rx1_ch = LoRa_Settings->Channel_Rx;
 	#ifdef US_915   
     unsigned char rx1_dr = LoRa_Settings->Datarate_Tx+10;
-	#elif defined(EU_868)   
-    unsigned char rx1_dr = LoRa_Settings->Datarate_Tx;
+	#elif defined(EU_868)       
+	unsigned char rx1_dr=0;
+	if (Session_Data->RX1DRoffset<LoRa_Settings->Datarate_Tx)
+		rx1_dr = LoRa_Settings->Datarate_Tx-Session_Data->RX1DRoffset;
 	#endif
 
   	//Transmit
@@ -93,9 +95,9 @@ void LORA_Cycle(sBuffer *Data_Tx, sBuffer *Data_Rx, RFM_command_t *RFM_Command, 
 			#ifdef US_915
 			LoRa_Settings->Channel_Rx = 0x08;    // set Rx2 channel 923.3 MHZ
 			LoRa_Settings->Datarate_Rx = SF12BW500;   //set RX2 datarate 12
-			#elif defined(EU_868)
+			#elif defined(EU_868)			
 			LoRa_Settings->Channel_Rx = CHRX2;    // set Rx2 channel 923.3 MHZ 
-			LoRa_Settings->Datarate_Rx = SF12BW125;   //set RX2 datarate 12
+			LoRa_Settings->Datarate_Rx = Session_Data->RX2Datarate;
 			#endif
 			LORA_Receive_Data(Data_Rx, Session_Data, OTAA_Data, Message_Rx, LoRa_Settings);  //BUG DETECT SENDED PACKET ALWAYS (IT DOES UPDATE)
 		}
@@ -131,8 +133,14 @@ void LORA_Cycle(sBuffer *Data_Tx, sBuffer *Data_Rx, RFM_command_t *RFM_Command, 
 		if (Data_Rx->Counter>0)return;
 
 		//Configure datarate and channel for RX2
+		#ifdef US_915
 		LoRa_Settings->Channel_Rx = 0x08;    // set RX2 channel 
 		LoRa_Settings->Datarate_Rx = 0x08;   //set RX2 datarate
+		#elif defined(EU_868)			
+		LoRa_Settings->Channel_Rx = CHRX2;    // set Rx2 channel 923.3 MHZ 
+		LoRa_Settings->Datarate_Rx = Session_Data->RX2Datarate;
+		#endif
+		
 		#if (SAMR34)
 		digitalWrite(RFM_SWITCH,1); //Rf switch inside RAK module change to Rx
 		#endif	
@@ -591,7 +599,7 @@ void LORA_Receive_Data(sBuffer *Data_Rx, sLoRa_Session *Session_Data, sLoRa_OTAA
 static void Generate_DevNonce(unsigned char *DevNonce)
 {
 	unsigned int RandNumber;
-
+	
 	RandNumber = random(0xFFFF);
 
 	DevNonce[0] = RandNumber & 0x00FF;
@@ -737,12 +745,26 @@ bool LORA_join_Accept(sBuffer *Data_Rx,sLoRa_Session *Session_Data, sLoRa_OTAA *
 				for(i = 0; i< 4; i++)
 					Session_Data->DevAddr[3-i] = Data_Rx->Data[i + 7];
 
+				// Get DLSettings
+				Session_Data->RX1DRoffset=Data_Rx->Data[11] >> 4;
+				Session_Data->RX2Datarate=Data_Rx->Data[11] & 0b00001111;
+				
+				// Get RXDelay
 				Session_Data->RX1Delay = Data_Rx->Data[12];
+				if (Session_Data->RX1DelayPending==0)
+					Session_Data->RX1DelayPending=1;
 				Session_Data->RX1DelayPending = 0;
+
+
 				#ifdef	DEBUG_MAC
 				Serial.print("RX1Delay: ");
 				Serial.println(Session_Data->RX1Delay);
+				Serial.print("RX1DRoffset: ");
+				Serial.println(Session_Data->RX1DRoffset);
+				Serial.print("RX2Datarate: ");
+				Serial.println(Session_Data->RX2Datarate);
 				#endif
+				
 
 				//Calculate Network Session Key
 				Session_Data->NwkSKey[0] = 0x01;

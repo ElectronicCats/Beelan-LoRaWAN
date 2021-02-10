@@ -70,6 +70,10 @@ bool LoRaWANClass::init(void)
     Session_Data.RX1Delay = 1;
     Session_Data.RX1DelayPending = 0;
 
+    #ifdef EU_868
+    Session_Data.RX2Datarate = SF12BW125;   //set RX2 datarate 12
+    #endif
+
     //Initialize OTAA data struct
     memset(DevEUI, 0x00, 8);
     memset(AppEUI, 0x00, 8);
