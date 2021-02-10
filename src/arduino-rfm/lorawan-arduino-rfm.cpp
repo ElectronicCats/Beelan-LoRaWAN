@@ -66,7 +66,9 @@ bool LoRaWANClass::init(void)
     Session_Data.NwkSKey = NwkSKey;
     Session_Data.AppSKey = AppSKey;
     Session_Data.DevAddr = Address_Tx;
-    Session_Data.Frame_Counter = &Frame_Counter_Tx;
+    Session_Data.Frame_Counter = &Frame_Counter_Tx;    
+    Session_Data.RX1Delay = 1;
+    Session_Data.RX1DelayPending = 0;
 
     //Initialize OTAA data struct
     memset(DevEUI, 0x00, 8);
@@ -108,6 +110,7 @@ bool LoRaWANClass::init(void)
 
     LoRa_Settings.Confirm = 0x00; //0x00 unconfirmed, 0x01 confirmed
     LoRa_Settings.Channel_Hopping = 0x00; //0x00 no channel hopping, 0x01 channel hopping
+    
 
     // Initialise buffer for data to transmit
     memset(Data_Tx, 0x00, sizeof(Data_Tx));

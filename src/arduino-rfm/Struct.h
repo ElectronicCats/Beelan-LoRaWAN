@@ -62,6 +62,8 @@ typedef struct {
     unsigned int  *Frame_Counter;
     unsigned char GwCount;          // Gateway count sent in last LinkCheckAns
     unsigned char Margin;           // Margin sent in last LinkCheckAns
+    unsigned char RX1Delay;
+    unsigned char RX1DelayPending;  // If the node must send RXTimingSetupAns
 } sLoRa_Session;
 
 typedef struct {

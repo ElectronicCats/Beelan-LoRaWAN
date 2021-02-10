@@ -63,8 +63,7 @@
 */
 void LORA_Cycle(sBuffer *Data_Tx, sBuffer *Data_Rx, RFM_command_t *RFM_Command, sLoRa_Session *Session_Data,
  									sLoRa_OTAA *OTAA_Data, sLoRa_Message *Message_Rx, sSettings *LoRa_Settings)
-{
-	static const unsigned int Receive_Delay_1 = 1000;
+{	
 	static const unsigned int Receive_Delay_2 = 1000;
 	unsigned long prevTime = 0;
 	unsigned char rx1_ch = LoRa_Settings->Channel_Rx;
@@ -106,7 +105,7 @@ void LORA_Cycle(sBuffer *Data_Tx, sBuffer *Data_Rx, RFM_command_t *RFM_Command, 
 		do{
 			if(digitalRead(RFM_pins.DIO0))		//Poll Rx done for getting message
 				LORA_Receive_Data(Data_Rx, Session_Data, OTAA_Data, Message_Rx, LoRa_Settings);
-		}while(millis() - prevTime < Receive_Delay_1);
+		}while(millis() - prevTime < (Session_Data->RX1Delay*1000) );
 		//Return if message on RX2 
 		if (Data_Rx->Counter>0)return;
 		
@@ -211,8 +210,7 @@ void LORA_Send_Data(sBuffer *Data_Tx, sLoRa_Session *Session_Data, sSettings *Lo
 		{
 
 				#ifdef DEBUG_MAC			
-				Serial.println("LinkCheckInterval expired.");
-				Serial.println(elapsedMillis);
+				Serial.println("LinkCheckInterval expired.");				
 				#endif				
 				Message.Frame_Options[commandPointer++] = COMMAND_LINK_CHECK;
 				LoRa_Settings->LastLinkCheck = millis();
@@ -220,6 +218,14 @@ void LORA_Send_Data(sBuffer *Data_Tx, sLoRa_Session *Session_Data, sSettings *Lo
 				// Increase FOpts len in the bits 3..0 of FCtrl
 				Message.Frame_Control++;		  
 		}          
+	}
+
+	// Send RXTimingSetupAns until the node receives a downlink
+	if(Session_Data->RX1DelayPending == 1)
+	{	
+		Message.Frame_Options[commandPointer++] = COMMAND_RX_TIMING_SETUP;	
+		// Increase FOpts len in the bits 3..0 of FCtrl
+		Message.Frame_Control++;	
 	}
 
 	//Build the Radio Package
@@ -492,7 +498,11 @@ void LORA_Receive_Data(sBuffer *Data_Rx, sLoRa_Session *Session_Data, sLoRa_OTAA
 				}
 				Message_Status = MESSAGE_DONE;
 			}
-				
+
+			// After a Downlink both Server and node use same RXTiming	
+			if (Session_Data->RX1DelayPending == 1)
+				Session_Data->RX1DelayPending = 0;
+
 			// Process MAC command from FOpts or FRMPayload
 
 			if (Frame_Options_Length>0)
@@ -507,20 +517,33 @@ void LORA_Receive_Data(sBuffer *Data_Rx, sLoRa_Session *Session_Data, sLoRa_OTAA
 							
 							#ifdef DEBUG_MAC	
 							Serial.println("LinkCheckAns received.");
-							Serial.print("Demodulation margin: ");
+							Serial.print("\tDemodulation margin: ");
 							Serial.println(Session_Data->GwCount, DEC);
-							Serial.print("Gateway count: ");
+							Serial.print("\tGateway count: ");
 							Serial.println(Session_Data->Margin, DEC);								
 							#endif
 							
+							break;
+
+						case COMMAND_RX_TIMING_SETUP:
+							Session_Data->RX1Delay = Message->Frame_Options[++commandPointer] & 0b00001111;								
+							if (Session_Data->RX1Delay == 0)
+								Session_Data->RX1Delay = 1;
+							Session_Data->RX1DelayPending = 1;
+
+							#ifdef DEBUG_MAC	
+							Serial.println("RXTimingSetupReq received.");
+							Serial.print("\tNew RX1 delay: ");
+							Serial.println(Session_Data->RX1Delay, DEC);							
+							#endif
+
 							break;
 						
 						case COMMAND_LINK_ADR:						
 						case COMMAND_DUTY_CYCLE:							
 						case COMMAND_RX_PARAM_SETUP:							
 						case COMMAND_DEV_STATUS:							
-						case COMMAND_NEW_CHANNEL:							
-						case COMMAND_RX_TIMING_SETUP:													
+						case COMMAND_NEW_CHANNEL:																									
 						case COMMAND_TX_PARAM_SETUP:														
 						case COMMAND_DIC_CHANNEL:							
 						case COMMAND_DEV_TIME:						
@@ -549,7 +572,7 @@ void LORA_Receive_Data(sBuffer *Data_Rx, sLoRa_Session *Session_Data, sLoRa_OTAA
 		
 				}
 			}
-		}
+		}		
 
 		if(Message_Status == WRONG_MESSAGE)
 		{
@@ -713,6 +736,13 @@ bool LORA_join_Accept(sBuffer *Data_Rx,sLoRa_Session *Session_Data, sLoRa_OTAA *
 				//Get session Device address
 				for(i = 0; i< 4; i++)
 					Session_Data->DevAddr[3-i] = Data_Rx->Data[i + 7];
+
+				Session_Data->RX1Delay = Data_Rx->Data[12];
+				Session_Data->RX1DelayPending = 0;
+				#ifdef	DEBUG_MAC
+				Serial.print("RX1Delay: ");
+				Serial.println(Session_Data->RX1Delay);
+				#endif
 
 				//Calculate Network Session Key
 				Session_Data->NwkSKey[0] = 0x01;
