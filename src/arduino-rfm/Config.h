@@ -1,6 +1,9 @@
 //Uncomment for debug 
 //#define DEBUG
 
+// Debug only MAC layer
+#define DEBUG_MAC
+
 // Define max payload size used for this node
 #define MAX_UPLINK_PAYLOAD_SIZE    220  
 #define MAX_DOWNLINK_PAYLOAD_SIZE   220

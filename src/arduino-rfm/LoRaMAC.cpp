@@ -169,7 +169,7 @@ void LORA_Send_Data(sBuffer *Data_Tx, sLoRa_Session *Session_Data, sSettings *Lo
 	sLoRa_Message Message;
 
 	Message.MAC_Header = 0x00;
-	Message.Frame_Port = 0x01; //Frame port always 1 for now
+	Message.Frame_Port = LoRa_Settings->Mport; 
 	Message.Frame_Control = 0x00;
 
 	//Load device address from session data into the message
@@ -196,6 +196,32 @@ void LORA_Send_Data(sBuffer *Data_Tx, sLoRa_Session *Session_Data, sSettings *Lo
 		Message.MAC_Header = Message.MAC_Header | 0x80;
 	}
 
+	 // Add pending MAC commands to FHDR->FOpts and increase FOptsLen accordingly
+	unsigned char	commandPointer=0;
+
+	if (LoRa_Settings->LinkCheckInterval>0)
+	{
+		// Check if it is time for LinkCheckReq
+		// Add LinkCheckReq to FOpts
+		unsigned long now = millis();         
+		unsigned long elapsedMillis = now - LoRa_Settings->LastLinkCheck;  	 
+		//unsigned int elapsedDays=elapsedMillis/1000/60/24;
+		//if (elapsedDays >= LoRa_Settings->LinkCheckInterval)                    
+		if (elapsedMillis >= LoRa_Settings->LinkCheckInterval)                    
+		{
+
+				#ifdef DEBUG_MAC			
+				Serial.println("LinkCheckInterval expired.");
+				Serial.println(elapsedMillis);
+				#endif				
+				Message.Frame_Options[commandPointer++] = COMMAND_LINK_CHECK;
+				LoRa_Settings->LastLinkCheck = millis();
+
+				// Increase FOpts len in the bits 3..0 of FCtrl
+				Message.Frame_Control++;		  
+		}          
+	}
+
 	//Build the Radio Package
 	//Load mac header
 	RFM_Package.Data[0] = Message.MAC_Header;
@@ -216,27 +242,28 @@ void LORA_Send_Data(sBuffer *Data_Tx, sLoRa_Session *Session_Data, sSettings *Lo
 	//Set data counter to 8
 	RFM_Package.Counter = 8;
 
+	// Add Frame Options to package
+	for(int i = 0; i< (Message.Frame_Control & 0x0F); i++)
+	{
+		RFM_Package.Data[RFM_Package.Counter++] = Message.Frame_Options[i];
+	}
+
+	// End of FHDR
 	//If there is data load the Frame_Port field
 	//Encrypt the data and load the data
 	if(Data_Tx->Counter > 0x00)
 	{
-	//Load Frame port field
-	//RFM_Data[8] = Message.Frame_Port;
-	RFM_Package.Data[8] = LoRa_Settings->Mport;
+		//Load Frame port field	
+		RFM_Package.Data[RFM_Package.Counter++] = Message.Frame_Port;
 
-	//Raise package counter
-	RFM_Package.Counter++;
+		//Encrypt the data
+		Encrypt_Payload(Data_Tx, Session_Data->AppSKey, &Message);
 
-	//Encrypt the data
-	Encrypt_Payload(Data_Tx, Session_Data->AppSKey, &Message);
-
-	//Load Data
-	for(i = 0; i < Data_Tx->Counter; i++)
-	{
-		RFM_Package.Data[RFM_Package.Counter++] = Data_Tx->Data[i];
-	}
-
-
+		//Load Data
+		for(i = 0; i < Data_Tx->Counter; i++)
+		{
+			RFM_Package.Data[RFM_Package.Counter++] = Data_Tx->Data[i];
+		}
 	}
 
 	//Calculate MIC
@@ -254,25 +281,25 @@ void LORA_Send_Data(sBuffer *Data_Tx, sLoRa_Session *Session_Data, sSettings *Lo
 	//Raise Frame counter
 	if(*Session_Data->Frame_Counter != 0xFFFF)
 	{
-	//Raise frame counter
-	*Session_Data->Frame_Counter = *Session_Data->Frame_Counter + 1;
+		//Raise frame counter
+		*Session_Data->Frame_Counter = *Session_Data->Frame_Counter + 1;
 	}
 	else
 	{
-	*Session_Data->Frame_Counter = 0x0000;
+		*Session_Data->Frame_Counter = 0x0000;
 	}
 
 	//Change channel for next message if hopping is activated
 	if(LoRa_Settings->Channel_Hopping == 0x01)
 	{
-	if(LoRa_Settings->Channel_Tx < 0x07)
-	{
-		LoRa_Settings->Channel_Tx++;
-	}
-	else
-	{
-		LoRa_Settings->Channel_Tx = 0x00;
-	}
+		if(LoRa_Settings->Channel_Tx < 0x07)
+		{
+			LoRa_Settings->Channel_Tx++;
+		}
+		else
+		{
+			LoRa_Settings->Channel_Tx = 0x00;
+		}
 	}
 }
 
@@ -338,7 +365,10 @@ void LORA_Receive_Data(sBuffer *Data_Rx, sLoRa_Session *Session_Data, sLoRa_OTAA
     	Message->MAC_Header = RFM_Data[0];
 
 		//Data message
-		if(Message->MAC_Header == 0x40 || Message->MAC_Header == 0x60 || Message->MAC_Header == 0x80 || Message->MAC_Header == 0xA0)
+		if(Message->MAC_Header == UNCONFIRMED_UPLINK 
+			|| Message->MAC_Header == UNCONFIRMED_DOWNLINK 
+			|| Message->MAC_Header == CONFIRMED_UPLINK 
+			|| Message->MAC_Header == CONFIRMED_DOWNLINK)
 		{
 			//Get device address from received data
 			Message->DevAddr[0] = RFM_Data[4];
@@ -352,6 +382,17 @@ void LORA_Receive_Data(sBuffer *Data_Rx, sLoRa_Session *Session_Data, sLoRa_OTAA
 			 //Get frame counter
 			Message->Frame_Counter = RFM_Data[7];
 			Message->Frame_Counter = (Message->Frame_Counter << 8) + RFM_Data[6];
+
+			//Get length of frame options field
+			Frame_Options_Length = (Message->Frame_Control & 0x0F);
+			
+			// Get MAC commands if present in FOpts for later processing
+			if (Frame_Options_Length>0)
+			{
+				for (i=0; i<Frame_Options_Length; i++)
+					Message->Frame_Options[i] = RFM_Data[8+i];								
+			}
+
 
 			//Lower Package length with 4 to remove MIC length
 			RFM_Package.Counter -= 4;
@@ -449,7 +490,63 @@ void LORA_Receive_Data(sBuffer *Data_Rx, sLoRa_Session *Session_Data, sLoRa_OTAA
 				{
 					Encrypt_Payload(Data_Rx, Session_Data->AppSKey, Message);
 				}
-					Message_Status = MESSAGE_DONE;
+				Message_Status = MESSAGE_DONE;
+			}
+				
+			// Process MAC command from FOpts or FRMPayload
+
+			if (Frame_Options_Length>0)
+			{					
+				for (int commandPointer = 0; commandPointer<Frame_Options_Length; commandPointer++)
+				{
+					switch(Message->Frame_Options[commandPointer])
+					{
+						case COMMAND_LINK_CHECK:
+							Session_Data->GwCount = Message->Frame_Options[++commandPointer];
+							Session_Data->Margin = Message->Frame_Options[++commandPointer];
+							
+							#ifdef DEBUG_MAC	
+							Serial.println("LinkCheckAns received.");
+							Serial.print("Demodulation margin: ");
+							Serial.println(Session_Data->GwCount, DEC);
+							Serial.print("Gateway count: ");
+							Serial.println(Session_Data->Margin, DEC);								
+							#endif
+							
+							break;
+						
+						case COMMAND_LINK_ADR:						
+						case COMMAND_DUTY_CYCLE:							
+						case COMMAND_RX_PARAM_SETUP:							
+						case COMMAND_DEV_STATUS:							
+						case COMMAND_NEW_CHANNEL:							
+						case COMMAND_RX_TIMING_SETUP:													
+						case COMMAND_TX_PARAM_SETUP:														
+						case COMMAND_DIC_CHANNEL:							
+						case COMMAND_DEV_TIME:						
+														
+							#ifdef DEBUG_MAC								
+							Serial.println("Not implemented MAC command received.");		
+							Serial.print("CID ");						
+							Serial.println(Message->Frame_Options[commandPointer], HEX);
+							Serial.println("No more commands will be processed");
+							#endif	
+
+							break;
+
+						default:
+
+							#ifdef DEBUG_MAC								
+							Serial.println("Unknown MAC command received.");		
+							Serial.print("Unknown CID ");						
+							Serial.println(Message->Frame_Options[commandPointer], HEX);
+							Serial.println("No more commands will be processed");
+							#endif	
+
+							break;
+						}											
+					}
+		
 				}
 			}
 		}

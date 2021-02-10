@@ -82,7 +82,8 @@ class LoRaWANClass
         int readData(char *outBuff);
         bool readAck(void);
         void update(void);
-
+        void setLinkCheckInterval(unsigned long interval);
+        
         // frame counter
         unsigned int getFrameCounter();
         void setFrameCounter(unsigned int FrameCounter);

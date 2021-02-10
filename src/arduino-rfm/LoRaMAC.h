@@ -45,6 +45,22 @@
 
 typedef enum {NO_RFM_COMMAND, NEW_RFM_COMMAND, RFM_COMMAND_DONE, JOIN} RFM_command_t;
 
+typedef enum {
+    COMMAND_LINK_CHECK      = 0x02,
+    COMMAND_LINK_ADR        = 0x03,
+    COMMAND_DUTY_CYCLE      = 0X04,
+    COMMAND_RX_PARAM_SETUP  = 0x05,
+    COMMAND_DEV_STATUS      = 0x06,
+    COMMAND_NEW_CHANNEL     = 0x07,
+    COMMAND_RX_TIMING_SETUP = 0x08,
+    COMMAND_TX_PARAM_SETUP  = 0x09,
+    COMMAND_DIC_CHANNEL     = 0x0A,
+    COMMAND_DEV_TIME        = 0x0D
+
+}
+macComands_t;
+
+
 /*
 *****************************************************************************************
 * FUNCTION PROTOTYPES

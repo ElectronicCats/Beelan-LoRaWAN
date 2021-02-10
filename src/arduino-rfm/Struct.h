@@ -60,6 +60,8 @@ typedef struct {
     unsigned char *AppSKey;
     unsigned char *DevAddr;
     unsigned int  *Frame_Counter;
+    unsigned char GwCount;          // Gateway count sent in last LinkCheckAns
+    unsigned char Margin;           // Margin sent in last LinkCheckAns
 } sLoRa_Session;
 
 typedef struct {
@@ -94,6 +96,8 @@ typedef struct {
     unsigned char Channel_Rx;		//See RFM filed
     unsigned char Channel_Hopping;	//0x00 No hopping, 0x01 Hopping
     unsigned char Transmit_Power;	//0x00 to 0x0F
+    unsigned long LinkCheckInterval; // in millis
+    unsigned long LastLinkCheck;     // millis() of last LinkCheckReq sent
 } sSettings;
 
 typedef enum {
@@ -158,6 +162,16 @@ typedef enum {CLASS_A, CLASS_C} devclass_t;
 typedef enum {NO_RX, NEW_RX} rx_t;
 
 typedef enum {NO_ACK, NEW_ACK} ack_t;
+
+typedef enum {
+    JOIN_REQ_MTYPE          = 0b00000000,
+    JOIN_ACK_MTYPE          = 0b00100000,
+    UNCONFIRMED_UPLINK      = 0b01000000,
+    UNCONFIRMED_DOWNLINK    = 0b01100000,
+    CONFIRMED_UPLINK        = 0b10000000,
+    CONFIRMED_DOWNLINK      = 0b10100000,    
+}
+mtype_t;
 
 #endif
 
