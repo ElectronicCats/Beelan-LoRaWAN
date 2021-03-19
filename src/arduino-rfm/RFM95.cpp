@@ -619,8 +619,11 @@ void RFM_Send_Package(sBuffer *RFM_Tx_Package, sSettings *LoRa_Settings)
   RFM_Write(RFM_REG_OP_MODE,0x83);
 
   //Wait for TxDone
-  while(digitalRead(RFM_pins.DIO0) == LOW);
-
+  while(digitalRead(RFM_pins.DIO0) == LOW) {
+	#if defined(ESP8266) || defined(ESP32) 
+	yield();
+	#endif
+    };
   //Clear interrupt
   RFM_Write(RFM_REG_IRQ_FLAGS,0x08);
 
@@ -664,8 +667,11 @@ message_t RFM_Single_Receive(sSettings *LoRa_Settings)
 
   //Wait until RxDone or Timeout
   //Wait until timeout or RxDone interrupt
-  while((digitalRead(RFM_pins.DIO0) == LOW) && (digitalRead(RFM_pins.DIO1) == LOW));
-
+  while((digitalRead(RFM_pins.DIO0) == LOW) && (digitalRead(RFM_pins.DIO1) == LOW)) {
+	#if defined(ESP8266) || defined(ESP32) 
+	yield();
+	#endif
+    };
   //Check for Timeout
   if(digitalRead(RFM_pins.DIO1) == HIGH)
   {
