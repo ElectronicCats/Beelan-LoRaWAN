@@ -110,6 +110,8 @@ void RFM_Switch_Mode(unsigned char Mode);
 void RFM_Set_Tx_Power(int level, int outputPin);
 void RFM_Set_OCP(unsigned char mA);
 
+unsigned char RFM_Get_Rssi();
+
 
 #endif
 
