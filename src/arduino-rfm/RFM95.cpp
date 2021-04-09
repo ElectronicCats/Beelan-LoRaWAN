@@ -815,3 +815,12 @@ void RFM_Switch_Mode(unsigned char Mode)
     RFM_Write(RFM_REG_OP_MODE,Mode);
 }
 
+/*
+*****************************************************************************************
+* Description : Function to retrieve value of the last received packet rssi register
+*****************************************************************************************
+*/
+unsigned char RFM_Get_Rssi()
+{
+  return RFM_Read(RFM_REG_LAST_RSSI);
+}
