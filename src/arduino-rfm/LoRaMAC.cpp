@@ -70,10 +70,18 @@ void LORA_Cycle(sBuffer *Data_Tx, sBuffer *Data_Rx, RFM_command_t *RFM_Command, 
 
   //Transmit
   if(*RFM_Command == NEW_RFM_COMMAND)
-  {
-    //Lora send data
+  {	
+	#if (SAMR34)
+	pinMode(RFM_SWITCH,OUTPUT);
+	digitalWrite(RFM_SWITCH,0); //Rf switch inside RAK module change to Tx
+	#endif	
+	//Lora send data
     LORA_Send_Data(Data_Tx, Session_Data, LoRa_Settings);
 	prevTime = millis();
+	#if (SAMR34)
+	//pinMode(RFM_SWITCH,OUTPUT);
+	digitalWrite(RFM_SWITCH,1); //Rf switch inside RAK module change to Tx
+	#endif	
 		// Class C open RX2 immediately after sending data
 	if(LoRa_Settings->Mote_Class == 0x01)
 	{
