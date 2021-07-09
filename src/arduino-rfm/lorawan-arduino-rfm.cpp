@@ -257,6 +257,12 @@ void LoRaWANClass::setTxPower(int level,txPin_t pinTx)
     RFM_Set_Tx_Power(level, pinTx);
 } 
 
+int LoRaWANClass::getRssi()
+{
+    // return rssi value in dBm - convertion according to sx1276 datasheet
+    return -157 + RFM_Get_Rssi();
+}
+
 void LoRaWANClass::setDeviceClass(devclass_t dev_class)
 {
     LoRa_Settings.Mote_Class = (dev_class == CLASS_A)? CLASS_A : CLASS_C;

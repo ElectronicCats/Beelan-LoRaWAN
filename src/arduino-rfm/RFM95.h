@@ -65,6 +65,7 @@ typedef enum {
     RFM_REG_LNA             = 0x0C,
     RFM_REG_FIFO_ADDR_PTR   = 0x0D,
     RFM_REG_IRQ_FLAGS       = 0x12,
+    RFM_REG_LAST_RSSI       = 0x1A,
     RFM_REG_MODEM_CONFIG1   = 0x1D,
     RFM_REG_MODEM_CONFIG2   = 0x1E,
     RFM_REG_SYM_TIMEOUT_LSB = 0x1F,
@@ -109,6 +110,8 @@ void RFM_Write(unsigned char RFM_Address, unsigned char RFM_Data);
 void RFM_Switch_Mode(unsigned char Mode);
 void RFM_Set_Tx_Power(int level, int outputPin);
 void RFM_Set_OCP(unsigned char mA);
+
+unsigned char RFM_Get_Rssi();
 
 
 #endif

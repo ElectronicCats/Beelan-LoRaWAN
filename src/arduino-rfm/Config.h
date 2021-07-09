@@ -5,6 +5,8 @@
 #define MAX_UPLINK_PAYLOAD_SIZE    220  
 #define MAX_DOWNLINK_PAYLOAD_SIZE   220
 
+#if !defined(AS_923) && !defined(EU_868) && !defined(US_915) && !defined(AU_915)
+
 //LoRaWAN freq band
 //#define AS_923
 //#define EU_868
@@ -35,4 +37,5 @@
     //#define SUBND_5     // 923.2 - 924.6 Mhz
     //#define SUBND_6     // 924.8 - 926.2 Mhz
     //#define SUBND_7     // 926.4 - 927.8 Mhz
+#endif
 #endif

@@ -79,6 +79,7 @@ class LoRaWANClass
         unsigned char getDataRate();
         void setTxPower1(unsigned char power_idx);
         void setTxPower(int level,txPin_t pinTx);
+        int getRssi();
         int readData(char *outBuff);
         bool readAck(void);
         void update(void);
