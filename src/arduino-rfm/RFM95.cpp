@@ -737,18 +737,19 @@ message_t RFM_Get_Package(sBuffer *RFM_Rx_Package)
   message_t Message_Status;
 
   //Get interrupt register
-  RFM_Interrupts = RFM_Read(RFM_REG_IRQ_FLAGS);
+  RFM_Interrupts = RFM_Read(0x12);
 
-  //Check CRC
-  if((RFM_Interrupts & 0x20) != 0x20)
-  {
-	  Message_Status = CRC_OK;
+ 
+  if((RFM_Interrupts & 0x40)){ //IRQ_RX_DONE_MASK
+    if((RFM_Interrupts & 0x20) != 0x20)  //Check CRC
+    {
+      Message_Status = CRC_OK;
+    }
+    else
+    {
+      Message_Status = WRONG_MESSAGE;
+    }
   }
-  else
-  {
-	  Message_Status = WRONG_MESSAGE;
-  }
-
   RFM_Package_Location = RFM_Read(0x10); /*Read start position of received package*/
   RFM_Rx_Package->Counter = RFM_Read(0x13); /*Read length of received package*/
 
@@ -760,7 +761,7 @@ message_t RFM_Get_Package(sBuffer *RFM_Rx_Package)
   }
 
   //Clear interrupt register
-  RFM_Write(RFM_REG_IRQ_FLAGS,0xE0);
+  RFM_Write(RFM_REG_IRQ_FLAGS,RFM_Interrupts);
 
   return Message_Status;
 }
