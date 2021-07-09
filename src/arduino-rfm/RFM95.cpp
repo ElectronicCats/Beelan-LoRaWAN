@@ -315,10 +315,15 @@ static void RFM_change_SF_BW(unsigned char _SF, unsigned char _BW)
 	RFM_Write(RFM_REG_MODEM_CONFIG2, (_SF << 4) | 0b0100); //SFx CRC On
 	RFM_Write(RFM_REG_MODEM_CONFIG1,(_BW << 4) | 0x02); //x kHz 4/5 coding rate explicit header mode
 
-  if(_SF==12 || _SF==11)
-    RFM_Write(RFM_REG_MODEM_CONFIG3, 0x0C); //Low datarate optimization on AGC auto on
+  #ifdef EU_868
+  if(_SF>10)
+    RFM_Write(RFM_REG_MODEM_CONFIG3, 0b1100); //Low datarate optimization on AGC auto on 
   else
-    RFM_Write(RFM_REG_MODEM_CONFIG3, 0x04); //Mobile node, low datarate optimization on AGC acorging to register LnaGain
+    RFM_Write(RFM_REG_MODEM_CONFIG3, 0b0100); //Mobile node, low datarate optimization on AGC acorging to register LnaGain  
+  #else
+  RFM_Write(RFM_REG_MODEM_CONFIG3, 0b0100); //Mobile node, low datarate optimization on AGC acorging to register LnaGain
+  #endif
+    
 }
 /*
 *****************************************************************************************
@@ -623,13 +628,6 @@ void RFM_Send_Package(sBuffer *RFM_Tx_Package, sSettings *LoRa_Settings)
 
   //Clear interrupt
   RFM_Write(RFM_REG_IRQ_FLAGS,0x08);
-
-  //Switch RFM back to receive if it is a type C mote
-  if(LoRa_Settings->Mote_Class == CLASS_C)
-  {
-    //Switch Back to Continuous receive
-    RFM_Continuous_Receive(LoRa_Settings);
-  }
 }
 
 /*
@@ -706,6 +704,12 @@ void RFM_Continuous_Receive(sSettings *LoRa_Settings)
   RFM_Change_Datarate(SF12BW125);
   RFM_Change_Channel(CHRX2);
 #else
+  //Datarate for downlink should be 8 but testing on 10
+  //LoRa_Settings->Datarate_Rx=10;
+  //LoRa_Settings->Channel_Rx=0;
+  //Serial.println("DataRate Rx "+String(LoRa_Settings->Datarate_Rx));
+  //Serial.println("Cannel Rx "+String(LoRa_Settings->Channel_Rx));
+  
 	RFM_Change_Datarate(LoRa_Settings->Datarate_Rx);
 	RFM_Change_Channel(LoRa_Settings->Channel_Rx);
 #endif
@@ -733,18 +737,19 @@ message_t RFM_Get_Package(sBuffer *RFM_Rx_Package)
   message_t Message_Status;
 
   //Get interrupt register
-  RFM_Interrupts = RFM_Read(RFM_REG_IRQ_FLAGS);
+  RFM_Interrupts = RFM_Read(0x12);
 
-  //Check CRC
-  if((RFM_Interrupts & 0x20) != 0x20)
-  {
-	  Message_Status = CRC_OK;
+ 
+  if((RFM_Interrupts & 0x40)){ //IRQ_RX_DONE_MASK
+    if((RFM_Interrupts & 0x20) != 0x20)  //Check CRC
+    {
+      Message_Status = CRC_OK;
+    }
+    else
+    {
+      Message_Status = WRONG_MESSAGE;
+    }
   }
-  else
-  {
-	  Message_Status = WRONG_MESSAGE;
-  }
-
   RFM_Package_Location = RFM_Read(0x10); /*Read start position of received package*/
   RFM_Rx_Package->Counter = RFM_Read(0x13); /*Read length of received package*/
 
@@ -756,7 +761,7 @@ message_t RFM_Get_Package(sBuffer *RFM_Rx_Package)
   }
 
   //Clear interrupt register
-  RFM_Write(RFM_REG_IRQ_FLAGS,0xE0);
+  RFM_Write(RFM_REG_IRQ_FLAGS,RFM_Interrupts);
 
   return Message_Status;
 }

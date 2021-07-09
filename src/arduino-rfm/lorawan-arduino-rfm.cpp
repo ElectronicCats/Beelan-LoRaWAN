@@ -94,7 +94,7 @@ bool LoRaWANClass::init(void)
 #else //US_915 or AU_915
     LoRa_Settings.Datarate_Rx = 0x0C;   //set to SF8 BW 500 kHz
 #endif
-    LoRa_Settings.Channel_Rx = 0x0A;    // set to recv channel
+    LoRa_Settings.Channel_Rx = 0x08;    // set to recv channel
 
     // Tx
 #if defined(US_915)
@@ -389,7 +389,7 @@ void LoRaWANClass::update(void)
     //Type A mote transmit receive cycle
     if((RFM_Command_Status == NEW_RFM_COMMAND || RFM_Command_Status == JOIN) && LoRa_Settings.Mote_Class == CLASS_A)
     {
-      //LoRa cycle
+      //LoRaWAN TX/RX cycle
       LORA_Cycle(&Buffer_Tx, &Buffer_Rx, &RFM_Command_Status, &Session_Data, &OTAA_Data, &Message_Rx, &LoRa_Settings);
 
       if ((Message_Rx.Frame_Control & 0x20) > 0)
@@ -407,22 +407,19 @@ void LoRaWANClass::update(void)
     if(LoRa_Settings.Mote_Class == CLASS_C)
     {
        //Transmit
-      if(RFM_Command_Status == NEW_RFM_COMMAND)
-      {     
-        //Lora send data
-        LORA_Send_Data(&Buffer_Tx, &Session_Data, &LoRa_Settings);
-
+      if(RFM_Command_Status == NEW_RFM_COMMAND){     
+        //LoRaWAN TX/RX cycle
+        LORA_Cycle(&Buffer_Tx, &Buffer_Rx, &RFM_Command_Status, &Session_Data, &OTAA_Data, &Message_Rx, &LoRa_Settings);
+        if(Buffer_Rx.Counter != 0x00){
+            Rx_Status = NEW_RX;
+        }
         RFM_Command_Status = NO_RFM_COMMAND;
       }
 
       //Receive
-      if(digitalRead(RFM_pins.DIO0) == HIGH)
-      {
-        //Get data
+      if(digitalRead(RFM_pins.DIO0) == HIGH){
         LORA_Receive_Data(&Buffer_Rx, &Session_Data, &OTAA_Data, &Message_Rx, &LoRa_Settings);
-
-        if(Buffer_Rx.Counter != 0x00)
-        {
+        if(Buffer_Rx.Counter != 0x00){
             Rx_Status = NEW_RX;
         }
       }
