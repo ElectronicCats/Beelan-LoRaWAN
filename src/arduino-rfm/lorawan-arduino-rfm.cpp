@@ -436,7 +436,7 @@ void LoRaWANClass::randomChannel()
     // limit drate, ch 8 -> sf7bw250
     LoRa_Settings.Datarate_Tx = freq_idx == 0x08? 0x06 : drate_common;
 #elif defined(EU_868)    
-    freq_idx = random(0,7);
+    freq_idx = random(0,8);
     LoRa_Settings.Channel_Rx=freq_idx;      // same rx and tx channel 
 #else // US_915 or AU_915
     freq_idx = random(0,8);
