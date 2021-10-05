@@ -16,6 +16,42 @@ void setup() {
 }
 ```
 
+### LoRa module sleep
+Put LoRa/LoRaWAN module to sleep.
+
+#### Syntax
+```c
+  void sleep(void);
+```
+
+#### Example
+```c
+void loop() {
+  ...
+  // Put module to sleep
+  lora.sleep();
+  ...
+}
+```
+
+### LoRa module sleep
+Wake LoRa/LoRaWAN module.
+
+#### Syntax
+```c
+  void wakeUp(void);
+```
+
+#### Example
+```c
+void loop() {
+  ...
+  // Wake up module
+  lora.wakeUp();
+  ...
+}
+```
+
 ### Setup Authentication Keys for ABP activation
 Setup authentication keys for your LoRaWAN device, including device address.
 
