@@ -65,9 +65,9 @@ public:
     void wakeUp(void);
     void setDeviceClass(devclass_t dev_class);
     // OTAA credentials
-    void setDevEUI(const char *devEUI_in);
-    void setAppEUI(const char *appEUI_in);
-    void setAppKey(const char *appKey_in);
+    void setDevEUI(const uint8_t *devEUI_in);
+    void setAppEUI(const uint8_t *appEUI_in);
+    void setAppKey(const uint8_t *appKey_in);
     // ABP credentials
     void setNwkSKey(const char *NwkKey_in);
     void setAppSKey(const char *ApskKey_in);

@@ -186,10 +186,10 @@ void LoRaWANClass::wakeUp(void)
     RFM_Switch_Mode(RFM_MODE_STANDBY);
 }
 
-void LoRaWANClass::setDevEUI(const char *devEUI_in)
+void LoRaWANClass::setDevEUI(const uint8_t *devEUI_in)
 {
     for (byte i = 0; i < 8; ++i)
-        DevEUI[i] = ASCII2Hex(devEUI_in[i * 2], devEUI_in[(i * 2) + 1]);
+        DevEUI[i] = devEUI_in[i];
     //Reset frame counter
     Frame_Counter_Tx = 0x0000;
 
@@ -197,10 +197,10 @@ void LoRaWANClass::setDevEUI(const char *devEUI_in)
     RFM_Command_Status = NO_RFM_COMMAND;
 }
 
-void LoRaWANClass::setAppEUI(const char *appEUI_in)
+void LoRaWANClass::setAppEUI(const uint8_t *appEUI_in)
 {
     for (byte i = 0; i < 8; ++i)
-        AppEUI[i] = ASCII2Hex(appEUI_in[i * 2], appEUI_in[(i * 2) + 1]);
+        AppEUI[i] = appEUI_in[i];
     //Reset frame counter
     Frame_Counter_Tx = 0x0000;
 
@@ -208,10 +208,10 @@ void LoRaWANClass::setAppEUI(const char *appEUI_in)
     RFM_Command_Status = NO_RFM_COMMAND;
 }
 
-void LoRaWANClass::setAppKey(const char *appKey_in)
+void LoRaWANClass::setAppKey(const uint8_t *appKey_in)
 {
     for (byte i = 0; i < 16; ++i)
-        AppKey[i] = ASCII2Hex(appKey_in[i * 2], appKey_in[(i * 2) + 1]);
+        AppKey[i] = appKey_in[i];
     //Reset frame counter
     Frame_Counter_Tx = 0x0000;
 
