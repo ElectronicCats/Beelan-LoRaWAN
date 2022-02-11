@@ -67,7 +67,7 @@ void LORA_Cycle(sBuffer *Data_Tx, sBuffer *Data_Rx, RFM_command_t *RFM_Command, 
 	static const unsigned int Receive_Delay_1 = 1000;
 	static const unsigned int Receive_Delay_2 = 1000;
 	unsigned long prevTime = 0;
-	unsigned char rx1_ch = LoRa_Settings->Channel_Rx;
+	unsigned char rx1_ch = LoRa_Settings->Channel_Tx;
 	#ifdef US_915   
     unsigned char rx1_dr = LoRa_Settings->Datarate_Tx+10;
 	#elif defined(AU_915)    
