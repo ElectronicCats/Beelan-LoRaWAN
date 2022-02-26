@@ -475,7 +475,8 @@ bool RFM_Init()
 {
   
   uint8_t ver = RFM_Read(0x42);
-  if(ver!=18){
+  if(ver!=18 && ver!=19){
+   //ver=19 is reported by S76G Lora Chip
     return 0;
   }
   //Switch RFM to sleep
