@@ -166,8 +166,8 @@ bool LoRaWANClass::join(void)
 	
 	//rx1
     prev_millis = millis();
-	LoRa_Settings->Channel_Rx = LoRa_Settings->Channel_Tx;// set RX1 channel 
-	LoRa_Settings->Datarate_Rx = LoRa_Settings->Datarate_Tx;   //set RX1 datarate
+	LoRa_Settings.Channel_Rx = LoRa_Settings.Channel_Tx;// set RX1 channel 
+	LoRa_Settings.Datarate_Rx = LoRa_Settings.Datarate_Tx;   //set RX1 datarate
     do
     {
         join_status = LORA_join_Accept(&Buffer_Rx, &Session_Data, &OTAA_Data, &Message_Rx, &LoRa_Settings);
