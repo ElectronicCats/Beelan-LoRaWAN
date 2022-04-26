@@ -57,6 +57,8 @@ At the very least, you should set the right type of board in config.h, most othe
 
 When using the US_915 you need to select which sub-band you will use, by default it is sub-band 6.
 
+We have to manually set the frequency plan (EU_868, US_915, AS_923, AS_923_2...) in the Config.h of the library.
+
 Supported hardware
 ------------------
 This library is intended to be used with plain LoRa transceivers,
