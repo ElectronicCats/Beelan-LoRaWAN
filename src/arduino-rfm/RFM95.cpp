@@ -236,7 +236,7 @@
     { 0xE7, 0xE0, 0x27}, //Rcv Channel [7] 927.5 Mhz / 61.035 Hz = 15196199 = 0xE7E027
   };
 #elif defined(AS_923)
-  static const PROGMEM unsigned char  [9][3] = {//[923.2 - 924.8] MHz
+  static const PROGMEM unsigned char LoRa_Frequency[9][3] = {//[923.2 - 924.8] MHz
     { 0xE6, 0xCC, 0xF4 }, //Channel [0], 923.2 MHz / 61.035 Hz = 15125748 = 0xE6CCF4
     { 0xE6, 0xD9, 0xC0 }, //Channel [1], 923.4 MHz / 61.035 Hz = 15129024 = 0xE6D9C0
     { 0xE6, 0xE6, 0x8D }, //Channel [2], 923.6 MHz / 61.035 Hz = 15132301 = 0xE6E68D
@@ -246,6 +246,17 @@
     { 0xE7, 0x19, 0xC0 }, //Channel [6], 924.4 MHz / 61.035 Hz = 15145408 = 0xE719C0
     { 0xE7, 0x26, 0x8D }, //Channel [7], 924.6 MHz / 61.035 Hz = 15148685 = 0xE7268D
     { 0xE7, 0x33, 0x5A }, //Channel [8], 924.8 MHz / 61.035 Hz = 15151962 = 0xE7335A
+  };
+#elif defined(AS_923_2)
+  static const PROGMEM unsigned char LoRa_Frequency[8][3] = {//[921.4 - 922.8] MHz
+    { 0xE6, 0x59, 0xC0 }, //Channel [0], 921.4 MHz / 61.035 Hz = 15096256 = 0xE659C0 - Default OTAA - RX2
+    { 0xE6, 0x66, 0x8D }, //Channel [1], 921.6 MHz / 61.035 Hz = 15099533 = 0xE6668D - Default OTAA
+    { 0xE6, 0x4C, 0xF3 }, //Channel [2], 921.2 MHz / 61.035 Hz = 15092979 = 0xE64CF3 
+    { 0xE6, 0x73, 0x5A }, //Channel [3], 921.8 MHz / 61.035 Hz = 15102810 = 0xE6735A
+    { 0xE6, 0x80, 0x27 }, //Channel [4], 922.0 MHz / 61.035 Hz = 15106087 = 0xE68027 
+    { 0xE6, 0x8C, 0xF3 }, //Channel [5], 922.2 MHz / 61.035 Hz = 15109363 = 0xE68CF3 
+    { 0xE6, 0x99, 0xC0 }, //Channel [6], 922.4 MHz / 61.035 Hz = 15112640 = 0xE699C0 
+    { 0xE6, 0xA6, 0x8D }, //Channel [7], 922.6 MHz / 61.035 Hz = 15115917 = 0xE6A68D
   };
 #elif defined(EU_868)
   static const PROGMEM unsigned char LoRa_Frequency[9][3] = {//[868.1 - 867.9] MHz
@@ -407,7 +418,7 @@ static void RFM_Change_Datarate(unsigned char Datarate)
     RFM_change_SF_BW(7,0x09);
     break;
   }
-#else //EU_868 or AS_923
+#else //EU_868 or AS_923 or AS_923_2
   switch (Datarate) {
   case 0x00:  // SF12BW125
     RFM_change_SF_BW(12,0x07);
@@ -443,7 +454,7 @@ static void RFM_Change_Datarate(unsigned char Datarate)
 */
 static void RFM_Change_Channel(unsigned char Channel)
 {
-#if defined(AS_923)
+#if defined(AS_923) || defined(AS_923_2)
   if (Channel <= 0x08)
     for(unsigned char i = 0 ; i < 3 ; ++i)
       RFM_Write(RFM_REG_FR_MSB + i, pgm_read_byte(&(LoRa_Frequency[Channel][i])));

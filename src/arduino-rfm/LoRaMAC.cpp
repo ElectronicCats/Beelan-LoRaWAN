@@ -74,6 +74,8 @@ void LORA_Cycle(sBuffer *Data_Tx, sBuffer *Data_Rx, RFM_command_t *RFM_Command, 
     unsigned char rx1_dr = LoRa_Settings->Datarate_Tx+10;
 	#elif defined(EU_868)   
     unsigned char rx1_dr = LoRa_Settings->Datarate_Tx;
+	#else // AS_923 and AS_923_2
+	unsigned char rx1_dr = LoRa_Settings->Datarate_Tx;
 	#endif
 
   	//Transmit
