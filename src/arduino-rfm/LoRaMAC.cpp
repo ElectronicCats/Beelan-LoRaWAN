@@ -100,44 +100,49 @@ void LORA_Cycle(sBuffer *Data_Tx, sBuffer *Data_Rx, RFM_command_t *RFM_Command, 
 			#elif defined(EU_868)
 			LoRa_Settings->Channel_Rx = CHRX2;    // set Rx2 channel 923.3 MHZ 
 			LoRa_Settings->Datarate_Rx = SF12BW125;   //set RX2 datarate 12
+			#elif defined(AS_923) || defined(AS_923_2)
+			LoRa_Settings->Channel_Rx = 0x00;    // set Rx2 channel 923.2 (AS_923) or 921.4 (AS_923_2)
+			LoRa_Settings->Datarate_Rx = SF10BW125;   //set RX2 datarate 10
 			#endif
 			LORA_Receive_Data(Data_Rx, Session_Data, OTAA_Data, Message_Rx, LoRa_Settings);  //BUG DETECT SENDED PACKET ALWAYS (IT DOES UPDATE)
 		}
-		//Wait rx1 window delay 
-		//Receive on RX2 if countinous mode is available
-		//check if anything if coming on class C RX2 window in class A no DIO0 flag will be activated
-		do{
-			if(digitalRead(RFM_pins.DIO0))		//Poll Rx done for getting message
-				LORA_Receive_Data(Data_Rx, Session_Data, OTAA_Data, Message_Rx, LoRa_Settings);
-		}while(millis() - prevTime < Receive_Delay_1);
-		//Return if message on RX2 
-		if (Data_Rx->Counter>0)return;
-		
-		//Update time for counting 1 sec more
-		prevTime = millis(); 
-		//Return to datarate and channel for RX1
-		LoRa_Settings->Channel_Rx = rx1_ch;    // set RX1 channel 
-		LoRa_Settings->Datarate_Rx = rx1_dr;   //set RX1 datarate
-		//Receive Data RX1
-		LORA_Receive_Data(Data_Rx, Session_Data, OTAA_Data, Message_Rx, LoRa_Settings);
-		//Wait rx2 window delay 
-		do{
-			//Poll Rx done for getting message
-			//DIO0 flag will only be active while class C
-			if(digitalRead(RFM_pins.DIO0))
-				LORA_Receive_Data(Data_Rx, Session_Data, OTAA_Data, Message_Rx, LoRa_Settings); 
-		}while(millis() - prevTime < Receive_Delay_2);
-		//Return if message on RX1
-		if (Data_Rx->Counter>0)return;
+		else {
+			//Wait rx1 window delay 
+			//Receive on RX2 if countinous mode is available
+			//check if anything if coming on class C RX2 window in class A no DIO0 flag will be activated
+			do{
+				if(digitalRead(RFM_pins.DIO0))		//Poll Rx done for getting message
+					LORA_Receive_Data(Data_Rx, Session_Data, OTAA_Data, Message_Rx, LoRa_Settings);
+			}while(millis() - prevTime < Receive_Delay_1);
+			//Return if message on RX2 
+			if (Data_Rx->Counter>0)return;
+			
+			//Update time for counting 1 sec more
+			prevTime = millis(); 
+			//Return to datarate and channel for RX1
+			LoRa_Settings->Channel_Rx = rx1_ch;    // set RX1 channel 
+			LoRa_Settings->Datarate_Rx = rx1_dr;   //set RX1 datarate
+			//Receive Data RX1
+			LORA_Receive_Data(Data_Rx, Session_Data, OTAA_Data, Message_Rx, LoRa_Settings);
+			//Wait rx2 window delay 
+			do{
+				//Poll Rx done for getting message
+				//DIO0 flag will only be active while class C
+				if(digitalRead(RFM_pins.DIO0))
+					LORA_Receive_Data(Data_Rx, Session_Data, OTAA_Data, Message_Rx, LoRa_Settings); 
+			}while(millis() - prevTime < Receive_Delay_2);
+			//Return if message on RX1
+			if (Data_Rx->Counter>0)return;
 
-		//Configure datarate and channel for RX2
-		LoRa_Settings->Channel_Rx = 0x08;    // set RX2 channel 
-		LoRa_Settings->Datarate_Rx = 0x08;   //set RX2 datarate
-		//Receive Data RX2 
-		//If class A timeout will apply
-		//If class C continous Rx will happen
-		LORA_Receive_Data(Data_Rx, Session_Data, OTAA_Data, Message_Rx, LoRa_Settings);
-		*RFM_Command = NO_RFM_COMMAND;
+			//Configure datarate and channel for RX2
+			LoRa_Settings->Channel_Rx = 0x08;    // set RX2 channel 
+			LoRa_Settings->Datarate_Rx = 0x08;   //set RX2 datarate
+			//Receive Data RX2 
+			//If class A timeout will apply
+			//If class C continous Rx will happen
+			LORA_Receive_Data(Data_Rx, Session_Data, OTAA_Data, Message_Rx, LoRa_Settings);
+			*RFM_Command = NO_RFM_COMMAND;
+		}
 	}
 }
 
