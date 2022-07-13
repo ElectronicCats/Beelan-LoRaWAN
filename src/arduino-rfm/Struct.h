@@ -150,6 +150,14 @@ typedef enum {
     SF8BW125    = 0x04,
     SF7BW125    = 0x05,
     SF7BW250    = 0x06
+#elif defined(AS_923) || defined(AS_923_2)
+    SF12BW125   = 0x00,
+    SF11BW125   = 0x01,
+    SF10BW125   = 0x02,
+    SF9BW125    = 0x03,
+    SF8BW125    = 0x04,
+    SF7BW125    = 0x05,
+    SF7BW250    = 0x06
 #endif
 } dataRates_t;
 
