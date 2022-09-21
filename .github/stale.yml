@@ -1,7 +1,7 @@
 # Number of days of inactivity before an issue becomes stale
-daysUntilStale: 60
+daysUntilStale: 1
 # Number of days of inactivity before a stale issue is closed
-daysUntilClose: 7
+daysUntilClose: 2
 # Issues with these labels will never be considered stale
 exemptLabels:
   - pinned
@@ -10,8 +10,13 @@ exemptLabels:
 staleLabel: wontfix
 # Comment to post when marking an issue as stale. Set to `false` to disable
 markComment: >
-  This issue has been automatically marked as stale because it has not had
-  recent activity. It will be closed if no further activity occurs. Thank you
-  for your contributions.
+  This is a message to remind you that your request has been pending for 5 days and awaits your comments. 
+  
+  Our agent would like to hear from you about your previous request to see if the difficulty
+  you were facing has been resolved or if we can provide further assistance.
+  Otherwise, if we do not hear back from you within the next three days, the issue will be closed.
+  
+  Kind regards,
+  Electronic Cats Support Team
 # Comment to post when closing a stale issue. Set to `false` to disable
 closeComment: false
