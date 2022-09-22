@@ -39,10 +39,6 @@
 #include "Config.h"
 #include "Arduino.h"
 
-#define AU_915 // use the band youy need
-#define SUBND_0 // same here!
-
-
 /*
 *****************************************************************************************
 * FUNCTIONS
