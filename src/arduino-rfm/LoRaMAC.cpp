@@ -103,6 +103,10 @@ void LORA_Cycle(sBuffer *Data_Tx, sBuffer *Data_Rx, RFM_command_t *RFM_Command, 
 			#elif defined(AS_923) || defined(AS_923_2)
 			LoRa_Settings->Channel_Rx = 0x00;    // set Rx2 channel 923.2 (AS_923) or 921.4 (AS_923_2)
 			LoRa_Settings->Datarate_Rx = SF10BW125;   //set RX2 datarate 10
+			/* Added the band AU_915 for use in class C */
+			#elif defined(AU_915)
+			LoRa_Settings->Channel_Rx = 0x08;    // set Rx2 channel 923.3 MHZ
+			LoRa_Settings->Datarate_Rx = SF12BW500;   //set RX2 datarate 12
 			#endif
 			LORA_Receive_Data(Data_Rx, Session_Data, OTAA_Data, Message_Rx, LoRa_Settings);  //BUG DETECT SENDED PACKET ALWAYS (IT DOES UPDATE)
 		}
