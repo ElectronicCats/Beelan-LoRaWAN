@@ -1,13 +1,15 @@
 # Number of days of inactivity before an issue becomes stale
-daysUntilStale: 1
+daysUntilStale: 5
 # Number of days of inactivity before a stale issue is closed
-daysUntilClose: 2
+daysUntilClose: 3
 # Issues with these labels will never be considered stale
 exemptLabels:
-  - pinned
-  - security
+- Bug
+- Quality
+- Feedback
+- Libraries
 # Label to use when marking an issue as stale
-staleLabel: wontfix
+staleLabel: First warning
 # Comment to post when marking an issue as stale. Set to `false` to disable
 markComment: >
   This is a message to remind you that your request has been pending for 5 days and awaits your comments. 
@@ -20,3 +22,5 @@ markComment: >
   Electronic Cats Support Team
 # Comment to post when closing a stale issue. Set to `false` to disable
 closeComment: false
+# Limit to only `issues` or `pulls`
+only: issues
