@@ -348,6 +348,9 @@ void LoRaWANClass::setChannel(unsigned char channel)
 #elif defined(EU_868)
         LoRa_Settings.Channel_Rx = channel;
 #endif
+#elif defined(AS_923) || defined(AS_923_2)
+        LoRa_Settings.Channel_Rx = channel;
+#endif
     }
     else if (channel == MULTI)
     {
