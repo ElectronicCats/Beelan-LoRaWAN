@@ -113,28 +113,28 @@ void LORA_Cycle(sBuffer *Data_Tx, sBuffer *Data_Rx, RFM_command_t *RFM_Command, 
 			#endif
 			LORA_Receive_Data(Data_Rx, Session_Data, OTAA_Data, Message_Rx, LoRa_Settings);  //BUG DETECT SENDED PACKET ALWAYS (IT DOES UPDATE)
 		}
-		else {
-			//https://lora-developers.semtech.com/documentation/tech-papers-and-guides/lorawan-class-a-devices/
-			//Wait rx1 window delay
-			do{
-				yield(); // Do nothing during rx1 window delay
-			}while(millis() - prevTime < Receive_Delay_1);
-			
-			//RX1 Window
-			//Return to datarate and channel for RX1
-			LoRa_Settings->Channel_Rx = rx1_ch;    // set RX1 channel 
-			LoRa_Settings->Datarate_Rx = rx1_dr;   // set RX1 datarate
 
-			do{
-				LORA_Receive_Data(Data_Rx, Session_Data, OTAA_Data, Message_Rx, LoRa_Settings);
-			}while(millis() - prevTime < Receive_Delay_1 + RX1_Window);
-			//Return if message on RX1
-			if (Data_Rx->Counter>0){
-				return;			
-			}
+		//LoRaWAN Link Layer Specification v1.0.4 line 375
+		//Wait rx1 window delay, TO TEST check if class c receives anything
+		do{
+			yield(); // Do nothing during rx1 window delay
+		}while(millis() - prevTime < Receive_Delay_1);
+		
+		//RX1 Window
+		//Return to datarate and channel for RX1
+		LoRa_Settings->Channel_Rx = rx1_ch;    // set RX1 channel 
+		LoRa_Settings->Datarate_Rx = rx1_dr;   // set RX1 datarate
 
-			//RX2 Window
-			//Configure datarate and channel for RX2			
+		do{
+			LORA_Receive_Data(Data_Rx, Session_Data, OTAA_Data, Message_Rx, LoRa_Settings);
+		}while(millis() - prevTime < Receive_Delay_1 + RX1_Window);
+		//Return if message on RX1
+		if (Data_Rx->Counter>0){
+			return;			
+		}
+
+		// Class C open RX2 immediately after first rx window
+		if(LoRa_Settings->Mote_Class == CLASS_C){
 			#ifdef US_915
 			LoRa_Settings->Channel_Rx = 0x08;    // set Rx2 channel 923.3 MHZ
 			LoRa_Settings->Datarate_Rx = SF12BW500;   //set RX2 datarate 12
@@ -144,20 +144,44 @@ void LORA_Cycle(sBuffer *Data_Tx, sBuffer *Data_Rx, RFM_command_t *RFM_Command, 
 			#elif defined(AS_923) || defined(AS_923_2)
 			LoRa_Settings->Channel_Rx = 0x00;    // set Rx2 channel 923.2 (AS_923) or 921.4 (AS_923_2)
 			LoRa_Settings->Datarate_Rx = SF10BW125;   //set RX2 datarate 10
+			/* Added the band AU_915 for use in class C */
 			#elif defined(AU_915)
 			LoRa_Settings->Channel_Rx = 0x08;    // set Rx2 channel 923.3 MHZ
 			LoRa_Settings->Datarate_Rx = SF12BW500;   //set RX2 datarate 12
 			#endif
-			
-			//Receive Data RX2 
-			do{
-				LORA_Receive_Data(Data_Rx, Session_Data, OTAA_Data, Message_Rx, LoRa_Settings);
-			}while(millis() - prevTime < Receive_Delay_2 + RX2_Window);
+			LORA_Receive_Data(Data_Rx, Session_Data, OTAA_Data, Message_Rx, LoRa_Settings);  //BUG DETECT SENDED PACKET ALWAYS (IT DOES UPDATE)
+		}
 
-			//Return if message on RX2
-		    if (Data_Rx->Counter>0){
-				return;			
-			}
+		//LoRaWAN Link Layer Specification v1.0.4 line 375
+		//Wait rx2 window delay, TO TEST check if class c receives anything
+		do{
+			yield(); // Do nothing during rx2 window delay
+		}while(millis() - prevTime < Receive_Delay_2);
+
+		//RX2 Window
+		//Configure datarate and channel for RX2			
+		#ifdef US_915
+		LoRa_Settings->Channel_Rx = 0x08;    // set Rx2 channel 923.3 MHZ
+		LoRa_Settings->Datarate_Rx = SF12BW500;   //set RX2 datarate 12
+		#elif defined(EU_868)
+		LoRa_Settings->Channel_Rx = CHRX2;    // set Rx2 channel 923.3 MHZ 
+		LoRa_Settings->Datarate_Rx = SF12BW125;   //set RX2 datarate 12
+		#elif defined(AS_923) || defined(AS_923_2)
+		LoRa_Settings->Channel_Rx = 0x00;    // set Rx2 channel 923.2 (AS_923) or 921.4 (AS_923_2)
+		LoRa_Settings->Datarate_Rx = SF10BW125;   //set RX2 datarate 10
+		#elif defined(AU_915)
+		LoRa_Settings->Channel_Rx = 0x08;    // set Rx2 channel 923.3 MHZ
+		LoRa_Settings->Datarate_Rx = SF12BW500;   //set RX2 datarate 12
+		#endif
+		
+		//Receive Data RX2 
+		do{
+			LORA_Receive_Data(Data_Rx, Session_Data, OTAA_Data, Message_Rx, LoRa_Settings);
+		}while(millis() - prevTime < Receive_Delay_2 + RX2_Window);
+
+		//Return if message on RX2
+		if (Data_Rx->Counter>0){
+			return;			
 		}
 	}
 }
