@@ -89,6 +89,7 @@ This library has been tested using:
 - Electronic Cats Bast-WAN (Based on SAMR34)
 - NINA B302 is NRF52840 core
 - STMDuino
+- Arduino RENESAS
 
 Connections
 -----------
