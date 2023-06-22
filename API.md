@@ -319,7 +319,7 @@ void loop() {
   // put your main code here, to run repeatedly:
   char myStr[] = "Ini data LoRaku";  
 
-  lora.sendUplink(myStr, strlen(myStr), 0);
+  lora.sendUplink(myStr, strlen(myStr), 0, 1);
   ...
 
 } 
