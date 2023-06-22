@@ -310,7 +310,7 @@ You need to specify the length of data you want to send and also the message typ
 
 #### Syntax
 ```c
-void sendUplink(unsigned char *data, unsigned int len, unsigned char confirm);
+void sendUplink(char *data, unsigned int len, unsigned char confirm, unsigned char mport);
 ```        
 
 #### Example
