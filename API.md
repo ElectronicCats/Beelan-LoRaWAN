@@ -308,6 +308,8 @@ void setup() {
 ### Send data to LoRaWAN
 You need to specify the length of data you want to send and also the message type (unconfirmed or confirmed message). Set `confirm = 0` to send unconfirmed message and `confirm = 1`' to send confirmed message.
 
+For mport, you are free to utilize values between 1-223, it is entirely up to you to choose the values your node and infrastructure software sets or checks for.
+
 #### Syntax
 ```c
 void sendUplink(char *data, unsigned int len, unsigned char confirm, unsigned char mport);
