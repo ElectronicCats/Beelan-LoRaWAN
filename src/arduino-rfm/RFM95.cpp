@@ -270,6 +270,13 @@
     { 0xD8, 0xF9, 0xBE }, //Channel [7], 867.9 MHz / 61.035 Hz = 14219710 = 0xD8F9BE
     { 0xD9, 0x61, 0xBE }, // RX2 Receive channel 869.525 MHz / 61.035 Hz = 14246334 = 0xD961BE    
   };
+#elif defined(IN_865)
+  static const PROGMEM unsigned char LoRa_Frequency[4][3] = {
+    { 0xD8, 0x44, 0x24 }, //Channel [0], 865.0625 MHz / 61.035 Hz = 14173220 = 0xD84424
+    { 0xD8, 0x59, 0xE7 }, //Channel [1], 865.4025 MHz / 61.035 Hz = 14178791 = 0xD859E7
+    { 0xD8, 0x7F, 0x2F }, //Channel [2], 865.9850 MHz / 61.035 Hz = 14188335 = 0xD87F2F
+    { 0xD8, 0xA3, 0x58 }, // RX2 Receive channel 866.550 MHz / 61.035 Hz = 14197592 = 0xD8A358
+  };
 #endif
 
 /*
@@ -326,7 +333,7 @@ static void RFM_change_SF_BW(unsigned char _SF, unsigned char _BW)
 	RFM_Write(RFM_REG_MODEM_CONFIG2, (_SF << 4) | 0b0100); //SFx CRC On
 	RFM_Write(RFM_REG_MODEM_CONFIG1,(_BW << 4) | 0x02); //x kHz 4/5 coding rate explicit header mode
 
-  #ifdef EU_868
+  #if defined(EU_868) || defined(IN_865)
   if(_SF>10)
     RFM_Write(RFM_REG_MODEM_CONFIG3, 0b1100); //Low datarate optimization on AGC auto on 
   else
@@ -418,6 +425,27 @@ static void RFM_Change_Datarate(unsigned char Datarate)
     RFM_change_SF_BW(7,0x09);
     break;
   }
+#elif defined(IN_865)
+  switch (Datarate) {
+  case 0x00:  // SF12BW125
+    RFM_change_SF_BW(12,0x07);
+    break;
+  case 0x01:  // SF11BW125
+    RFM_change_SF_BW(11,0x07);
+    break;
+  case 0x02:  // SF10BW125
+    RFM_change_SF_BW(10,0x07);
+    break;
+  case 0x03:  // SF9BW125
+    RFM_change_SF_BW(9,0x07);
+    break;
+  case 0x04:  // SF8BW125
+    RFM_change_SF_BW(8,0x07);
+    break;
+  case 0x05:  // SF7BW125
+    RFM_change_SF_BW(7,0x07);
+    break;
+  }
 #else //EU_868 or AS_923 or AS_923_2
   switch (Datarate) {
   case 0x00:  // SF12BW125
@@ -466,6 +494,10 @@ static void RFM_Change_Channel(unsigned char Channel)
   if (Channel <= 0x08) 
     for(unsigned char i = 0 ; i < 3 ; ++i)
       RFM_Write(RFM_REG_FR_MSB + i, pgm_read_byte(&(LoRa_Frequency[Channel][i])));  
+#elif defined(IN_865)
+  if( Channel <= 0x03)
+    for(unsigned char i = 0 ; i < 3 ; ++i)
+      RFM_Write(RFM_REG_FR_MSB + i, pgm_read_byte(&(LoRa_Frequency[Channel][i]))); 
 #else   //US915 or AU_915
   if (Channel <= 0x07)
     for(unsigned char i = 0 ; i < 3 ; ++i)
@@ -711,8 +743,11 @@ void RFM_Continuous_Receive(sSettings *LoRa_Settings)
   
 	//Change Datarate and channel.
   // This depends on regional parameters
-#ifdef EU_868
+#if defined(EU_868)
   RFM_Change_Datarate(SF12BW125);
+  RFM_Change_Channel(CHRX2);
+#elif defined(IN_865)
+  RFM_Change_Datarate(SF10BW125);
   RFM_Change_Channel(CHRX2);
 #else
   //Datarate for downlink should be 8 but testing on 10

@@ -77,6 +77,8 @@ void LORA_Cycle(sBuffer *Data_Tx, sBuffer *Data_Rx, RFM_command_t *RFM_Command, 
     unsigned char rx1_dr = LoRa_Settings->Datarate_Tx+10;
 	#elif defined(EU_868)   
     unsigned char rx1_dr = LoRa_Settings->Datarate_Tx;
+	#elif defined(IN_865)
+	unsigned char rx1_dr = LoRa_Settings->Datarate_Tx;
 	#else // AS_923 and AS_923_2
 	unsigned char rx1_dr = LoRa_Settings->Datarate_Tx;
 	#endif
@@ -103,6 +105,9 @@ void LORA_Cycle(sBuffer *Data_Tx, sBuffer *Data_Rx, RFM_command_t *RFM_Command, 
 			#elif defined(EU_868)
 			LoRa_Settings->Channel_Rx = CHRX2;    // set Rx2 channel 923.3 MHZ 
 			LoRa_Settings->Datarate_Rx = SF12BW125;   //set RX2 datarate 12
+			#elif defined(IN_865)
+			LoRa_Settings->Channel_Rx = CHRX2;    // set Rx2 channel 866.550 MHZ 
+			LoRa_Settings->Datarate_Rx = SF10BW125;   //set RX2 datarate 10
 			#elif defined(AS_923) || defined(AS_923_2)
 			LoRa_Settings->Channel_Rx = 0x00;    // set Rx2 channel 923.2 (AS_923) or 921.4 (AS_923_2)
 			LoRa_Settings->Datarate_Rx = SF10BW125;   //set RX2 datarate 10
@@ -141,6 +146,9 @@ void LORA_Cycle(sBuffer *Data_Tx, sBuffer *Data_Rx, RFM_command_t *RFM_Command, 
 			#elif defined(EU_868)
 			LoRa_Settings->Channel_Rx = CHRX2;    // set Rx2 channel 923.3 MHZ 
 			LoRa_Settings->Datarate_Rx = SF12BW125;   //set RX2 datarate 12
+			#elif defined(IN_865)
+			LoRa_Settings->Channel_Rx = CHRX2;    // set Rx2 channel 866.550 MHZ 
+			LoRa_Settings->Datarate_Rx = SF10BW125;   //set RX2 datarate 10
 			#elif defined(AS_923) || defined(AS_923_2)
 			LoRa_Settings->Channel_Rx = 0x00;    // set Rx2 channel 923.2 (AS_923) or 921.4 (AS_923_2)
 			LoRa_Settings->Datarate_Rx = SF10BW125;   //set RX2 datarate 10
@@ -166,6 +174,9 @@ void LORA_Cycle(sBuffer *Data_Tx, sBuffer *Data_Rx, RFM_command_t *RFM_Command, 
 		#elif defined(EU_868)
 		LoRa_Settings->Channel_Rx = CHRX2;    // set Rx2 channel 923.3 MHZ 
 		LoRa_Settings->Datarate_Rx = SF12BW125;   //set RX2 datarate 12
+		#elif defined(IN_865)
+		LoRa_Settings->Channel_Rx = CHRX2;    // set Rx2 channel 866.550 MHZ 
+		LoRa_Settings->Datarate_Rx = SF10BW125;   //set RX2 datarate 10
 		#elif defined(AS_923) || defined(AS_923_2)
 		LoRa_Settings->Channel_Rx = 0x00;    // set Rx2 channel 923.2 (AS_923) or 921.4 (AS_923_2)
 		LoRa_Settings->Datarate_Rx = SF10BW125;   //set RX2 datarate 10
