@@ -473,7 +473,7 @@ void LoRaWANClass::randomChannel()
     freq_idx = random(0,8);
     LoRa_Settings.Channel_Rx=freq_idx;      // same rx and tx channel 
 #elif defined(IN_865)
-    freq_idx = random(0,4);
+    freq_idx = random(0,3);
     LoRa_Settings.Channel_Rx=freq_idx;      // same rx and tx channel 
 #else // US_915 or AU_915
     freq_idx = random(0, 8);
