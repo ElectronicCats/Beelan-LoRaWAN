@@ -11,7 +11,7 @@ Initialize LoRa/LoRaWAN module. Must be called once in the Arduino setup block.
 ```c
 void setup() {
   // Setup loraid access
-  lora.init();
+  lora.init(); //bla bla
   ...
 }
 ```
