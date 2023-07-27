@@ -31,6 +31,9 @@
 #include "lorawan-arduino-rfm.h"
 #include "Conversions.h"
 
+// define lora objet
+LoRaWANClass lora;
+
 LoRaWANClass::LoRaWANClass()
 {
 }
@@ -292,6 +295,8 @@ void LoRaWANClass::setDeviceClass(devclass_t dev_class)
 
 void LoRaWANClass::sendUplink(char *data, unsigned int len, unsigned char confirm, unsigned char mport)
 {
+    lora.setDeviceClass(CLASS_A); // start as class a device
+
     if (currentChannel == MULTI)
     {
         randomChannel();
@@ -304,8 +309,27 @@ void LoRaWANClass::sendUplink(char *data, unsigned int len, unsigned char confir
     LoRa_Settings.Mport = mport;
     //Set new command for RFM
     RFM_Command_Status = NEW_RFM_COMMAND;
+    upMsg_Type = MSG_UP;
     Buffer_Tx.Counter = len;
     memcpy(Buffer_Tx.Data, data, len);
+}
+
+void LoRaWANClass::sendACK()
+{
+    char Str[10];
+    Serial.println("sendACK triggered!!");
+    lora.setDeviceClass(CLASS_A); // start as class a device
+
+    if (currentChannel == MULTI)
+    {
+        randomChannel();
+    }
+    //Set new command for RFM
+    RFM_Command_Status = NEW_RFM_COMMAND;
+    upMsg_Type = MSG_ACK;
+    sprintf(Str, ""); 
+    memcpy(Buffer_Tx.Data, Str, sizeof(Str));
+
 }
 
 void LoRaWANClass::setDataRate(unsigned char data_rate)
@@ -408,33 +432,55 @@ bool LoRaWANClass::readAck(void)
     return false;
 }
 
+void LoRaWANClass::switchToClassC(sSettings *LoRa_Settings)
+{
+    lora.setDeviceClass(CLASS_C);
+ 	LoRa_Settings->Channel_Rx = CHRX2;    // set Rx2 channel 868.500 MHZ 
+	LoRa_Settings->Datarate_Rx = SF12BW125;   //set RX2 datarate 12
+    RFM_Continuous_Receive(LoRa_Settings);
+}
+
+void LoRaWANClass::onMessage(void(*callback)(sBuffer *Data_Rx, bool isConfirmed, uint8_t fPort))
+{
+	messageCallback = callback;
+}
+
 void LoRaWANClass::update(void)
 {
     //Type A mote transmit receive cycle
     if ((RFM_Command_Status == NEW_RFM_COMMAND || RFM_Command_Status == JOIN) && LoRa_Settings.Mote_Class == CLASS_A)
     {
         //LoRaWAN TX/RX cycle
-        LORA_Cycle(&Buffer_Tx, &Buffer_Rx, &RFM_Command_Status, &Session_Data, &OTAA_Data, &Message_Rx, &LoRa_Settings);
-
-        if ((Message_Rx.Frame_Control & 0x20) > 0)
+        LORA_Cycle(&Buffer_Tx, &Buffer_Rx, &RFM_Command_Status, &Session_Data, &OTAA_Data, &Message_Rx, &LoRa_Settings, &upMsg_Type);
+        
+        if ((Message_Rx.Frame_Control & 0x20) > 0){ // ack get only in RX1 window
             Ack_Status = NEW_ACK;
+            Message_Rx.Frame_Control = 0; // clear ack bit after reading
+        }
 
         if (Buffer_Rx.Counter != 0x00)
         {
-            Rx_Status = NEW_RX;
+            bool isConfirmed =  ((Message_Rx.MAC_Header & 0xE0)>>5) == 5 ? true : false ; // MType
+            uint8_t fPort = Message_Rx.Frame_Port;
+            if(lora.messageCallback) lora.messageCallback(&Buffer_Rx, isConfirmed, fPort);
+            Buffer_Rx.Counter = 0x00; // clear counter for the next cycle
+            Serial.println("Data received over RX1");
+            
         }
 
         RFM_Command_Status = NO_RFM_COMMAND;
+
     }
 
     //Type C mote transmit and receive handling
     if (LoRa_Settings.Mote_Class == CLASS_C)
     {
-        //Transmit
+        //Transmit -> this will be never used in Class C since device start as class A all the time.
+        // in Class C mode we will only listen upcoming messages
         if (RFM_Command_Status == NEW_RFM_COMMAND)
         {
             //LoRaWAN TX/RX cycle
-            LORA_Cycle(&Buffer_Tx, &Buffer_Rx, &RFM_Command_Status, &Session_Data, &OTAA_Data, &Message_Rx, &LoRa_Settings);
+            LORA_Cycle(&Buffer_Tx, &Buffer_Rx, &RFM_Command_Status, &Session_Data, &OTAA_Data, &Message_Rx, &LoRa_Settings,&upMsg_Type);
             if (Buffer_Rx.Counter != 0x00)
             {
                 Rx_Status = NEW_RX;
@@ -442,17 +488,29 @@ void LoRaWANClass::update(void)
             RFM_Command_Status = NO_RFM_COMMAND;
         }
 
-        //Receive
-        if (digitalRead(RFM_pins.DIO0) == HIGH)
+        //Receive in Class C mode
+        if (digitalRead(RFM_pins.DIO0) == HIGH )
         {
             LORA_Receive_Data(&Buffer_Rx, &Session_Data, &OTAA_Data, &Message_Rx, &LoRa_Settings);
             if (Buffer_Rx.Counter != 0x00)
             {
-                Rx_Status = NEW_RX;
+            // MType 3:unconfirmed dwn / 5:confirmed dwn
+            bool isConfirmed =  ((Message_Rx.MAC_Header & 0xE0)>>5) == 5 ? true : false ; 
+            uint8_t fPort = Message_Rx.Frame_Port;
+            if(lora.messageCallback) lora.messageCallback(&Buffer_Rx, isConfirmed, fPort);
+            Buffer_Rx.Counter = 0x00; // clear counter for the next cycle
+            Serial.println("Data received over RX2");
+            
             }
         }
+
         RFM_Command_Status = NO_RFM_COMMAND;
     }
+    
+        #ifdef _CLASS_C_
+        lora.switchToClassC(&LoRa_Settings);
+        #endif
+
 }
 
 void LoRaWANClass::randomChannel()
@@ -485,5 +543,4 @@ void LoRaWANClass::setFrameCounter(unsigned int FrameCounter)
     Frame_Counter_Tx = FrameCounter;
 }
 
-// define lora objet
-LoRaWANClass lora;
+

@@ -4,9 +4,12 @@
 // To define your LoRaWAN frequency band here
 //#define AS_923
 //#define AS_923_2
-//#define EU_868
+#define EU_868
 //#define US_915
 //#define AU_915
+
+// If you dont define _CLASS_C_, CLASS_A mode will be on
+#define _CLASS_C_
 
 // Define max payload size used for this node
 #define MAX_UPLINK_PAYLOAD_SIZE 220
