@@ -7,12 +7,13 @@
 //#define EU_868
 //#define US_915
 //#define AU_915
+#define IN_865
 
 // Define max payload size used for this node
 #define MAX_UPLINK_PAYLOAD_SIZE 220
 #define MAX_DOWNLINK_PAYLOAD_SIZE 220
 
-#if !defined(AS_923) && !defined(AS_923_2) && !defined(EU_868) && !defined(US_915) && !defined(AU_915)
+#if !defined(AS_923) && !defined(AS_923_2) && !defined(EU_868) && !defined(US_915) && !defined(AU_915) &&!defined(IN_865)
 #define US_915  // Define default Region
 #endif
 
