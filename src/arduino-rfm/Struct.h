@@ -178,6 +178,8 @@ typedef enum {NO_RX, NEW_RX} rx_t;
 
 typedef enum {NO_ACK, NEW_ACK} ack_t;
 
+typedef enum {MSG_UP, MSG_ACK} msg_t;
+
 #endif
 
 
