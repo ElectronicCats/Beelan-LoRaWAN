@@ -65,7 +65,6 @@
 void LORA_Cycle(sBuffer *Data_Tx, sBuffer *Data_Rx, RFM_command_t *RFM_Command, sLoRa_Session *Session_Data,
  									sLoRa_OTAA *OTAA_Data, sLoRa_Message *Message_Rx, sSettings *LoRa_Settings, msg_t *upMsg_Type)
 {
-	Serial.println("cyclee..");
 	static const unsigned int Receive_Delay_1 = 1000;
 	static const unsigned int Receive_Delay_2 = 2000;    // Receive_Delay_2 >= Receive_Delay_1 + RX1_Window
 	static const unsigned int RX1_Window      = 1000;
