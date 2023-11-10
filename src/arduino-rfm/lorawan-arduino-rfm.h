@@ -59,7 +59,7 @@ public:
     LoRaWANClass();
     ~LoRaWANClass();
 
-    bool init(void);
+    bool init(int8_t clk_pin=-1, int8_t miso_pin=-1, int8_t mosi_pin=-1, int8_t ss_pin=-1);
     bool join(void);
     void sleep(void);
     void wakeUp(void);

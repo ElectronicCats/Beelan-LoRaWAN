@@ -42,7 +42,7 @@ LoRaWANClass::~LoRaWANClass()
 {
 }
 
-bool LoRaWANClass::init(void)
+bool LoRaWANClass::init(int8_t clk_pin, int8_t miso_pin, int8_t mosi_pin, int8_t ss_pin)
 {
     // Lora Setting Class
     dev_class = CLASS_A;
@@ -141,7 +141,7 @@ bool LoRaWANClass::init(void)
     digitalWrite(RFM_pins.RST, HIGH);
 
     //Initialise the SPI port
-    SPI.begin();
+    SPI.begin(clk_pin, miso_pin, mosi_pin, ss_pin);
 
     /*** This prevents the use of other SPI devices with different settings ***/
     //SPI.beginTransaction(SPISettings(4000000,MSBFIRST,SPI_MODE0));
