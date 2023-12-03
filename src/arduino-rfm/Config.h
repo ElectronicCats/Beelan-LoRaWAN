@@ -1,24 +1,24 @@
-//Uncomment for debug
-//#define DEBUG
-
 // To define your LoRaWAN frequency band here
+//#define US_915
 //#define AS_923
 //#define AS_923_2
-#define EU_868
-//#define US_915
+//#define EU_868
 //#define AU_915
-#define IN_865
+//#define IN_865
+
+#if !defined(AS_923) && !defined(AS_923_2) && !defined(EU_868) && !defined(US_915) && !defined(AU_915) &&!defined(IN_865)
+#error "Select the Region in Config.h"
+#endif
 
 // If you dont define _CLASS_C_, CLASS_A mode will be on
-#define _CLASS_C_
+//#define _CLASS_C_
+
+//Uncomment for debug
+//#define DEBUG
 
 // Define max payload size used for this node
 #define MAX_UPLINK_PAYLOAD_SIZE 220
 #define MAX_DOWNLINK_PAYLOAD_SIZE 220
-
-#if !defined(AS_923) && !defined(AS_923_2) && !defined(EU_868) && !defined(US_915) && !defined(AU_915) &&!defined(IN_865)
-#define US_915  // Define default Region
-#endif
 
 #ifdef US_915
 //Select the subband you're working on
