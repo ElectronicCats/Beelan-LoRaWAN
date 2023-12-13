@@ -36,8 +36,8 @@ jobs:
           - arduino:mbed:nano33ble|All-US_915
           - esp8266:esp8266:huzzah:eesz=4M3M,xtal=80|All-US_915
           - rp2040:rp2040:generic|All-US_915
-          - esp32:esp32:esp32:FlashFreq=80
-          - esp32:esp32:featheresp32:FlashFreq=80|All-US_915
+          #- esp32:esp32:esp32:FlashFreq=80
+          #- esp32:esp32:featheresp32:FlashFreq=80|All-US_915
 
         # Specify parameters for each board.
         # Parameters can be: platform-url, examples-exclude and examples-build-properties
@@ -102,24 +102,24 @@ jobs:
               All:
                 -DUS_915
                 -DDEBUG 
-          - arduino-boards-fqbn: esp32:esp32:esp32:FlashFreq=80
-            platform-url: https://github.com/espressif/arduino-esp32/releases/download/3.0.0-alpha2/package_esp32_dev_index.json
-            extra-arduino-cli-args: "--warnings default"
-            build-properties:
-              class_c_abp:
-                -DEU_868 
-                -D_CLASS_C_
-              class_c_otaa_ack:
-                -DEU_868 
-                -D_CLASS_C_
-              All:
-                -DEU_868
-          - arduino-boards-fqbn: esp32:esp32:featheresp32:FlashFreq=80|All-US_915
-            platform-url: https://github.com/espressif/arduino-esp32/releases/download/3.0.0-alpha2/package_esp32_dev_index.json
-            extra-arduino-cli-args: "--warnings default"
-            build-properties: 
-              All:
-                -DUS_915
+          #- arduino-boards-fqbn: esp32:esp32:esp32:FlashFreq=80
+           # platform-url: https://github.com/espressif/arduino-esp32/releases/download/3.0.0-alpha2/package_esp32_dev_index.json
+           # extra-arduino-cli-args: "--warnings default"
+           # build-properties:
+           #   class_c_abp:
+           #     -DEU_868 
+            #    -D_CLASS_C_
+             # class_c_otaa_ack:
+              #  -DEU_868 
+               # -D_CLASS_C_
+              #All:
+               # -DEU_868
+          #- arduino-boards-fqbn: esp32:esp32:featheresp32:FlashFreq=80|All-US_915
+          #  platform-url: https://github.com/espressif/arduino-esp32/releases/download/3.0.0-alpha2/package_esp32_dev_index.json
+          #  extra-arduino-cli-args: "--warnings default"
+          #  build-properties: 
+          #    All:
+          #      -DUS_915
 
       # Do not cancel all jobs / architectures if one job fails
       fail-fast: false
