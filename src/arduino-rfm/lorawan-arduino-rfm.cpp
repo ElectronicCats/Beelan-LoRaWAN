@@ -436,6 +436,7 @@ bool LoRaWANClass::readAck(void)
     return false;
 }
 
+#ifdef _CLASS_C_
 void LoRaWANClass::switchToClassC(sSettings *LoRa_Settings)
 {
     lora.setDeviceClass(CLASS_C);
@@ -443,6 +444,7 @@ void LoRaWANClass::switchToClassC(sSettings *LoRa_Settings)
 	LoRa_Settings->Datarate_Rx = SF12BW125;   //set RX2 datarate 12
     RFM_Continuous_Receive(LoRa_Settings);
 }
+#endif
 
 void LoRaWANClass::onMessage(void(*callback)(sBuffer *Data_Rx, bool isConfirmed, uint8_t fPort))
 {
