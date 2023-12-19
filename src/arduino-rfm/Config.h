@@ -10,9 +10,6 @@
 #error "Select the Region in Config.h"
 #endif
 
-// If you dont define _CLASS_C_, CLASS_A mode will be on
-//#define _CLASS_C_
-
 //Uncomment for debug
 //#define DEBUG
 

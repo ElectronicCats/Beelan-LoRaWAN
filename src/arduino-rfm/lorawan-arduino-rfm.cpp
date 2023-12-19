@@ -436,16 +436,6 @@ bool LoRaWANClass::readAck(void)
     return false;
 }
 
-#ifdef _CLASS_C_
-void LoRaWANClass::switchToClassC(sSettings *LoRa_Settings)
-{
-    lora.setDeviceClass(CLASS_C);
- 	LoRa_Settings->Channel_Rx = CHRX2;    // set Rx2 channel 868.500 MHZ 
-	LoRa_Settings->Datarate_Rx = SF12BW125;   //set RX2 datarate 12
-    RFM_Continuous_Receive(LoRa_Settings);
-}
-#endif
-
 void LoRaWANClass::onMessage(void(*callback)(sBuffer *Data_Rx, bool isConfirmed, uint8_t fPort))
 {
 	messageCallback = callback;
@@ -513,9 +503,7 @@ void LoRaWANClass::update(void)
         RFM_Command_Status = NO_RFM_COMMAND;
     }
     
-        #ifdef _CLASS_C_
-        lora.switchToClassC(&LoRa_Settings);
-        #endif
+        lora.setDeviceClass(CLASS_C); // start as class C device
 
 }
 
