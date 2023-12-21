@@ -7,6 +7,10 @@ This repository contains the simple LoRaWAN library encapsulated to run in the g
 This repository is all based on the library originally created by [Ideetron B.V.](https://github.com/Ideetron) This library is slightly
 modified and this [repo]( https://git.antares.id/lorawan-loraid/arduino-loraid), with the principal purpose to have an LoRaWAN MAC layer for arduino with an easy API.
 
+<a href="https://github.com/ElectronicCats/Beelan-LoRaWAN/wiki">
+  <img src="https://github.com/ElectronicCats/flipper-shields/assets/44976441/6aa7f319-3256-442e-a00d-33c8126833ec" width="200" height="104" />
+</a>
+
 Features
 --------
 The Arduino LoRaWAN library supports LoRaWAN Class A and Class C implementations operating in EU-868, AS-923, US-915 and AU-915 bands. Note that this library is fairly simple with the aim of demonstrating the LoRaWAN capabilities.
