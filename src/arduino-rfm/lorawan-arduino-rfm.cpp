@@ -252,7 +252,8 @@ void LoRaWANClass::setAppSKey(const char *ApskKey_in)
 
 void LoRaWANClass::setDevAddr(const char *devAddr_in)
 {
-    memset(Session_Data.DevAddr, 0x30, sizeof(Session_Data.DevAddr));
+    size_t devAddrSize = sizeof(Session_Data.DevAddr);
+    memset(Session_Data.DevAddr, 0x30, devAddrSize);
 
     //Check if it is a set command and there is enough data sent
     Address_Tx[0] = ASCII2Hex(devAddr_in[0], devAddr_in[1]);
@@ -329,7 +330,9 @@ void LoRaWANClass::sendACK()
     //Set new command for RFM
     RFM_Command_Status = NEW_RFM_COMMAND;
     upMsg_Type = MSG_ACK;
-    sprintf(Str, ""); 
+
+    Str[0] = '\0';
+
     memcpy(Buffer_Tx.Data, Str, sizeof(Str));
 
 }
