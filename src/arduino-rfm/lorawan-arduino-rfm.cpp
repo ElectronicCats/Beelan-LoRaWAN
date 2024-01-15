@@ -46,8 +46,12 @@ bool LoRaWANClass::init(void)
 {
     // Lora Setting Class
     dev_class = CLASS_A;
-    // Random seed
-    randomSeed(analogRead(0));
+
+    #ifdef ESP32
+        randomSeed(esp_random());
+    #else
+        randomSeed(analogRead(0));
+    #endif
 
     // Status
     RFM_Command_Status = NO_RFM_COMMAND;
