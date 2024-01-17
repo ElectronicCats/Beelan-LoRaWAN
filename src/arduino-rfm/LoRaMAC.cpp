@@ -139,14 +139,16 @@ void LORA_Cycle(sBuffer *Data_Tx, sBuffer *Data_Rx, RFM_command_t *RFM_Command, 
 			LORA_Receive_Data(Data_Rx, Session_Data, OTAA_Data, Message_Rx, LoRa_Settings);
 		}while(millis() - prevTime < Receive_Delay_1 + RX1_Window);
 		//Return if message on RX1
-		if (Data_Rx->Counter>0){
+		if (Data_Rx-> >0){
+			Serial.println("[debug] Data update received on RX1");
+			Serial.println("[debug] Counter: "+String(Data_Rx->Counter));
 			return;			
 		}
 
 		// 
-		#ifdef _CLASS_C_
-		return;
-		#endif
+		// #ifdef _CLASS_C_
+		// return;
+		// #endif
 
 		// Class C open RX2 immediately after first rx window
 		if(LoRa_Settings->Mote_Class == CLASS_C){
@@ -202,6 +204,8 @@ void LORA_Cycle(sBuffer *Data_Tx, sBuffer *Data_Rx, RFM_command_t *RFM_Command, 
 
 		//Return if message on RX2
 		if (Data_Rx->Counter>0){
+			Serial.println("[debug] Data update received on RX1");
+			Serial.println("[debug] Counter: "+String(Data_Rx->Counter));
 			return;			
 		}
 	}
@@ -495,7 +499,7 @@ void LORA_Receive_Data(sBuffer *Data_Rx, sLoRa_Session *Session_Data, sLoRa_OTAA
 	//If it is a type A device switch RFM to single receive
 	if(LoRa_Settings->Mote_Class == CLASS_A)
 	{
-		Message_Status = RFM_Single_Receive(LoRa_Settings);  
+		Message_Status = RFM_Single_Receive(LoRa_Settings);
 	}
 	else
 	{
@@ -503,7 +507,9 @@ void LORA_Receive_Data(sBuffer *Data_Rx, sLoRa_Session *Session_Data, sLoRa_OTAA
 		RFM_Switch_Mode(RFM_MODE_STANDBY);
 		Message_Status = NEW_MESSAGE;
 	}
-
+	if(Message_Status == TIMEOUT){
+		Data_Rx->Counter=0x00;
+	}
 	//If there is a message received get the data from the RFM
 	if(Message_Status == NEW_MESSAGE)
 	{

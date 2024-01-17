@@ -503,7 +503,7 @@ void LoRaWANClass::update(void)
         RFM_Command_Status = NO_RFM_COMMAND;
     }
     
-        lora.setDeviceClass(CLASS_C); // start as class C device
+        //lora.setDeviceClass(CLASS_C); // start as class C device
 
 }
 
