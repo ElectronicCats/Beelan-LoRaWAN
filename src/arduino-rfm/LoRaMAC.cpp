@@ -100,10 +100,14 @@ void LORA_Cycle(sBuffer *Data_Tx, sBuffer *Data_Rx, RFM_command_t *RFM_Command, 
 		
 		#if (SAMR34)
 		digitalWrite(RFM_SWITCH,1); //Rf switch inside RAK module change to Rx 
+		Serial.println("RAK module change to Rx");
 		#endif
 
 		// Class C open RX2 immediately after sending data
 		if(LoRa_Settings->Mote_Class == CLASS_C){
+
+			Serial.println("CLASS C");
+
 			#ifdef US_915
 			LoRa_Settings->Channel_Rx = 0x08;    // set Rx2 channel 923.3 MHZ
 			LoRa_Settings->Datarate_Rx = SF12BW500;   //set RX2 datarate 12
@@ -132,16 +136,22 @@ void LORA_Cycle(sBuffer *Data_Tx, sBuffer *Data_Rx, RFM_command_t *RFM_Command, 
 		
 		//RX1 Window
 		//Return to datarate and channel for RX1
-		LoRa_Settings->Channel_Rx = rx1_ch;    // set RX1 channel 
-		LoRa_Settings->Datarate_Rx = rx1_dr;   // set RX1 datarate
+		LoRa_Settings->Channel_Rx = rx1_ch;    // set RX1 channel 923.3 MHz
+		LoRa_Settings->Datarate_Rx = rx1_dr;   // set RX1 datarate SF8BW500
+
+		Serial.print("Channel_Rx = ");
+		Serial.println(rx1_ch);
+		Serial.print("Datarate_Rx = ");
+		Serial.println(rx1_dr);
 
 		do{
 			LORA_Receive_Data(Data_Rx, Session_Data, OTAA_Data, Message_Rx, LoRa_Settings);
 		}while(millis() - prevTime < Receive_Delay_1 + RX1_Window);
+
 		//Return if message on RX1
-		if (Data_Rx-> >0){
+		if (Data_Rx->Counter > 0){
 			Serial.println("[debug] Data update received on RX1");
-			Serial.println("[debug] Counter: "+String(Data_Rx->Counter));
+			Serial.println("[debug] Counter: " + String(Data_Rx->Counter));
 			return;			
 		}
 
@@ -500,6 +510,10 @@ void LORA_Receive_Data(sBuffer *Data_Rx, sLoRa_Session *Session_Data, sLoRa_OTAA
 	if(LoRa_Settings->Mote_Class == CLASS_A)
 	{
 		Message_Status = RFM_Single_Receive(LoRa_Settings);
+		Serial.print("Message_Status = ");
+		Serial.println(Message_Status);
+		if(Message_Status == 1)Serial.println("NEW_MESSAGE");
+		if(Message_Status == 6)Serial.println("TIMEOUT");
 	}
 	else
 	{
@@ -507,6 +521,7 @@ void LORA_Receive_Data(sBuffer *Data_Rx, sLoRa_Session *Session_Data, sLoRa_OTAA
 		RFM_Switch_Mode(RFM_MODE_STANDBY);
 		Message_Status = NEW_MESSAGE;
 	}
+
 	if(Message_Status == TIMEOUT){
 		Data_Rx->Counter=0x00;
 	}
