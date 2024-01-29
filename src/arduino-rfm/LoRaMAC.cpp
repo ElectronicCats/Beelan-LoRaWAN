@@ -63,165 +63,169 @@
 *****************************************************************************************
 */
 void LORA_Cycle(sBuffer *Data_Tx, sBuffer *Data_Rx, RFM_command_t *RFM_Command, sLoRa_Session *Session_Data,
- 									sLoRa_OTAA *OTAA_Data, sLoRa_Message *Message_Rx, sSettings *LoRa_Settings, msg_t *upMsg_Type)
-{
-	static const unsigned int Receive_Delay_1 = 1000;
-	static const unsigned int Receive_Delay_2 = 2000;    // Receive_Delay_2 >= Receive_Delay_1 + RX1_Window
-	static const unsigned int RX1_Window      = 1000;
-	static const unsigned int RX2_Window      = 1000;
+                sLoRa_OTAA *OTAA_Data, sLoRa_Message *Message_Rx, sSettings *LoRa_Settings, msg_t *upMsg_Type) {
+    static const unsigned int Receive_Delay_1 = 1000;
+    static const unsigned int Receive_Delay_2 = 2000;    // Receive_Delay_2 >= Receive_Delay_1 + RX1_Window
+    static const unsigned int RX1_Window      = 1000;
+    static const unsigned int RX2_Window      = 1000;
 
-	unsigned long prevTime = 0;
-	unsigned char rx1_ch = LoRa_Settings->Channel_Rx;
-	#ifdef US_915   
-    unsigned char rx1_dr = LoRa_Settings->Datarate_Tx+10;
-	#elif defined(AU_915)    
-    unsigned char rx1_dr = LoRa_Settings->Datarate_Tx+10;
-	#elif defined(EU_868)   
-    unsigned char rx1_dr = LoRa_Settings->Datarate_Tx;
-	#elif defined(IN_865)
-	unsigned char rx1_dr = LoRa_Settings->Datarate_Tx;
-	#else // AS_923 and AS_923_2
-	unsigned char rx1_dr = LoRa_Settings->Datarate_Tx;
-	#endif
+    unsigned long prevTime = 0;
+    unsigned char rx1_ch = LoRa_Settings->Channel_Rx;
+    unsigned char rx1_dr;
+    // Configure the RX1 datarate based on region
+    #ifdef US_915   
+    rx1_dr = LoRa_Settings->Datarate_Tx + 10;
+    #elif defined(AU_915)    
+    rx1_dr = LoRa_Settings->Datarate_Tx + 10;
+    #elif defined(EU_868)   
+    rx1_dr = LoRa_Settings->Datarate_Tx;
+    #elif defined(IN_865)
+    rx1_dr = LoRa_Settings->Datarate_Tx;
+    #else // AS_923 and AS_923_2
+    rx1_dr = LoRa_Settings->Datarate_Tx;
+    #endif
 
-  	//Transmit
-	if(*RFM_Command == NEW_RFM_COMMAND){
-		#if (SAMR34)
-		pinMode(RFM_SWITCH,OUTPUT);
-		digitalWrite(RFM_SWITCH,0); //Rf switch inside RAK module change to Tx
-		#endif	
+    //Transmit
+    if (*RFM_Command == NEW_RFM_COMMAND) {
+        Serial.println("NEW_RFM_COMMAND");
 
-		//Lora send data & ack
-		if(*upMsg_Type == MSG_UP) LORA_Send_Data(Data_Tx, Session_Data, LoRa_Settings);
-		else if(*upMsg_Type == MSG_ACK) LORA_Send_ACK(Data_Tx, Session_Data, LoRa_Settings);
+        #if (SAMR34)
+        pinMode(RFM_SWITCH, OUTPUT);
+        digitalWrite(RFM_SWITCH, 0); //Rf switch inside RAK module change to Tx
+        #endif    
 
+        //Lora send data & ack
+        if (*upMsg_Type == MSG_UP) LORA_Send_Data(Data_Tx, Session_Data, LoRa_Settings);
+        else if (*upMsg_Type == MSG_ACK) LORA_Send_ACK(Data_Tx, Session_Data, LoRa_Settings);
 
-		prevTime = millis();
+        prevTime = millis();
+
+        #if (SAMR34)
+        digitalWrite(RFM_SWITCH, 1); //Rf switch inside RAK module change to Rx 
+        Serial.println("RAK module change to Rx");
+        #endif
+
+        // Handle Class A and Class C separately
+        if (LoRa_Settings->Mote_Class == CLASS_A) {
+            // Class A specific operations...
+
+            // Wait for RX1 window
+            do {
+                yield(); // Do nothing during rx1 window delay
+            } while (millis() - prevTime < Receive_Delay_1);
+
+            // RX1 Window
+            LoRa_Settings->Channel_Rx = rx1_ch;
+            LoRa_Settings->Datarate_Rx = rx1_dr;
+
+            Serial.print("Channel_Rx = ");
+            Serial.println(rx1_ch);
+            Serial.print("Datarate_Rx = ");
+            Serial.println(rx1_dr);
+
+            do {
+                LORA_Receive_Data(Data_Rx, Session_Data, OTAA_Data, Message_Rx, LoRa_Settings);
+            } while (millis() - prevTime < Receive_Delay_1 + RX1_Window);
+
+            if (Data_Rx->Counter > 0) {
+                Serial.println("[debug] Data update received on RX1");
+                Serial.println("[debug] Counter: " + String(Data_Rx->Counter));
+                return;
+            }
+
+			//RX2 Window
+			//LoRaWAN Link Layer Specification v1.0.4 line 375
+			//Wait rx2 window delay, TO TEST check if class c receives anything
+			do{
+				yield(); // Do nothing during rx2 window delay
+			}while(millis() - prevTime < Receive_Delay_2);
+			
+			// RX2 Window
+            LORA_Configure_Rx2_Channel_and_Datarate(LoRa_Settings);
+			
+			//Receive Data RX2 
+			do{
+				LORA_Receive_Data(Data_Rx, Session_Data, OTAA_Data, Message_Rx, LoRa_Settings);
+			}while(millis() - prevTime < Receive_Delay_2 + RX2_Window);
+
+			//Return if message on RX2
+			if (Data_Rx->Counter>0){
+				Serial.println("[debug] Data update received on RX2");
+				Serial.println("[debug] Counter: " + String(Data_Rx->Counter));
+				return;			
+			}
+
+        } else if (LoRa_Settings->Mote_Class == CLASS_C) {
 		
-		#if (SAMR34)
-		digitalWrite(RFM_SWITCH,1); //Rf switch inside RAK module change to Rx 
-		Serial.println("RAK module change to Rx");
-		#endif
+			// Open RX2 immediately after sending data
+            LORA_Configure_Rx2_Channel_and_Datarate(LoRa_Settings);
 
-		// Class C open RX2 immediately after sending data
-		if(LoRa_Settings->Mote_Class == CLASS_C){
+            LORA_Receive_Data(Data_Rx, Session_Data, OTAA_Data, Message_Rx, LoRa_Settings);  //BUG DETECT SENDED PACKET ALWAYS (IT DOES UPDATE)
+          
+			//LoRaWAN Link Layer Specification v1.0.4 line 375
+			//Wait rx1 window delay, TO TEST check if class c receives anything
+			do{
+				yield(); // Do nothing during rx1 window delay
+			}while(millis() - prevTime < Receive_Delay_1);
+			
+			//RX1 Window
+			//Return to datarate and channel for RX1
+			LoRa_Settings->Channel_Rx = rx1_ch;    // set RX1 channel 923.3 (0x08)
+			LoRa_Settings->Datarate_Rx = rx1_dr;   // set RX1 datarate SF8BW500
 
-			Serial.println("CLASS C");
+			do{
+				LORA_Receive_Data(Data_Rx, Session_Data, OTAA_Data, Message_Rx, LoRa_Settings);
+			}while(millis() - prevTime < Receive_Delay_1 + RX1_Window);
+			
+			//Return if message on RX1
+			if (Data_Rx->Counter > 0){
+				Serial.println("[debug] Data update received on RX1");
+				Serial.println("[debug] Counter: "+String(Data_Rx->Counter));
+				return;			
+			}
+			
+            // Open RX2 immediately after sending data
+            LORA_Configure_Rx2_Channel_and_Datarate(LoRa_Settings);
 
-			#ifdef US_915
-			LoRa_Settings->Channel_Rx = 0x08;    // set Rx2 channel 923.3 MHZ
-			LoRa_Settings->Datarate_Rx = SF12BW500;   //set RX2 datarate 12
-			#elif defined(EU_868)
-			LoRa_Settings->Channel_Rx = CHRX2;    // set Rx2 channel 923.3 MHZ 
-			LoRa_Settings->Datarate_Rx = SF12BW125;   //set RX2 datarate 12
-			#elif defined(IN_865)
-			LoRa_Settings->Channel_Rx = CHRX2;    // set Rx2 channel 866.550 MHZ 
-			LoRa_Settings->Datarate_Rx = SF10BW125;   //set RX2 datarate 10
-			#elif defined(AS_923) || defined(AS_923_2)
-			LoRa_Settings->Channel_Rx = 0x00;    // set Rx2 channel 923.2 (AS_923) or 921.4 (AS_923_2)
-			LoRa_Settings->Datarate_Rx = SF10BW125;   //set RX2 datarate 10
-			/* Added the band AU_915 for use in class C */
-			#elif defined(AU_915)
-			LoRa_Settings->Channel_Rx = 0x08;    // set Rx2 channel 923.3 MHZ
-			LoRa_Settings->Datarate_Rx = SF12BW500;   //set RX2 datarate 12
-			#endif
-			LORA_Receive_Data(Data_Rx, Session_Data, OTAA_Data, Message_Rx, LoRa_Settings);  //BUG DETECT SENDED PACKET ALWAYS (IT DOES UPDATE)
-		}
+            LORA_Receive_Data(Data_Rx, Session_Data, OTAA_Data, Message_Rx, LoRa_Settings);  //BUG DETECT SENDED PACKET ALWAYS (IT DOES UPDATE)
 
-		//LoRaWAN Link Layer Specification v1.0.4 line 375
-		//Wait rx1 window delay, TO TEST check if class c receives anything
-		do{
-			yield(); // Do nothing during rx1 window delay
-		}while(millis() - prevTime < Receive_Delay_1);
-		
-		//RX1 Window
-		//Return to datarate and channel for RX1
-		LoRa_Settings->Channel_Rx = rx1_ch;    // set RX1 channel 923.3 MHz
-		LoRa_Settings->Datarate_Rx = rx1_dr;   // set RX1 datarate SF8BW500
+            // Wait for RX2 window
+            do {
+                yield(); // Do nothing during rx2 window delay
+            } while (millis() - prevTime < Receive_Delay_2);
 
-		Serial.print("Channel_Rx = ");
-		Serial.println(rx1_ch);
-		Serial.print("Datarate_Rx = ");
-		Serial.println(rx1_dr);
+            do {
+                LORA_Receive_Data(Data_Rx, Session_Data, OTAA_Data, Message_Rx, LoRa_Settings);
+            } while (millis() - prevTime < Receive_Delay_2 + RX2_Window);
 
-		do{
-			LORA_Receive_Data(Data_Rx, Session_Data, OTAA_Data, Message_Rx, LoRa_Settings);
-		}while(millis() - prevTime < Receive_Delay_1 + RX1_Window);
-
-		//Return if message on RX1
-		if (Data_Rx->Counter > 0){
-			Serial.println("[debug] Data update received on RX1");
-			Serial.println("[debug] Counter: " + String(Data_Rx->Counter));
-			return;			
-		}
-
-		// 
-		// #ifdef _CLASS_C_
-		// return;
-		// #endif
-
-		// Class C open RX2 immediately after first rx window
-		if(LoRa_Settings->Mote_Class == CLASS_C){
-			#ifdef US_915
-			LoRa_Settings->Channel_Rx = 0x08;    // set Rx2 channel 923.3 MHZ
-			LoRa_Settings->Datarate_Rx = SF12BW500;   //set RX2 datarate 12
-			#elif defined(EU_868)
-			LoRa_Settings->Channel_Rx = CHRX2;    // set Rx2 channel 923.3 MHZ 
-			LoRa_Settings->Datarate_Rx = SF12BW125;   //set RX2 datarate 12
-			#elif defined(IN_865)
-			LoRa_Settings->Channel_Rx = CHRX2;    // set Rx2 channel 866.550 MHZ 
-			LoRa_Settings->Datarate_Rx = SF10BW125;   //set RX2 datarate 10
-			#elif defined(AS_923) || defined(AS_923_2)
-			LoRa_Settings->Channel_Rx = 0x00;    // set Rx2 channel 923.2 (AS_923) or 921.4 (AS_923_2)
-			LoRa_Settings->Datarate_Rx = SF10BW125;   //set RX2 datarate 10
-			/* Added the band AU_915 for use in class C */
-			#elif defined(AU_915)
-			LoRa_Settings->Channel_Rx = 0x08;    // set Rx2 channel 923.3 MHZ
-			LoRa_Settings->Datarate_Rx = SF12BW500;   //set RX2 datarate 12
-			#endif
-			LORA_Receive_Data(Data_Rx, Session_Data, OTAA_Data, Message_Rx, LoRa_Settings);  //BUG DETECT SENDED PACKET ALWAYS (IT DOES UPDATE)
-		}
-
-		//LoRaWAN Link Layer Specification v1.0.4 line 375
-		//Wait rx2 window delay, TO TEST check if class c receives anything
-		do{
-			yield(); // Do nothing during rx2 window delay
-		}while(millis() - prevTime < Receive_Delay_2);
-
-		//RX2 Window
-		//Configure datarate and channel for RX2			
-		#ifdef US_915
-		LoRa_Settings->Channel_Rx = 0x08;    // set Rx2 channel 923.3 MHZ
-		LoRa_Settings->Datarate_Rx = SF12BW500;   //set RX2 datarate 12
-		#elif defined(EU_868)
-		LoRa_Settings->Channel_Rx = CHRX2;    // set Rx2 channel 923.3 MHZ 
-		LoRa_Settings->Datarate_Rx = SF12BW125;   //set RX2 datarate 12
-		#elif defined(IN_865)
-		LoRa_Settings->Channel_Rx = CHRX2;    // set Rx2 channel 866.550 MHZ 
-		LoRa_Settings->Datarate_Rx = SF10BW125;   //set RX2 datarate 10
-		#elif defined(AS_923) || defined(AS_923_2)
-		LoRa_Settings->Channel_Rx = 0x00;    // set Rx2 channel 923.2 (AS_923) or 921.4 (AS_923_2)
-		LoRa_Settings->Datarate_Rx = SF10BW125;   //set RX2 datarate 10
-		#elif defined(AU_915)
-		LoRa_Settings->Channel_Rx = 0x08;    // set Rx2 channel 923.3 MHZ
-		LoRa_Settings->Datarate_Rx = SF12BW500;   //set RX2 datarate 12
-		#endif
-		
-		//Receive Data RX2 
-		do{
-			LORA_Receive_Data(Data_Rx, Session_Data, OTAA_Data, Message_Rx, LoRa_Settings);
-		}while(millis() - prevTime < Receive_Delay_2 + RX2_Window);
-
-		//Return if message on RX2
-		if (Data_Rx->Counter>0){
-			Serial.println("[debug] Data update received on RX1");
-			Serial.println("[debug] Counter: "+String(Data_Rx->Counter));
-			return;			
-		}
-	}
+            if (Data_Rx->Counter > 0) {
+                Serial.println("[debug] Data update received on RX2");
+                Serial.println("[debug] Counter: " + String(Data_Rx->Counter));
+                return;
+            }
+        }
+    }
 }
 
-
+void LORA_Configure_Rx2_Channel_and_Datarate(sSettings *LoRa_Settings) {
+    // Set Rx2 channel and datarate based on region
+    #ifdef US_915
+    LoRa_Settings->Channel_Rx = 0x08;
+    LoRa_Settings->Datarate_Rx = SF12BW500;
+    #elif defined(EU_868)
+    LoRa_Settings->Channel_Rx = CHRX2;
+    LoRa_Settings->Datarate_Rx = SF12BW125;
+    #elif defined(IN_865)
+    LoRa_Settings->Channel_Rx = CHRX2;
+    LoRa_Settings->Datarate_Rx = SF10BW125;
+    #elif defined(AS_923) || defined(AS_923_2)
+    LoRa_Settings->Channel_Rx = 0x00;
+    LoRa_Settings->Datarate_Rx = SF10BW125;
+    #elif defined(AU_915)
+    LoRa_Settings->Channel_Rx = 0x08;
+    LoRa_Settings->Datarate_Rx = SF12BW500;
+    #endif
+}
 
 /*
 *****************************************************************************************
@@ -510,10 +514,6 @@ void LORA_Receive_Data(sBuffer *Data_Rx, sLoRa_Session *Session_Data, sLoRa_OTAA
 	if(LoRa_Settings->Mote_Class == CLASS_A)
 	{
 		Message_Status = RFM_Single_Receive(LoRa_Settings);
-		Serial.print("Message_Status = ");
-		Serial.println(Message_Status);
-		if(Message_Status == 1)Serial.println("NEW_MESSAGE");
-		if(Message_Status == 6)Serial.println("TIMEOUT");
 	}
 	else
 	{
@@ -521,7 +521,6 @@ void LORA_Receive_Data(sBuffer *Data_Rx, sLoRa_Session *Session_Data, sLoRa_OTAA
 		RFM_Switch_Mode(RFM_MODE_STANDBY);
 		Message_Status = NEW_MESSAGE;
 	}
-
 	if(Message_Status == TIMEOUT){
 		Data_Rx->Counter=0x00;
 	}
