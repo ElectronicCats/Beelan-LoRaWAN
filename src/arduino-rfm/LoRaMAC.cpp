@@ -110,7 +110,7 @@ void LORA_Cycle(sBuffer *Data_Tx, sBuffer *Data_Rx, RFM_command_t *RFM_Command, 
 			#endif
 			LORA_Receive_Data(Data_Rx, Session_Data, OTAA_Data, Message_Rx, LoRa_Settings);  //BUG DETECT SENDED PACKET ALWAYS (IT DOES UPDATE)
 		}
-		else {
+		
 			//Wait rx1 window delay 
 			//Receive on RX2 if countinous mode is available
 			//check if anything if coming on class C RX2 window in class A no DIO0 flag will be activated
@@ -146,7 +146,7 @@ void LORA_Cycle(sBuffer *Data_Tx, sBuffer *Data_Rx, RFM_command_t *RFM_Command, 
 			//If class C continous Rx will happen
 			LORA_Receive_Data(Data_Rx, Session_Data, OTAA_Data, Message_Rx, LoRa_Settings);
 			*RFM_Command = NO_RFM_COMMAND;
-		}
+		
 	}
 }
 
