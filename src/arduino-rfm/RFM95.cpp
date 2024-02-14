@@ -746,9 +746,13 @@ void RFM_Continuous_Receive(sSettings *LoRa_Settings)
 #if defined(EU_868)
   RFM_Change_Datarate(SF12BW125);
   RFM_Change_Channel(CHRX2);
+  LoRa_Settings->Channel_Rx = CHRX2;    // set Rx2 channel 868.500 MHZ  
+	LoRa_Settings->Datarate_Rx = SF12BW125;   //set RX2 datarate 12 
 #elif defined(IN_865)
   RFM_Change_Datarate(SF10BW125);
   RFM_Change_Channel(CHRX2);
+  LoRa_Settings->Channel_Rx = CHRX2;    // set Rx2 channel 868.500 MHZ  
+	LoRa_Settings->Datarate_Rx = SF10BW125;   //set RX2 datarate 12 
 #else
   //Datarate for downlink should be 8 but testing on 10
   //LoRa_Settings->Datarate_Rx=10;
