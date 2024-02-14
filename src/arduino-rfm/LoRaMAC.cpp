@@ -480,12 +480,15 @@ void LORA_Receive_Data(sBuffer *Data_Rx, sLoRa_Session *Session_Data, sLoRa_OTAA
 */
 static void Generate_DevNonce(unsigned char *DevNonce)
 {
+#ifdef ESP32
+	// Use the built-in random number generator of ESP32 to obtain a random value
+	esp_fill_random(DevNonce, 2); // Fill the first 2 bytes of DevNonce with random values
+#else
 	unsigned int RandNumber;
-
 	RandNumber = random(0xFFFF);
-
 	DevNonce[0] = RandNumber & 0x00FF;
 	DevNonce[1] = (RandNumber >> 8) & 0x00FF;
+#endif
 }
 /*
 *****************************************************************************************
