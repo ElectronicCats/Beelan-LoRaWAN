@@ -100,13 +100,17 @@ typedef enum {
   CH0 = 0,
   CH1 = 1,
   CH2 = 2,
+#ifndef IN_865 //IN_865 only supports 3 channels
   CH3 = 3,
   CH4 = 4,
   CH5 = 5,
   CH6 = 6,
   CH7 = 7,
+#endif
 #ifdef EU_868
   CHRX2 = 8,
+#elif defined(IN_865)
+  CHRX2 = 3,
 #else
   CH8 = 8,
 #endif
@@ -158,6 +162,13 @@ typedef enum {
     SF8BW125    = 0x04,
     SF7BW125    = 0x05,
     SF7BW250    = 0x06
+#elif defined(IN_865)
+    SF12BW125   = 0x00,
+    SF11BW125   = 0x01,
+    SF10BW125   = 0x02,
+    SF9BW125    = 0x03,
+    SF8BW125    = 0x04,
+    SF7BW125    = 0x05
 #endif
 } dataRates_t;
 
@@ -168,5 +179,3 @@ typedef enum {NO_RX, NEW_RX} rx_t;
 typedef enum {NO_ACK, NEW_ACK} ack_t;
 
 #endif
-
-
