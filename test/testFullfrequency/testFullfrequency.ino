@@ -36,7 +36,7 @@ byte recvStatus = 0;
 
 byte _dataRate;
 byte _channel;
-byte _times;
+byte times;
 
 const sRFM_pins RFM_pins = {
   .CS = 20,
@@ -65,7 +65,7 @@ void setup() {
   counter.val = 0;
   _channel = 0; // 0 - 7
   _dataRate = 0; // 0 - 3 
-  _times = 0;
+  times = 0;
 
   // Put ABP Key and DevAddress here
   lora.setNwkSKey(nwkSKey);
@@ -77,8 +77,8 @@ void loop() {
   currentMillis = millis();
   // Check interval overflow
   if(currentMillis - previousMillis > interval) {
-    if(_times > 0){
-        _times = 0;
+    if(times > 0){
+        times = 0;
         _dataRate++;
         if (_dataRate > 3){
             _dataRate = 0;
@@ -106,13 +106,13 @@ void loop() {
     payload[0] = _channel;
     payload[1] = _dataRate;
     payload[2] = 15;
-    payload[3] = _times + 1;
+    payload[3] = times + 1;
     payload[4] = counter._cb[1];
     payload[5] = counter._cb[0];
 
     lora.sendUplink(payload, 6, 0, 1);
     counter.val++;
-    _times++;
+    times++;
   }
 
   // Check Lora RX

@@ -4,12 +4,16 @@ Arduino LoRaWAN library
 ====================
 This repository contains the simple LoRaWAN library encapsulated to run in the generic platform, allowing using the SX1272, SX1276 transceivers and compatible modules (such as some HopeRF RFM9x modules).
 
-This repository is all based on the library originally created by Ideetron B.V. This library is slightly
+This repository is all based on the library originally created by [Ideetron B.V.](https://github.com/Ideetron) This library is slightly
 modified and this [repo]( https://git.antares.id/lorawan-loraid/arduino-loraid), with the principal purpose to have an LoRaWAN MAC layer for arduino with an easy API.
+
+<a href="https://github.com/ElectronicCats/Beelan-LoRaWAN/wiki">
+  <img src="https://github.com/ElectronicCats/flipper-shields/assets/44976441/6aa7f319-3256-442e-a00d-33c8126833ec" width="200" height="104" />
+</a>
 
 Features
 --------
-The arduino LoRaWAN library supports LoRaWAN Class A and Class C implementations operating in EU-868, AS-923, US-915 and AU-915 bands. Note that this library is fairly simple with the aim of demonstrating the LoRaWAN capabilities.
+The Arduino LoRaWAN library supports LoRaWAN Class A and Class C implementations operating in EU-868, AS-923, US-915 and AU-915 bands. Note that this library is fairly simple with the aim of demonstrating the LoRaWAN capabilities.
 
 ### What certainly works:
  - Sending packets uplink, taking into account duty cycling.
@@ -25,25 +29,11 @@ The arduino LoRaWAN library supports LoRaWAN Class A and Class C implementations
  - Receiving and processing MAC commands.
 
 If you try one of these untested features and it works, be sure to let
-us know (creating a github issue is probably the best way for that).
+us know (creating a Github issue is probably the best way for that, also so you can submit a pull request to improve this repository).
 
-Quick Installing
+Installing the library
 ----------
-To install, use the Arduino Library Manager and search for "Beelan LoraWAN" and install the library.
-
-Manual Installing
-----------
-To install this library:
-
- - install it using the Arduino Library manager ("Sketch" -> "Include
-   Library" -> "Manage Libraries..."), or
- - download a zipfile from github using the "Download ZIP" button and
-   install it using the IDE ("Sketch" -> "Include Library" -> "Add .ZIP
-   Library..."
- - clone this git repository into your sketchbook/libraries folder.
-
-For more info, see https://www.arduino.cc/en/Guide/Libraries
-
+Please refer to the wiki's [first steps](https://github.com/ElectronicCats/Beelan-LoRaWAN/wiki/2.-First-steps) section for instructions on installing the library.
 
 Configuration
 -------------
@@ -89,6 +79,7 @@ This library has been tested using:
 - Electronic Cats Bast-WAN (Based on SAMR34)
 - NINA B302 is NRF52840 core
 - STMDuino
+- RENESAS compatible boards
 
 Connections
 -----------
@@ -117,7 +108,7 @@ For example, this could look like this:
   	
 API
 --------
-See [API.md](API.md).
+ - See [API.md](API.md).
 
 Tests
 -------
@@ -126,13 +117,19 @@ Tests
 Maintainer
 -------
 
-Electronic Cats invests time and resources providing this open source design, please support Electronic Cats!
+Electronic Cats invests time and resources providing this open source design, please support Electronic Cats and open-source hardware by purchasing products from Electronic Cats!
 Thanks Beelan
+
+<a href="https://github.com/sponsors/ElectronicCats">
+ <p align="center">
+  <img src="https://electroniccats.com/wp-content/uploads/2020/07/Badge_GHS.png" height="104" />
+ </p>
+</a>
 
 License
 -------
 Most source files in this repository are made available under the
-MIT License. The examples which use a more liberal
+[MIT License](https://github.com/ElectronicCats/Beelan-LoRaWAN/blob/master/LICENSE.txt). The examples which use a more liberal
 license. Some of the AES code is available under the LGPL. Refer to each
 individual source file for more details.
 
