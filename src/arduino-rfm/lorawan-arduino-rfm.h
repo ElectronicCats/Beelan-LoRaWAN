@@ -91,6 +91,10 @@ public:
     unsigned int getFrameCounter();
     void setFrameCounter(unsigned int FrameCounter);
 
+   // Declare OTAA data struct (Declare public so those data can be save on flash or rtc ram to be reloaded after deep sleep of esp device)
+    sLoRa_OTAA OTAA_Data;
+    sLoRa_Session Session_Data;
+
 private:
     void randomChannel();
 
@@ -110,8 +114,7 @@ private:
     unsigned char NwkSKey[16];
     unsigned char AppSKey[16];
     unsigned int Frame_Counter_Tx;
-    sLoRa_Session Session_Data;
-
+    
     // Declare OTAA data struct
     unsigned char DevEUI[8];
     unsigned char AppEUI[8];
@@ -119,7 +122,6 @@ private:
     unsigned char DevNonce[2];
     unsigned char AppNonce[3];
     unsigned char NetID[3];
-    sLoRa_OTAA OTAA_Data;
 
     // Declare LoRA settings struct
     sSettings LoRa_Settings;
