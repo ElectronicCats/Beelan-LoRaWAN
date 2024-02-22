@@ -105,6 +105,8 @@ For example, this could look like this:
 	  	.DIO2 = RFM_DIO2,
 	  	.DIO5 = RFM_DIO5
   	}; 
+All DIO pins are optional for class A device (maybe class C but not validated). Using DIO0 and DIO1 makes the sending 
+and receiving packet slighly faster since the SPI register is read instead at looking at the state of those pins.
   	
 API
 --------
