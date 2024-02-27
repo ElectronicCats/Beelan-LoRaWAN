@@ -91,9 +91,18 @@ public:
     unsigned int getFrameCounter();
     void setFrameCounter(unsigned int FrameCounter);
 
-   // Declare OTAA data struct (Declare public so those data can be save on flash or rtc ram to be reloaded after deep sleep of esp device)
-    sLoRa_OTAA OTAA_Data;
-    sLoRa_Session Session_Data;
+    // Declare public variable to be save on RTC RAM before deep sleep for ESP device
+    unsigned char DevEUI[8];
+    unsigned char AppEUI[8];
+    unsigned char AppKey[16];
+    unsigned char DevNonce[2];
+    unsigned char AppNonce[3];
+    unsigned char NetID[3];
+    unsigned char Address_Tx[4];
+    unsigned char NwkSKey[16];
+    unsigned char AppSKey[16];
+    unsigned int Frame_Counter_Tx;
+    sSettings LoRa_Settings;
 
 private:
     void randomChannel();
@@ -110,22 +119,10 @@ private:
     void(*messageCallback)(sBuffer *Data_Rx, bool isConfirmed, uint8_t fPort) = NULL;
 
     // Declare ABP session
-    unsigned char Address_Tx[4];
-    unsigned char NwkSKey[16];
-    unsigned char AppSKey[16];
-    unsigned int Frame_Counter_Tx;
+    sLoRa_Session Session_Data;
     
     // Declare OTAA data struct
-    unsigned char DevEUI[8];
-    unsigned char AppEUI[8];
-    unsigned char AppKey[16];
-    unsigned char DevNonce[2];
-    unsigned char AppNonce[3];
-    unsigned char NetID[3];
-
-    // Declare LoRA settings struct
-    sSettings LoRa_Settings;
-    sRFM_pins LoRa_Pins;
+    sLoRa_OTAA OTAA_Data;
 
     unsigned char drate_common;
 
