@@ -1,4 +1,5 @@
 
+// If your using PlatformIO you will need to set _CLASS_C_ using the -D flag in the build_flags options
 #include <Arduino.h>
 #include <lorawan.h>
 
@@ -57,6 +58,7 @@ void setup() {
     return;
   }
 
+  lora.setDeviceClass(CLASS_C);
   // Set Data Rate
   lora.setDataRate(SF8BW125);
 
