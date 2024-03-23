@@ -123,16 +123,17 @@ bool LoRaWANClass::init(void)
 
     //Initialize I/O pins
     if (RFM_pins.DIO0 != -1)
-    {
         pinMode(RFM_pins.DIO0, INPUT);
+    if (RFM_pins.DIO1 != -1)
         pinMode(RFM_pins.DIO1, INPUT);
+    if (RFM_pins.DIO2 != -1)
         pinMode(RFM_pins.DIO2, INPUT);
-    }
+    if (RFM_pins.RST != -1)
+        pinMode(RFM_pins.RST, OUTPUT);
 #ifdef BOARD_DRAGINO_SHIELD
     pinMode(RFM_pins.DIO5, INPUT);
 #endif
     pinMode(RFM_pins.CS, OUTPUT);
-    pinMode(RFM_pins.RST, OUTPUT);
 
     digitalWrite(RFM_pins.CS, HIGH);
 
