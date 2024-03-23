@@ -17,12 +17,10 @@ char myStr[50];
 char outStr[255];
 byte recvStatus = 0;
 
-byte rtcMemoryPointerInitial = 32; // Intial position of the pointer
 byte rtcMemoryPointer = 32; // Start at 32, because the first 128 bytes (128/4 = 32) are used by the ESP device during OTA, so those data will be lost during OTA
 
-
 const sRFM_pins RFM_pins = {
-  .CS = 20,
+  .CS = 15,
   .RST = -1,
   .DIO0 = -1,
   .DIO1 = -1,
