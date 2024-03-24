@@ -107,6 +107,70 @@ For example, this could look like this:
   	}; 
 All unused pin should be set to -1. All DIO pins are optional. RST could be set to -1 if connected to the reset pin of ESP8266.
 Using DIO0 and DIO1 makes the sending and receiving packet slighly faster.
+
+Deep sleep
+-----------
+For ESP device, when deep sleep is called, all the memory is flush execpt the memory explicitly put in RTC memory.
+In order to not loose LoRa session information and thus having to rejoin the LoRaWAN network after deep sleep, the following
+variable needs save on RTC RAM:
+
+lora.DevEUI
+lora.AppEUI
+lora.AppKey
+lora.DevNonce
+lora.AppNonce
+lora.NetID
+lora.Address_Tx
+lora.NwkSKey
+lora.AppSKey
+lora.Frame_Counter_Tx
+lora.LoRa_Settings
+
+Different strategies could be used to save those variables. It is suggested to create a struct as follows and to save that structure
+on RTC memory:
+struct RTCRAM {
+    unsigned char DevEUI[8];
+    unsigned char AppEUI[8];
+    unsigned char AppKey[16];
+    unsigned char DevNonce[2];
+    unsigned char AppNonce[3];
+    unsigned char NetID[3];
+    unsigned char Address_Tx[4];
+    unsigned char NwkSKey[16];
+    unsigned char AppSKey[16];
+    unsigned int Frame_Counter_Tx;
+    sSettings LoRa_Settings;
+};
+RTCRAM rtcRAM;
+
+Once the RTC memory are loaded after deep sleep, the variable can be parse to the LoRaWANClass as follow:
+memcpy(lora.DevEUI, rtcRAM.DevEUI, sizeof(rtcRAM.DevEUI));
+memcpy(lora.AppEUI, rtcRAM.AppEUI, sizeof(rtcRAM.AppEUI));
+memcpy(lora.AppKey, rtcRAM.AppKey, sizeof(rtcRAM.AppKey));
+memcpy(lora.DevNonce, rtcRAM.DevNonce, sizeof(rtcRAM.DevNonce));
+memcpy(lora.AppNonce, rtcRAM.AppNonce, sizeof(rtcRAM.AppNonce));
+memcpy(lora.NetID, rtcRAM.NetID, sizeof(rtcRAM.NetID));
+memcpy(lora.Address_Tx, rtcRAM.Address_Tx, sizeof(rtcRAM.Address_Tx));
+memcpy(lora.NwkSKey, rtcRAM.NwkSKey, sizeof(rtcRAM.NwkSKey));
+memcpy(lora.AppSKey, rtcRAM.AppSKey, sizeof(rtcRAM.AppSKey));
+memcpy(&lora.Frame_Counter_Tx, &rtcRAM.Frame_Counter_Tx, sizeof(rtcRAM.Frame_Counter_Tx));
+memcpy(&lora.LoRa_Settings, &rtcRAM.LoRa_Settings, sizeof(rtcRAM.LoRa_Settings));
+
+The same strategy is used before calling deep sleep in order to save the updated LoRaWAN session on the RTCRAM structure:
+memcpy(rtcRAM.DevEUI, lora.DevEUI, sizeof(rtcRAM.DevEUI));
+memcpy(rtcRAM.AppEUI, lora.AppEUI, sizeof(rtcRAM.AppEUI));
+memcpy(rtcRAM.AppKey, lora.AppKey, sizeof(rtcRAM.AppKey));
+memcpy(rtcRAM.DevNonce, lora.DevNonce, sizeof(rtcRAM.DevNonce));
+memcpy(rtcRAM.AppNonce, lora.AppNonce, sizeof(rtcRAM.AppNonce));
+memcpy(rtcRAM.NetID, lora.NetID, sizeof(rtcRAM.NetID));
+memcpy(rtcRAM.Address_Tx, lora.Address_Tx, sizeof(rtcRAM.Address_Tx));
+memcpy(rtcRAM.NwkSKey, lora.NwkSKey, sizeof(rtcRAM.NwkSKey));
+memcpy(rtcRAM.AppSKey, lora.AppSKey, sizeof(rtcRAM.AppSKey));
+memcpy(&rtcRAM.Frame_Counter_Tx, &lora.Frame_Counter_Tx, sizeof(rtcRAM.Frame_Counter_Tx));
+memcpy(&rtcRAM.LoRa_Settings, &lora.LoRa_Settings, sizeof(rtcRAM.LoRa_Settings));
+memcpy(&rtcRAM.counter, &counter, sizeof(rtcRAM.counter));
+
+The RTCRAM strucutre needs to be explictly save on RTC memory.
   	
 API
 --------
