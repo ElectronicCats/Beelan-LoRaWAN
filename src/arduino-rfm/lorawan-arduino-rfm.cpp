@@ -111,6 +111,12 @@ bool LoRaWANClass::init(void)
     LoRa_Settings.Confirm = 0x00;         //0x00 unconfirmed, 0x01 confirmed
     LoRa_Settings.Channel_Hopping = 0x00; //0x00 no channel hopping, 0x01 channel hopping
 
+    // Set default rx delay and windows
+    LoRa_Settings.Rx1_Delay = 1000; // Thing stack seems to be 5000 ms (so Rx2_delay 6000 ms)
+    LoRa_Settings.Rx2_Delay = 2000; // Rx2_Delay >= Rx1_Delay + RX1_Window
+    LoRa_Settings.RX1_Window = 1000;
+    LoRa_Settings.RX2_Window = 1000;
+
     // Initialise buffer for data to transmit
     memset(Data_Tx, 0x00, sizeof(Data_Tx));
     Buffer_Tx.Data = Data_Tx;
@@ -134,6 +140,7 @@ bool LoRaWANClass::init(void)
     pinMode(RFM_pins.DIO5, INPUT);
 #endif
     pinMode(RFM_pins.CS, OUTPUT);
+    pinMode(RFM_pins.RST, OUTPUT);
 
     digitalWrite(RFM_pins.CS, HIGH);
 
@@ -276,7 +283,28 @@ void LoRaWANClass::setDevAddr(const char *devAddr_in)
 
 void LoRaWANClass::setTxPower(int level, txPin_t pinTx)
 {
+    if (RFO_PIN == pinTx) {
+        // RFO
+        if (level < 0) {
+        level = 0;
+        } else if (level > 14) {
+        level = 14;
+        }
+    } else {
+        // PA BOOST
+        if (level > 20) {
+        level = 20;
+        } else if (level < 2) {
+            level = 2;
+        }
+    }
+    LoRa_Settings.Transmit_Power = level;
     RFM_Set_Tx_Power(level, pinTx);
+}
+
+void LoRaWANClass::setTxPower1(unsigned char power_idx)
+{
+    setTxPower(power_idx, RFO_PIN);
 }
 
 int LoRaWANClass::getRssi()
@@ -392,6 +420,26 @@ void LoRaWANClass::setChannel(unsigned char channel)
     }
 }
 
+void LoRaWANClass::setRx1Delay(unsigned int ms) 
+{
+    LoRa_Settings.Rx1_Delay = ms;
+}
+
+void LoRaWANClass::setRx2Delay(unsigned int ms)
+{
+    LoRa_Settings.Rx2_Delay = ms;
+}
+
+void LoRaWANClass::setRx1Window(unsigned int ms)
+{
+    LoRa_Settings.RX1_Window = ms;
+}
+
+void LoRaWANClass::setRx2Window(unsigned int ms)
+{
+    LoRa_Settings.RX2_Window = ms;
+}
+
 unsigned char LoRaWANClass::getChannel()
 {
     return LoRa_Settings.Channel_Tx;
@@ -400,13 +448,6 @@ unsigned char LoRaWANClass::getChannel()
 unsigned char LoRaWANClass::getDataRate()
 {
     return LoRa_Settings.Datarate_Tx;
-}
-void LoRaWANClass::setTxPower1(unsigned char power_idx)
-{
-    unsigned char RFM_Data;
-    LoRa_Settings.Transmit_Power = (power_idx > 0x0F) ? 0x0F : power_idx;
-    RFM_Data = LoRa_Settings.Transmit_Power + 0xF0;
-    RFM_Write(RFM_REG_PA_CONFIG, RFM_Data);
 }
 
 int LoRaWANClass::readData(char *outBuff)
@@ -478,7 +519,6 @@ void LoRaWANClass::update(void)
             if(lora.messageCallback) lora.messageCallback(&Buffer_Rx, isConfirmed, fPort);
             Buffer_Rx.Counter = 0x00; // clear counter for the next cycle
             Serial.println("Data received over RX1");
-            
         }
 
         RFM_Command_Status = NO_RFM_COMMAND;
@@ -522,7 +562,6 @@ void LoRaWANClass::update(void)
             if(lora.messageCallback) lora.messageCallback(&Buffer_Rx, isConfirmed, fPort);
             Buffer_Rx.Counter = 0x00; // clear counter for the next cycle
             Serial.println("Data received over RX2");
-            
             }
         }
 

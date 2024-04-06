@@ -570,30 +570,16 @@ void RFM_Set_Tx_Power(int level, int outputPin)
 {
   if (RFO_PIN == outputPin) {
     // RFO
-    if (level < 0) {
-      level = 0;
-    } else if (level > 14) {
-      level = 14;
-    }
-
     RFM_Write(RFM_REG_PA_CONFIG, 0x70 | level);
   } else {
     // PA BOOST
     if (level > 17) {
-      if (level > 20) {
-        level = 20;
-      }
-
       // subtract 3 from level, so 18 - 20 maps to 15 - 17
       level -= 3;
-
       // High Power +20 dBm Operation (Semtech SX1276/77/78/79 5.4.3.)
       RFM_Write(RFM_REG_PA_DAC, 0x87);
       RFM_Set_OCP(140);
     } else {
-      if (level < 2) {
-        level = 2;
-      }
       //Default value PA_HF/LF or +17dBm
       RFM_Write(RFM_REG_PA_DAC, 0x84);
       RFM_Set_OCP(100);
@@ -717,7 +703,7 @@ message_t RFM_Single_Receive(sSettings *LoRa_Settings)
   //Wait until RxDone or Timeout
   //Wait until timeout or RxDone interrupt
   byte RegIrqFlags;
-  if (RFM_pins.DIO0 != -1)
+  if (RFM_pins.DIO0 != -1 && RFM_pins.DIO1 != -1)
     while((digitalRead(RFM_pins.DIO0) == LOW) && (digitalRead(RFM_pins.DIO1) == LOW));
   else
   {
@@ -730,7 +716,7 @@ message_t RFM_Single_Receive(sSettings *LoRa_Settings)
   
   //Check for Timeout
   bool isTimeout;
-  if (RFM_pins.DIO0 != -1)
+  if (RFM_pins.DIO1 != -1)
   {
     isTimeout = digitalRead(RFM_pins.DIO1) == HIGH;
   }
