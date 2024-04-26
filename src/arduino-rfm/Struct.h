@@ -85,15 +85,19 @@ typedef struct{
 
 //Struct used for storing settings of the mote
 typedef struct {
-    unsigned char Confirm;		//0x00 Unconfirmed, 0x01 Confirmed
-    unsigned char Mport;                //Port 1-223
-    unsigned char Mote_Class;		//0x00 Class A, 0x01 Class C
-    unsigned char Datarate_Tx;		//See RFM file
-    unsigned char Datarate_Rx;		//See RFM file
-    unsigned char Channel_Tx;		//See RFM file
-    unsigned char Channel_Rx;		//See RFM filed
-    unsigned char Channel_Hopping;	//0x00 No hopping, 0x01 Hopping
-    unsigned char Transmit_Power;	//0x00 to 0x0F
+    unsigned char Confirm;          //0x00 Unconfirmed, 0x01 Confirmed
+    unsigned char Mport;            //Port 1-223
+    unsigned char Mote_Class;       //0x00 Class A, 0x01 Class C
+    unsigned char Datarate_Tx;      //See RFM file
+    unsigned char Datarate_Rx;      //See RFM file
+    unsigned char Channel_Tx;       //See RFM file
+    unsigned char Channel_Rx;       //See RFM filed
+    unsigned char Channel_Hopping;  //0x00 No hopping, 0x01 Hopping
+    unsigned char Transmit_Power;   //0x00 to 0x0F
+    unsigned int Rx1_Delay;
+    unsigned int Rx2_Delay;         // Rx2_Delay >= Rx1_Delay + RX1_Window
+    unsigned int RX1_Window;
+    unsigned int RX2_Window;
 } sSettings;
 
 typedef enum {

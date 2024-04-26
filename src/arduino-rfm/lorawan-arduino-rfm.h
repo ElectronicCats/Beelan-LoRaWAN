@@ -79,6 +79,10 @@ public:
     unsigned char getDataRate();
     void setTxPower1(unsigned char power_idx);
     void setTxPower(int level, txPin_t pinTx);
+    void setRx1Delay(unsigned int ms);
+    void setRx2Delay(unsigned int ms);
+    void setRx1Window(unsigned int ms);
+    void setRx2Window(unsigned int ms);
     int getRssi();
     int readData(char *outBuff);
     bool readAck(void);
