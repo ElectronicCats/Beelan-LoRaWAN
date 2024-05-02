@@ -91,6 +91,19 @@ public:
     unsigned int getFrameCounter();
     void setFrameCounter(unsigned int FrameCounter);
 
+    // Declare public instead of private so they can be save on RTC ram in the main script before deep sleep for ESP
+    unsigned char DevEUI[8];
+    unsigned char AppEUI[8];
+    unsigned char AppKey[16];
+    unsigned char DevNonce[2];
+    unsigned char AppNonce[3];
+    unsigned char NetID[3];
+    unsigned char Address_Tx[4];
+    unsigned char NwkSKey[16];
+    unsigned char AppSKey[16];
+    unsigned int Frame_Counter_Tx;
+    sSettings LoRa_Settings;
+
 private:
     void randomChannel();
 
@@ -106,24 +119,10 @@ private:
     void(*messageCallback)(sBuffer *Data_Rx, bool isConfirmed, uint8_t fPort) = NULL;
 
     // Declare ABP session
-    unsigned char Address_Tx[4];
-    unsigned char NwkSKey[16];
-    unsigned char AppSKey[16];
-    unsigned int Frame_Counter_Tx;
     sLoRa_Session Session_Data;
 
     // Declare OTAA data struct
-    unsigned char DevEUI[8];
-    unsigned char AppEUI[8];
-    unsigned char AppKey[16];
-    unsigned char DevNonce[2];
-    unsigned char AppNonce[3];
-    unsigned char NetID[3];
     sLoRa_OTAA OTAA_Data;
-
-    // Declare LoRA settings struct
-    sSettings LoRa_Settings;
-    sRFM_pins LoRa_Pins;
 
     unsigned char drate_common;
 
