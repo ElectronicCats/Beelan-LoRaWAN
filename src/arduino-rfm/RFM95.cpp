@@ -603,6 +603,10 @@ void RFM_Set_Tx_Power(int level, int outputPin)
   }
 }
 
+bool RFM_isRxDone()
+{
+    return (RFM_Read(RFM_REG_IRQ_FLAGS & 0x7f) & IRQ_RX_DONE_MASK) != 0;
+}
 
 void RFM_Set_OCP(uint8_t mA)
 {
@@ -642,7 +646,8 @@ void RFM_Send_Package(sBuffer *RFM_Tx_Package, sSettings *LoRa_Settings)
   RFM_Change_Channel(LoRa_Settings->Channel_Tx);
 
   //Switch DIO0 to TxDone
-  RFM_Write(RFM_REG_DIO_MAPPING1, 0x40);
+  if (RFM_pins.DIO0 != -1)
+    RFM_Write(RFM_REG_DIO_MAPPING1, 0x40);
 
   //Set IQ to normal values
   RFM_Write(RFM_REG_INVERT_IQ,0x27);
@@ -667,7 +672,12 @@ void RFM_Send_Package(sBuffer *RFM_Tx_Package, sSettings *LoRa_Settings)
   RFM_Write(RFM_REG_OP_MODE,0x83);
 
   //Wait for TxDone
-  while(digitalRead(RFM_pins.DIO0) == LOW);
+  if (RFM_pins.DIO0 != -1)
+    while(digitalRead(RFM_pins.DIO0) == LOW);
+  else
+  {
+    while ((RFM_Read(RFM_REG_IRQ_FLAGS & 0x7f) & IRQ_TX_DONE_MASK) == 0);
+  }
 
   //Clear interrupt
   RFM_Write(RFM_REG_IRQ_FLAGS,0x08);
@@ -688,7 +698,8 @@ message_t RFM_Single_Receive(sSettings *LoRa_Settings)
   message_t Message_Status = NO_MESSAGE;
   
   //Change DIO 0 back to RxDone
-  RFM_Write(RFM_REG_DIO_MAPPING1, 0x00);
+  if (RFM_pins.DIO0 != -1)
+    RFM_Write(RFM_REG_DIO_MAPPING1, 0x00);
 
   //Invert IQ Back
   RFM_Write(RFM_REG_INVERT_IQ, 0x67);
@@ -705,10 +716,29 @@ message_t RFM_Single_Receive(sSettings *LoRa_Settings)
 
   //Wait until RxDone or Timeout
   //Wait until timeout or RxDone interrupt
-  while((digitalRead(RFM_pins.DIO0) == LOW) && (digitalRead(RFM_pins.DIO1) == LOW));
+  byte RegIrqFlags;
+  if (RFM_pins.DIO0 != -1)
+    while((digitalRead(RFM_pins.DIO0) == LOW) && (digitalRead(RFM_pins.DIO1) == LOW));
+  else
+  {
+    RegIrqFlags = RFM_Read(RFM_REG_IRQ_FLAGS & 0x7f);
+    while ((RegIrqFlags & (IRQ_RX_DONE_MASK | IRQ_RX_TIMEOUT_MASK)) == 0)
+    {
+      RegIrqFlags = RFM_Read(RFM_REG_IRQ_FLAGS & 0x7f);
+    }
+  }
 
   //Check for Timeout
-  if(digitalRead(RFM_pins.DIO1) == HIGH)
+  bool isTimeout;
+  if (RFM_pins.DIO0 != -1)
+  {
+    isTimeout = digitalRead(RFM_pins.DIO1) == HIGH;
+  }
+  else
+  {
+    isTimeout = (RegIrqFlags & IRQ_RX_TIMEOUT_MASK) != 0;
+  }
+  if (isTimeout)
   {
     //Clear interrupt register
     RFM_Write(RFM_REG_IRQ_FLAGS,0xE0);
@@ -716,14 +746,22 @@ message_t RFM_Single_Receive(sSettings *LoRa_Settings)
   }
 
   //Check for RxDone
-  if(digitalRead(RFM_pins.DIO0) == HIGH)
+  bool isRxDone;
+  if (RFM_pins.DIO0 != -1)
+  {
+    isRxDone = digitalRead(RFM_pins.DIO0) == HIGH;
+  }
+  else
+  {
+    isRxDone = (RegIrqFlags & IRQ_RX_DONE_MASK) != 0;
+  }
+  if(isRxDone)
   {
 	  Message_Status = NEW_MESSAGE;
   }
 
   return Message_Status;
 }
-
 
 /*
 *****************************************************************************************
@@ -735,7 +773,8 @@ message_t RFM_Single_Receive(sSettings *LoRa_Settings)
 void RFM_Continuous_Receive(sSettings *LoRa_Settings)
 {
   //Change DIO 0 back to RxDone and DIO 1 to rx timeout
-  RFM_Write(RFM_REG_DIO_MAPPING1,0x00);
+  if (RFM_pins.DIO0 != -1)
+    RFM_Write(RFM_REG_DIO_MAPPING1,0x00);
 
   //Invert IQ Back
   RFM_Write(RFM_REG_INVERT_IQ, 0x67);

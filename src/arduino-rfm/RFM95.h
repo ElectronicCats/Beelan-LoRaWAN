@@ -94,6 +94,11 @@ typedef enum {
     RFM_MODE_LORA       = 0b10000000
     } frm_mode_t;
 
+typedef enum {
+    IRQ_RX_TIMEOUT_MASK     = 0b10000000,
+    IRQ_RX_DONE_MASK        = 0b01000000,
+    IRQ_TX_DONE_MASK        = 0b00001000
+    } irq_mask;
 
 /*
 *****************************************************************************************
@@ -109,6 +114,7 @@ message_t RFM_Get_Package(sBuffer *RFM_Rx_Package);
 void RFM_Write(unsigned char RFM_Address, unsigned char RFM_Data);
 void RFM_Switch_Mode(unsigned char Mode);
 void RFM_Set_Tx_Power(int level, int outputPin);
+bool RFM_isRxDone();
 void RFM_Set_OCP(unsigned char mA);
 
 unsigned char RFM_Get_Rssi();
