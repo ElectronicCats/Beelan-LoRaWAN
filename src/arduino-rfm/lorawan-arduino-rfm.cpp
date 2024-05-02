@@ -111,6 +111,12 @@ bool LoRaWANClass::init(void)
     LoRa_Settings.Confirm = 0x00;         //0x00 unconfirmed, 0x01 confirmed
     LoRa_Settings.Channel_Hopping = 0x00; //0x00 no channel hopping, 0x01 channel hopping
 
+    // Set default rx delay and window
+    LoRa_Settings.Rx1_Delay = 1000; // Thing stack seems to be 5000 ms (so Rx2_delay 6000 ms)
+    LoRa_Settings.Rx2_Delay = 2000; // Rx2_Delay >= Rx1_Delay + RX1_Window
+    LoRa_Settings.RX1_Window = 1000;
+    LoRa_Settings.RX2_Window = 1000;
+
     // Initialise buffer for data to transmit
     memset(Data_Tx, 0x00, sizeof(Data_Tx));
     Buffer_Tx.Data = Data_Tx;
@@ -399,12 +405,35 @@ unsigned char LoRaWANClass::getDataRate()
 {
     return LoRa_Settings.Datarate_Tx;
 }
+
 void LoRaWANClass::setTxPower1(unsigned char power_idx)
 {
     unsigned char RFM_Data;
     LoRa_Settings.Transmit_Power = (power_idx > 0x0F) ? 0x0F : power_idx;
     RFM_Data = LoRa_Settings.Transmit_Power + 0xF0;
     RFM_Write(RFM_REG_PA_CONFIG, RFM_Data);
+}
+
+void LoRaWANClass::setRx1Delay(unsigned int ms) 
+{
+    LoRa_Settings.Rx1_Delay = ms;
+    LoRa_Settings.Rx2_Delay = max(LoRa_Settings.Rx2_Delay,LoRa_Settings.Rx1_Delay + LoRa_Settings.RX1_Window);
+}
+
+void LoRaWANClass::setRx2Delay(unsigned int ms)
+{
+    LoRa_Settings.Rx2_Delay = max(ms,LoRa_Settings.Rx1_Delay + LoRa_Settings.RX1_Window);
+}
+
+void LoRaWANClass::setRx1Window(unsigned int ms)
+{
+    LoRa_Settings.RX1_Window = ms;
+    LoRa_Settings.Rx2_Delay = max(LoRa_Settings.Rx2_Delay,LoRa_Settings.Rx1_Delay + LoRa_Settings.RX1_Window);
+}
+
+void LoRaWANClass::setRx2Window(unsigned int ms)
+{
+    LoRa_Settings.RX2_Window = ms;
 }
 
 int LoRaWANClass::readData(char *outBuff)
