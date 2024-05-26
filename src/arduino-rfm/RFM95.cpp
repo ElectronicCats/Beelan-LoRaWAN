@@ -237,13 +237,13 @@
   };
 #elif defined(AS_923)
   static const PROGMEM unsigned char LoRa_Frequency[8][3] = {//[922.0 - 923.4] MHz - New AS923/AS923-1 (920-923Mhz)
-    { 0xE6, 0x59, 0xC0 }, //Channel [0], 923.2 MHz / 61.035 Hz = 15125747 = 0xE6CCF3 - Default OTAA - RX2
-    { 0xE6, 0x66, 0x8D }, //Channel [1], 923.4 MHz / 61.035 Hz = 15129024 = 0xE6D9C0 - Default OTAA
+    { 0xE6, 0xCC, 0xF4 }, //Channel [0], 923.2 MHz / 61.035 Hz = 15125748 = 0xE6CCF4 - Default OTAA - RX2
+    { 0xE6, 0xD9, 0xC0 }, //Channel [1], 923.4 MHz / 61.035 Hz = 15129024 = 0xE6D9C0 - Default OTAA
     { 0xE6, 0x8C, 0xF3 }, //Channel [2], 922.2 MHz / 61.035 Hz = 15109363 = 0xE68CF3
     { 0xE6, 0x99, 0xC0 }, //Channel [3], 922.4 MHz / 61.035 Hz = 15112640 = 0xE699C0
     { 0xE6, 0xA6, 0x8D }, //Channel [4], 922.6 MHz / 61.035 Hz = 15115917 = 0xE6A68D
     { 0xE6, 0xB3, 0x5A }, //Channel [5], 922.8 MHz / 61.035 Hz = 15119194 = 0xE6B35A
-    { 0xE6, 0xA6, 0x8D }, //Channel [6], 923.0 MHz / 61.035 Hz = 15122471 = 0xE6C027
+    { 0xE6, 0xC0, 0x27 }, //Channel [6], 923.0 MHz / 61.035 Hz = 15122471 = 0xE6C027
     { 0xE6, 0x80, 0x27 }, //Channel [7], 922.0 MHz / 61.035 Hz = 15106087 = 0xE68027
   };
 #elif defined(AS_923_2)
