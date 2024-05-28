@@ -333,7 +333,7 @@ static void RFM_change_SF_BW(unsigned char _SF, unsigned char _BW)
 	RFM_Write(RFM_REG_MODEM_CONFIG2, (_SF << 4) | 0b0100); //SFx CRC On
 	RFM_Write(RFM_REG_MODEM_CONFIG1,(_BW << 4) | 0x02); //x kHz 4/5 coding rate explicit header mode
 
-  #if defined(EU_868) || defined(IN_865)
+  #if defined(EU_868) || defined(IN_865) || defined(AS_923) || defined(AS_923_2)
   if(_SF>10)
     RFM_Write(RFM_REG_MODEM_CONFIG3, 0b1100); //Low datarate optimization on AGC auto on 
   else
