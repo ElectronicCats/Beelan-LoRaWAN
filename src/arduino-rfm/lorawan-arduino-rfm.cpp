@@ -112,10 +112,12 @@ bool LoRaWANClass::init(void)
     LoRa_Settings.Channel_Hopping = 0x00; //0x00 no channel hopping, 0x01 channel hopping
 
     // Set default rx delay and window
-    LoRa_Settings.Rx1_Delay = 1000; // Thing stack seems to be 5000 ms (so Rx2_delay 6000 ms)
-    LoRa_Settings.Rx2_Delay = 2000; // Rx2_Delay >= Rx1_Delay + RX1_Window
     LoRa_Settings.RX1_Window = 1000;
     LoRa_Settings.RX2_Window = 1000;
+    
+    LoRa_Settings.Rx1_Delay = 5000; // Thing stack seems to be 5000 ms (so Rx2_delay 6000 ms)
+    LoRa_Settings.Rx2_Delay = LoRa_Settings.Rx1_Delay + LoRa_Settings.RX1_Window;
+    
 
     // Initialise buffer for data to transmit
     memset(Data_Tx, 0x00, sizeof(Data_Tx));
@@ -263,7 +265,10 @@ void LoRaWANClass::setAppSKey(const char *ApskKey_in)
 
 void LoRaWANClass::setDevAddr(const char *devAddr_in)
 {
-    memset(Session_Data.DevAddr, 0x30, sizeof(Session_Data.DevAddr));
+    //memset(Session_Data.DevAddr, 0x30, sizeof(Session_Data.DevAddr));
+
+    size_t devAddrSize = sizeof(Session_Data.DevAddr);
+    memset(Session_Data.DevAddr, 0x30, devAddrSize);
 
     //Check if it is a set command and there is enough data sent
     Address_Tx[0] = ASCII2Hex(devAddr_in[0], devAddr_in[1]);
@@ -340,7 +345,8 @@ void LoRaWANClass::sendACK()
     //Set new command for RFM
     RFM_Command_Status = NEW_RFM_COMMAND;
     upMsg_Type = MSG_ACK;
-    sprintf(Str, ""); 
+    //sprintf(Str, "");
+    Str[0] = '\0';
     memcpy(Buffer_Tx.Data, Str, sizeof(Str));
 
 }
@@ -503,7 +509,7 @@ void LoRaWANClass::update(void)
             bool isConfirmed =  ((Message_Rx.MAC_Header & 0xE0)>>5) == 5 ? true : false ; // MType
             uint8_t fPort = Message_Rx.Frame_Port;
             if(lora.messageCallback) lora.messageCallback(&Buffer_Rx, isConfirmed, fPort);
-            Buffer_Rx.Counter = 0x00; // clear counter for the next cycle
+            Rx_Status = NEW_RX;
             Serial.println("Data received over RX1");
             
         }
