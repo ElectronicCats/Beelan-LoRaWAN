@@ -170,17 +170,29 @@ bool LoRaWANClass::init(void)
     return 1;
 }
 
+// coppied from LoRaMAC.cpp 
+static void Generate_DevNonce(unsigned char *DevNonce)
+{
+	unsigned int RandNumber;
+
+	RandNumber = random(0xFFFF);
+
+	DevNonce[0] = RandNumber & 0x00FF;
+	DevNonce[1] = (RandNumber >> 8) & 0x00FF;
+    
+}
 bool LoRaWANClass::join(void)
 {
     bool join_status;
     const unsigned long timeout = 6000;
     unsigned long prev_millis;
-
+    
     if (currentChannel == MULTI)
     {
         randomChannel();
     }
     // join request
+    Generate_DevNonce(OTAA_Data.DevNonce);
     LoRa_Send_JoinReq(&OTAA_Data, &LoRa_Settings);
     // delay(900);
     // loop for <timeout> wait for join accept
