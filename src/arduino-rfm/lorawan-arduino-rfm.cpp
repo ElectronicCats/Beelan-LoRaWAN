@@ -291,7 +291,7 @@ void LoRaWANClass::setTxPower(int level, txPin_t pinTx)
 int LoRaWANClass::getRssi()
 {
     // return rssi value in dBm - convertion according to sx1276 datasheet
-    return -157 + RFM_Get_Rssi();
+    return -137 + RFM_Get_Rssi();
 }
 
 void LoRaWANClass::setDeviceClass(devclass_t dev_class)
