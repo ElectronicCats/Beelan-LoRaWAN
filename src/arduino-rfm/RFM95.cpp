@@ -780,23 +780,8 @@ void RFM_Continuous_Receive(sSettings *LoRa_Settings)
   RFM_Write(RFM_REG_INVERT_IQ2, 0x19);
   
 	//Change Datarate and channel.
-  // This depends on regional parameters
-#if defined(EU_868)
-  RFM_Change_Datarate(SF12BW125);
-  RFM_Change_Channel(CHRX2);
-#elif defined(IN_865)
-  RFM_Change_Datarate(SF10BW125);
-  RFM_Change_Channel(CHRX2);
-#else
-  //Datarate for downlink should be 8 but testing on 10
-  //LoRa_Settings->Datarate_Rx=10;
-  //LoRa_Settings->Channel_Rx=0;
-  //Serial.println("DataRate Rx "+String(LoRa_Settings->Datarate_Rx));
-  //Serial.println("Cannel Rx "+String(LoRa_Settings->Channel_Rx));
-  
-	RFM_Change_Datarate(LoRa_Settings->Datarate_Rx);
-	RFM_Change_Channel(LoRa_Settings->Channel_Rx);
-#endif
+  RFM_Change_Datarate(LoRa_Settings->Datarate_Rx);
+  RFM_Change_Channel(LoRa_Settings->Channel_Rx);
 
 	//Switch to continuous receive
 	RFM_Switch_Mode(RFM_MODE_RXCONT);
