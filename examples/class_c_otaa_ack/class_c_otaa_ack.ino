@@ -12,8 +12,6 @@ const unsigned long interval = 15 * 1000; // 10 s interval to send message
 unsigned long previousMillis = 0;     // will store last time message sent
 unsigned int counter = 0;             // message counter
 
-bool sendack = false;
-
 char myStr[50];
 
 const sRFM_pins RFM_pins = {
@@ -22,31 +20,6 @@ const sRFM_pins RFM_pins = {
     .DIO0 = 18,
     .DIO1 = 19,
 };
-
-void message(sBuffer *msg, bool isConfirmed, uint8_t fPort){
-
-  char Buff[255];
-  int size = msg->Counter;
-
-  memset(Buff, 0x00, size + 1);
-  memcpy(Buff, msg->Data, size);
-
-  Serial.println("--------------------");
-  Serial.print("Msg size as bytes : ");
-  Serial.println(msg->Counter);
-  Serial.print("Message :");
-  Serial.println(Buff);
-  Serial.print("Port :");
-  Serial.println(fPort);
-
-  if(isConfirmed){
-
-    Serial.println("ACK response Should be sent !");
-    sendack = true;
-    
-  }
-
-}
 
 void setup() {
   // Setup loraid access
@@ -68,9 +41,6 @@ void setup() {
   lora.setDevEUI(devEui);
   lora.setAppEUI(appEui);
   lora.setAppKey(appKey);
-
-  // Set Callback function
-  lora.onMessage(message);
 
   // Join procedure
   bool isJoined;
@@ -110,13 +80,6 @@ void loop() {
     
     lora.sendUplink(myStr, strlen(myStr), 1, 1);
     counter++;
-
-  }
-
-  if (sendack) {
-
-    lora.sendACK();
-    sendack = false;
 
   }
 
