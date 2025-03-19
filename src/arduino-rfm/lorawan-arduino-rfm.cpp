@@ -272,9 +272,6 @@ void LoRaWANClass::setDevAddr(const char *devAddr_in)
     size_t devAddrSize = sizeof(Session_Data.DevAddr);
     memset(Session_Data.DevAddr, 0x30, devAddrSize);
 
-    size_t devAddrSize = sizeof(Session_Data.DevAddr);
-    memset(Session_Data.DevAddr, 0x30, devAddrSize);
-
     //Check if it is a set command and there is enough data sent
     Address_Tx[0] = ASCII2Hex(devAddr_in[0], devAddr_in[1]);
     Address_Tx[1] = ASCII2Hex(devAddr_in[2], devAddr_in[3]);
