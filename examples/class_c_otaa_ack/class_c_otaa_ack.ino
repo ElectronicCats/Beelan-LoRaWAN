@@ -16,14 +16,14 @@ char myStr[50];
 char outStr[255];
 byte recvStatus = 0;
 
-//To confirm the pins used to handle the communication with the LoRa module
+//Pins used to handle the communication with the LoRa module
 const sRFM_pins RFM_pins = {
   .CS = 7,
   .RST = 3, 
   .DIO0 = 18,
   .DIO1 = 19, 
-  /*.DIO2 = if_needed, 
-  .DIO5 = if_needed,*/
+  .DIO2 = -1, 
+  .DIO5 = -1,
 };
 
 void setup() {
