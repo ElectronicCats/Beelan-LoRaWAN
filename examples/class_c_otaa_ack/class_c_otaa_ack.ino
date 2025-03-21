@@ -1,24 +1,28 @@
-
-// If your using PlatformIO you will need to set _CLASS_C_ using the -D flag in the build_flags options
-#include <Arduino.h>
+/*
+ * Example of OTAA class C device
+ */
 #include <lorawan.h>
 
 // OTAA credentials
-const char *devEui = "0";
-const char *appEui = "0";
-const char *appKey = "0";
+const char *devEui = "0000000000000000";
+const char *appEui = "0000000000000000";
+const char *appKey = "00000000000000000000000000000000";
 
-const unsigned long interval = 15 * 1000; // 10 s interval to send message
+const unsigned long interval = 10000; // 10 s interval to send message
 unsigned long previousMillis = 0;     // will store last time message sent
 unsigned int counter = 0;             // message counter
 
 char myStr[50];
+char outStr[255];
+byte recvStatus = 0;
 
 const sRFM_pins RFM_pins = {
-    .CS = 7,
-    .RST = 3,
-    .DIO0 = 18,
-    .DIO1 = 19,
+  .CS = SS,
+  .RST = RFM_RST, 
+  .DIO0 = RFM_DIO0,
+  .DIO1 = RFM_DIO1, 
+  .DIO2 = RFM_DIO2, 
+  .DIO5 = RFM_DIO5,
 };
 
 void setup() {
@@ -31,12 +35,15 @@ void setup() {
     return;
   }
 
+  // Set LoRaWAN Class change CLASS_A or CLASS_C
   lora.setDeviceClass(CLASS_C);
+
   // Set Data Rate
   lora.setDataRate(SF8BW125);
 
   // set channel to random
   lora.setChannel(MULTI);
+
   // Put OTAA Key and DevAddress here
   lora.setDevEUI(devEui);
   lora.setAppEUI(appEui);
@@ -49,42 +56,36 @@ void setup() {
     isJoined = lora.join();
     
     //wait for 10s to try again
-    delay(7000);
+    delay(10000);
   }while(!isJoined);
   Serial.println("Joined to network");
-
-    delay(1000);
-
-    sprintf(myStr, "First Message"); 
-
-    Serial.print("Sending: ");
-    Serial.println(myStr);
-    
-    lora.sendUplink(myStr, strlen(myStr), 0, 1);
-    counter++;
-
 }
 
 void loop() {
-
   // Check interval overflow
   if (millis() - previousMillis > interval){
-    delay(1000);
- 
     previousMillis = millis(); 
 
     sprintf(myStr, "Counter-%d", counter); 
 
     Serial.print("Sending: ");
     Serial.println(myStr);
-    
-    lora.sendUplink(myStr, strlen(myStr), 1, 1);
-    counter++;
 
+    //To send the string, the message is confirmed, using Port1
+    lora.sendUplink(myStr, strlen(myStr), 1, 1); 
+    counter++;
   }
 
+  //If any downliks are received from the server, proceed to read and print it, as well as the reception power
+  recvStatus = lora.readData(outStr);
+    if(recvStatus) {
+      Serial.println(lora.getRssi());
+      Serial.println(outStr);
+    }
+
+  // Check Lora RX
   lora.update();
 
+  //To receive the "Acknowlede" message from the server, since our Uplink was a confirmed one
   if(lora.readAck()) Serial.println("ack received");
-
 }
