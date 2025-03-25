@@ -86,10 +86,7 @@ public:
     int getRssi();
     int readData(char *outBuff);
     bool readAck(void);
-    void sendACK();
     void update(void);
-    void switchToClassC(sSettings *LoRa_Settings);
-    void onMessage(void(*callback)(sBuffer *Data_Rx, bool isConfirmed, uint8_t fPort));
 
     // frame counter
     unsigned int getFrameCounter();
@@ -119,9 +116,6 @@ private:
     sBuffer Buffer_Rx;
     sLoRa_Message Message_Rx;
 
-    //Callback function variable
-    void(*messageCallback)(sBuffer *Data_Rx, bool isConfirmed, uint8_t fPort) = NULL;
-
     // Declare ABP session
     sLoRa_Session Session_Data;
 
@@ -142,8 +136,6 @@ private:
 
     // ACK reception
     ack_t Ack_Status;
-
-    msg_t upMsg_Type;
 };
 
 #endif
