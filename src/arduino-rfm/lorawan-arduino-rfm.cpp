@@ -171,6 +171,13 @@ bool LoRaWANClass::init(void)
     {
         return 0;
     }
+
+    lora_state = LORA_STATE_IDLE;
+    rx1_timeout = 0;
+    rx2_timeout = 0;
+    rx1_channel = 0;
+    rx1_datarate = 0;
+
     return 1;
 }
 
@@ -458,65 +465,149 @@ bool LoRaWANClass::readAck(void)
     return false;
 }
 
-void LoRaWANClass::update(void)
-{
-    //Type A mote transmit receive cycle
-    if ((RFM_Command_Status == NEW_RFM_COMMAND || RFM_Command_Status == JOIN) && LoRa_Settings.Mote_Class == CLASS_A)
-    {
-        //LoRaWAN TX/RX cycle
-        LORA_Cycle(&Buffer_Tx, &Buffer_Rx, &RFM_Command_Status, &Session_Data, &OTAA_Data, &Message_Rx, &LoRa_Settings);
-        
-        if ((Message_Rx.Frame_Control & 0x20) > 0){ // ack get only in RX1 window
-            Ack_Status = NEW_ACK;
-        }
+void LoRaWANClass::update(void) {
+    switch (lora_state) {
+        case LORA_STATE_IDLE:
+            // Verificar si hay un comando pendiente (transmisión o unión)
+            if (RFM_Command_Status == NEW_RFM_COMMAND || RFM_Command_Status == JOIN) {
+                lora_state = LORA_STATE_TX;
+            }
+            // Para clase C, mantener recepción continua
+            if (LoRa_Settings.Mote_Class == CLASS_C && digitalRead(RFM_pins.DIO0)) {
+                LORA_Receive_Data(&Data_Rx, &Session_Data, &OTAA_Data, &Message_Rx, &LoRa_Settings);
+                if (Data_Rx.Counter > 0) {
+                    Rx_Status = NEW_RX;
+                    if (Message_Rx.Frame_Control & 0x20) {
+                        Ack_Status = NEW_ACK;
+                    }
+                }
+                // Reanudar recepción continua
+                RFM_Continuous_Receive(&LoRa_Settings);
+            }
+            break;
 
-        if (Buffer_Rx.Counter != 0x00)
-        {
-            Rx_Status = NEW_RX;
-        }
-
-        RFM_Command_Status = NO_RFM_COMMAND;
-
-    }
-
-    //Type C mote transmit and receive handling
-    if (LoRa_Settings.Mote_Class == CLASS_C)
-    {
-        //Transmit -> this will be never used in Class C since device start as class A all the time.
-        // in Class C mode we will only listen upcoming messages
-        if (RFM_Command_Status == NEW_RFM_COMMAND)
-        {
-            //LoRaWAN TX/RX cycle
-            LORA_Cycle(&Buffer_Tx, &Buffer_Rx, &RFM_Command_Status, &Session_Data, &OTAA_Data, &Message_Rx, &LoRa_Settings);
-            if (Buffer_Rx.Counter != 0x00)
-            {
-                Rx_Status = NEW_RX;
+        case LORA_STATE_TX:
+            // Procesar comando de unión (OTAA) o transmisión de datos
+            if (RFM_Command_Status == JOIN) {
+                LoRa_Send_JoinReq(&OTAA_Data, &LoRa_Settings);
+            } else {
+                LORA_Send_Data(&Data_Tx, &Session_Data, &LoRa_Settings);
             }
             RFM_Command_Status = NO_RFM_COMMAND;
-        }
 
-        //Receive in Class C mode
-        bool isRxDone;
-        if (RFM_pins.DIO0 != -1)
-        {
-            isRxDone = digitalRead(RFM_pins.DIO0) == HIGH;
-        }
-        else
-        {
-            isRxDone = RFM_isRxDone();
-        }
-        if (isRxDone)
-        {
-            LORA_Receive_Data(&Buffer_Rx, &Session_Data, &OTAA_Data, &Message_Rx, &LoRa_Settings);
-            if (Buffer_Rx.Counter != 0x00)
-            {
-              Rx_Status = NEW_RX;
+            // Guardar configuración de RX1
+            rx1_channel = LoRa_Settings.Channel_Rx;
+            rx1_datarate = LoRa_Settings.Datarate_Rx;
+
+            if (LoRa_Settings.Mote_Class == CLASS_A) {
+                // Iniciar espera para RX1
+                rx1_timeout = millis() + 1000; // Receive_Delay_1
+                lora_state = LORA_STATE_WAIT_RX1;
+            } else {
+                // Clase C: Configurar RX2 e ir a recepción continua
+                #ifdef US_915
+                LoRa_Settings.Channel_Rx = 0x08; // 923.3 MHz
+                LoRa_Settings.Datarate_Rx = SF12BW500;
+                #elif defined(EU_868)
+                LoRa_Settings.Channel_Rx = CHRX2; // 869.525 MHz
+                LoRa_Settings.Datarate_Rx = SF12BW125;
+                #elif defined(AS_923) || defined(AS_923_2)
+                LoRa_Settings.Channel_Rx = 0x00; // 923.2 o 921.4 MHz
+                LoRa_Settings.Datarate_Rx = SF10BW125;
+                #endif
+                RFM_Continuous_Receive(&LoRa_Settings);
+                lora_state = LORA_STATE_RX_CONT;
             }
-        }
+            break;
 
-        RFM_Command_Status = NO_RFM_COMMAND;
-    } 
+        case LORA_STATE_WAIT_RX1:
+            // Esperar hasta que llegue el tiempo de RX1
+            if (millis() >= rx1_timeout) {
+                lora_state = LORA_STATE_RX1;
+                LoRa_Settings.Channel_Rx = rx1_channel;
+                LoRa_Settings.Datarate_Rx = rx1_datarate;
+                RFM_Single_Receive(&LoRa_Settings);
+            }
+            break;
 
+        case LORA_STATE_RX1:
+            // Verificar si hay datos recibidos
+            if (digitalRead(RFM_pins.DIO0)) {
+                LORA_Receive_Data(&Data_Rx, &Session_Data, &OTAA_Data, &Message_Rx, &LoRa_Settings);
+                if (Data_Rx.Counter > 0) {
+                    Rx_Status = NEW_RX;
+                    if (Message_Rx.Frame_Control & 0x20) {
+                        Ack_Status = NEW_ACK;
+                    }
+                    lora_state = LORA_STATE_IDLE; // Datos recibidos, terminar
+                    break;
+                }
+                if (RFM_Command_Status == JOIN) {
+                    if (LORA_join_Accept(&Data_Rx, &Session_Data, &OTAA_Data, &Message_Rx)) {
+                        lora_state = LORA_STATE_IDLE;
+                        break;
+                    }
+                }
+            }
+            // Pasar a RX2 después de un tiempo
+            if (millis() >= rx1_timeout + 1000) { // Receive_Delay_2
+                lora_state = LORA_STATE_WAIT_RX2;
+                rx2_timeout = millis();
+                #ifdef US_915
+                LoRa_Settings.Channel_Rx = 0x08; // 923.3 MHz
+                LoRa_Settings.Datarate_Rx = SF12BW500;
+                #elif defined(EU_868)
+                LoRa_Settings.Channel_Rx = CHRX2; // 869.525 MHz
+                LoRa_Settings.Datarate_Rx = SF12BW125;
+                #elif defined(AS_923) || defined(AS_923_2)
+                LoRa_Settings.Channel_Rx = 0x00; // 923.2 o 921.4 MHz
+                LoRa_Settings.Datarate_Rx = SF10BW125;
+                #endif
+            }
+            break;
+
+        case LORA_STATE_WAIT_RX2:
+            // Esperar hasta que llegue el tiempo de RX2
+            if (millis() >= rx2_timeout) {
+                lora_state = LORA_STATE_RX2;
+                RFM_Single_Receive(&LoRa_Settings);
+            }
+            break;
+
+        case LORA_STATE_RX2:
+            // Verificar si hay datos recibidos
+            if (digitalRead(RFM_pins.DIO0)) {
+                LORA_Receive_Data(&Data_Rx, &Session_Data, &OTAA_Data, &Message_Rx, &LoRa_Settings);
+                if (Data_Rx.Counter > 0) {
+                    Rx_Status = NEW_RX;
+                    if (Message_Rx.Frame_Control & 0x20) {
+                        Ack_Status = NEW_ACK;
+                    }
+                }
+                if (RFM_Command_Status == JOIN) {
+                    if (LORA_join_Accept(&Data_Rx, &Session_Data, &OTAA_Data, &Message_Rx)) {
+                        lora_state = LORA_STATE_IDLE;
+                        break;
+                    }
+                }
+            }
+            lora_state = LORA_STATE_IDLE; // Terminar ciclo
+            break;
+
+        case LORA_STATE_RX_CONT:
+            // Recepción continua para clase C
+            if (digitalRead(RFM_pins.DIO0)) {
+                LORA_Receive_Data(&Data_Rx, &Session_Data, &OTAA_Data, &Message_Rx, &LoRa_Settings);
+                if (Data_Rx.Counter > 0) {
+                    Rx_Status = NEW_RX;
+                    if (Message_Rx.Frame_Control & 0x20) {
+                        Ack_Status = NEW_ACK;
+                    }
+                }
+                RFM_Continuous_Receive(&LoRa_Settings); // Reanudar recepción
+            }
+            break;
+    }
 }
 
 void LoRaWANClass::randomChannel()

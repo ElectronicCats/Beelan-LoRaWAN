@@ -47,6 +47,17 @@
 */
 
 #define LORAWAN_VERSION "1.0.0"
+
+typedef enum {
+  LORA_STATE_IDLE,        // Reposo, esperando un comando
+  LORA_STATE_TX,          // Transmitiendo datos
+  LORA_STATE_WAIT_RX1,    // Esperando ventana RX1 (clase A)
+  LORA_STATE_RX1,         // Recibiendo en RX1 (clase A)
+  LORA_STATE_WAIT_RX2,    // Esperando ventana RX2 (clase A)
+  LORA_STATE_RX2,         // Recibiendo en RX2 (clase A)
+  LORA_STATE_RX_CONT,     // Recepción continua (clase C)
+} lora_state_t;
+
 /*
 *****************************************************************************************
 * CLASS
@@ -109,6 +120,14 @@ private:
     void randomChannel();
 
 private:
+
+    // State
+    lora_state_t lora_state;
+    unsigned long rx1_timeout;
+    unsigned long rx2_timeout;
+    unsigned char rx1_channel; 
+    unsigned char rx1_datarate;
+
     // Messages
     unsigned char Data_Tx[MAX_UPLINK_PAYLOAD_SIZE];
     sBuffer Buffer_Tx;
